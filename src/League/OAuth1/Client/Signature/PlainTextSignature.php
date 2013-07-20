@@ -2,22 +2,32 @@
 
 namespace League\OAuth1\Client\Signature;
 
-use League\OAuth1\Client\Server\ServerInterface;
-use League\OAuth1\Client\Token\TokenInterface;
-use Symfony\Component\HttpFoundation\Request;
+use League\OAuth1\Client\Credentials\ClientCredentialsInterface;
+use League\OAuth1\Client\Credentials\CredentialsInterface;
 
-class PlainTextSignature extends AbstractSignature implements SignatureInterface
+class PlainTextSignature extends Signature implements SignatureInterface
 {
+    /**
+     * Get the OAuth signature method.
+     *
+     * @return string
+     */
+    public function method()
+    {
+        return 'PLAINTEXT';
+    }
+
     /**
      * Sign the given request for the client.
      *
-     * @param  Request          $request
-     * @param  ServerInterface  $server
-     * @param  TokenInterface   $token
+     * @param  string  $uri
+     * @param  array   $credentials
+     * @param  string  $method
      * @return string
+     * @see    OAuth 1.0 RFC 5849 Section 3.4.4
      */
-    public function sign(Request $request, ServerInterface $server, TokenInterface $token = null)
+    public function sign($uri, array $parameters = array(), $method = 'POST')
     {
-        return $this->key($server, $token);
+        return $this->key();
     }
 }
