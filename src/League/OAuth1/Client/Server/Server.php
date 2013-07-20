@@ -2,61 +2,30 @@
 
 namespace League\OAuth1\Client\Server;
 
-use DateTime;
-use Guzzle\Service\Client as GuzzleClient;
-use League\OAuth1\Client\Signature\SignatureInterface;
-use League\OAuth1\Client\Signature\HmacSha1Signature;
-use League\OAuth1\Client\Signature\PlainTextSignature;
-use League\OAuth1\Client\Token\TemporaryToken;
-use League\OAuth1\Client\Token\TokenException;
-use Symfony\Component\HttpFoundation\Request;
+use League\OAuth1\Client\Credentials\ClientCredentialsInterface;
+use League\OAuth1\Client\Credentials\ClientCredentials;
 
-abstract class IdentityServer implements ServerInterface
+abstract class Server
 {
-    protected $signature;
+    protected $clientCredentials;
 
-    public $clientId = '';
-
-    public $clientSecret = '';
-
-    public $callbackUri = '';
-
-    public $name;
-
-    public $uidKey = 'uid';
-
-    public $scopes = array();
-
-    public $method = 'post';
-
-    public $scopeSeperator = ',';
-
-    public $responseType = 'json';
-
-    public function __construct($options = array(), SignatureInterface $signature = null)
+    public function __construct($options = array())
     {
-        foreach ($options as $option => $value) {
-            if (isset($this->{$option})) {
-                $this->{$option} = $value;
+        // If our options are in fact an instance of client credentials,
+        // our options are actually our second argument.
+        if ($options instanceof ClientCredentialsInterface) {
+            $clientCredentials = $options;
+
+            if (func_num_args() == 2) {
+                $options = func_get_arg(1);
+            } else {
+                $options = array();
             }
+        } else {
+            list($clientCredentials, $options) = $this->extractClientCredentials($options);
         }
 
-        $this->signature = $signature ?: new PlainTextSignature;
-    }
-
-    public function getClientId()
-    {
-        return $this->clientId;
-    }
-
-    public function getClientSecret()
-    {
-        return $this->clientSecret;
-    }
-
-    public function getCallbackUri()
-    {
-        return $this->callbackUri;
+        $this->clientCredentials = $clientCredentials;
     }
 
     public function getTemporaryToken()
@@ -95,6 +64,28 @@ abstract class IdentityServer implements ServerInterface
 
     public function getAccessToken(TemporaryToken $token)
     {
+    }
+
+    protected function extractClientCredentials(array $options = array())
+    {
+        $keys = array('identifier', 'secret', 'callback_uri');
+
+        foreach ($keys as $key) {
+            if ( !isset($options[$key])) {
+                throw new \InvalidArgumentException("Missing client credentials key [$key] from options.");
+            }
+        }
+
+        $clientCredentials = new ClientCredentials;
+        $clientCredentials->setIdentifier($options['identifier']);
+        $clientCredentials->setSecret($options['secret']);
+        $clientCredentials->setCallbackUri($options['callback_uri']);
+
+        foreach ($keys as $key) {
+            unset($options[$key]);
+        }
+
+        return array($clientCredentials, $options);
     }
 
     protected function createTemporaryToken($response)
@@ -137,11 +128,6 @@ abstract class IdentityServer implements ServerInterface
         return 'OAuth '.implode(', ', $params);
     }
 
-    protected function createRequest($url)
-    {
-        return new Request($url);
-    }
-
     protected function createGuzzleClient(Request $request)
     {
         return new GuzzleClient($request->getUri());
@@ -166,7 +152,9 @@ abstract class IdentityServer implements ServerInterface
         return $nonce;
     }
 
-    abstract public function urlTemporaryToken();
+    abstract public function urlTemporaryCredentials();
 
-    // abstract public function urlAuthorize();
+    abstract public function urlAuthorization();
+
+    abstract public function urlTokenCredentials();
 }
