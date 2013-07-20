@@ -1,15 +1,27 @@
 <?php
 
-namespace Leagure\OAuth1\Client\Signature;
+namespace League\OAuth1\Client\Signature;
 
-class AbstractSignature implements SignatureInterface
+use League\OAuth1\Client\Server\ServerInterface;
+use League\OAuth1\Client\Token\TokenInterface;
+use Symfony\Component\HttpFoundation\Request;
+
+abstract class AbstractSignature implements SignatureInterface
 {
-    public function key(ClientInterface $client, TokenInterface $token = null)
+    /**
+     * Sign the given request for the client.
+     *
+     * @param  Request          $request
+     * @param  ServerInterface  $server
+     * @param  TokenInterface   $token
+     * @return string
+     */
+    protected function key(ServerInterface $server, TokenInterface $token = null)
     {
-        $key = urlencode($client->getSecret()).'&';
+        $key = rawurlencode($server->getClientSecret()).'&';
 
-        if ($token) {
-            $key .= urlencode($token->getSecret());
+        if ($token !== null) {
+            $key .= rawurlencode($token->getSecret());
         }
 
         return $key;

@@ -2,31 +2,28 @@
 
 namespace League\OAuth1\Client\Signature;
 
+use League\OAuth1\Client\Server\ServerInterface;
+use League\OAuth1\Client\Token\TokenInterface;
+use Symfony\Component\HttpFoundation\Request;
+
 class HmacSha1Signature extends AbstractSignature implements SignatureInterface
 {
     /**
      * Sign the given request for the client.
      *
-     * @param  ?
+     * @param  Request          $request
+     * @param  ServerInterface  $server
+     * @param  TokenInterface   $token
      * @return string
      */
-    public function sign(RequestInterface $request, ClientInterface $client, TokenInterface $token = null)
+    public function sign(Request $request, ServerInterface $server, TokenInterface $token = null)
     {
-        $key = $this->key($client, $token);
+        $signature = $request->getMethod().'&';
+        $signature .= rawurlencode($request->getSchemeAndHttpHost()).'&';
+        $signature .= rawurlencode($request->getQueryString()).'&';
 
-        $string = $request->getMethod().'&';
-        $string .= $request->getSchemeAndHttpHost().'&';
-        $string
-    }
+        $hashed = hash_hmac('sha1', $signature, $this->key(), true);
 
-    /**
-     * Verify the given signature against a request for the client.
-     *
-     * @param  ?
-     * @return string
-     */
-    public function verify($signature, RequestInterface $request, ClientInterface $client, TokenInterface $token = null)
-    {
-
+        return base64_encode($hashed);
     }
 }
