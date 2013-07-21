@@ -43,5 +43,31 @@ class Twitter extends Server
      */
     public function userDetails($data, TokenCredentials $tokenCredentials)
     {
+        $user = new User;
+
+        $user->uid = $data['id'];
+        $user->nickname = $data['screen_name'];
+        $user->name = $data['name'];
+        $user->location = $data['location'];
+        $user->description = $data['description'];
+        $user->imageUrl = $data['profile_image_url'];
+
+        $used = array('id', 'screen_name', 'name', 'location', 'description', 'profile_image_url');
+
+        foreach ($data as $key => $value) {
+            if (strpos($key, 'url') !== false) {
+
+                if ( ! in_array($key, $used)) {
+                    $used[] = $key;
+                }
+
+                $user->urls[$key] = $value;
+            }
+        }
+
+        // Save all extra data
+        $user->extra = array_diff_key($data, array_flip($used));
+
+        return $user;
     }
 }

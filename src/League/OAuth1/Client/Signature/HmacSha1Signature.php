@@ -51,7 +51,7 @@ class HmacSha1Signature extends Signature implements SignatureInterface
     protected function baseString(Request $request, array $parameters = array())
     {
         $baseString = rawurlencode($request->getMethod()).'&';
-        $baseString .= rawurlencode($request->getSchemeAndHttpHost()).'&';
+        $baseString .= rawurlencode($request->getSchemeAndHttpHost().$request->getPathInfo()).'&';
 
         $data = array();
         parse_str($request->getQueryString(), $query);

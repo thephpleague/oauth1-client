@@ -3,6 +3,7 @@
 namespace League\OAuth1\Client\Server;
 
 use Guzzle\Service\Client as GuzzleClient;
+use Guzzle\Http\Exception\BadResponseException;
 use League\OAuth1\Client\Credentials\ClientCredentialsInterface;
 use League\OAuth1\Client\Credentials\ClientCredentials;
 use League\OAuth1\Client\Credentials\CredentialsInterface;
@@ -66,9 +67,18 @@ abstract class Server
         $uri = $this->urlTemporaryCredentials();
 
         $client = $this->createHttpClient();
-        $response = $client->post($uri, array(
-            'Authorization' => $this->temporaryCredentialsProtocolHeader($uri),
-        ))->send();
+
+        try {
+            $response = $client->post($uri, array(
+                'Authorization' => $this->temporaryCredentialsProtocolHeader($uri),
+            ))->send();
+        } catch (BadResponseException $e) {
+            $response = $e->getResponse();
+            $body = $response->getBody();
+            $statusCode = $response->getStatusCode();
+
+            throw new \Exception("Received error [$body] with status code [$statusCode] when retrieving temporary credentials.");
+        }
 
         return $this->createTemporaryCredentials($response->getBody());
     }
@@ -127,9 +137,18 @@ abstract class Server
         $bodyParameters = array('oauth_verifier' => $verifier);
 
         $client = $this->createHttpClient();
-        $response = $client->post($uri, array(
-            'Authorization' => $this->protocolHeader('POST', $uri, $temporaryCredentials, $bodyParameters),
-        ))->send();
+
+        try {
+            $response = $client->post($uri, array(
+                'Authorization' => $this->protocolHeader('POST', $uri, $temporaryCredentials, $bodyParameters),
+            ), http_build_query($bodyParameters))->send();
+        } catch (BadResponseException $e) {
+            $response = $e->getResponse();
+            $body = $response->getBody();
+            $statusCode = $response->getStatusCode();
+
+            throw new \Exception("Received error [$body] with status code [$statusCode] when retrieving token credentials.");
+        }
 
         return $this->createTokenCredentials($response->getBody());
     }
@@ -145,9 +164,20 @@ abstract class Server
         $uri = $this->urlUserDetails();
 
         $client = $this->createHttpClient();
-        $response = $client->get($uri, array(
-            'Authorization' => $this->protocolHeader('GET', $uri, $tokenCredentials),
-        ))->send();
+
+        $this->signature->setCredentials($tokenCredentials);
+
+        try {
+            $response = $client->get($uri, array(
+                'Authorization' => $this->protocolHeader('GET', $uri, $tokenCredentials),
+            ))->send();
+        } catch (BadResponseException $e) {
+            $response = $e->getResponse();
+            $body = $response->getBody();
+            $statusCode = $response->getStatusCode();
+
+            throw new \Exception("Received error [$body] with status code [$statusCode] when retrieving token credentials.");
+        }
 
         switch ($this->responseType) {
             case 'json':
@@ -284,9 +314,9 @@ abstract class Server
 
         return array(
             'oauth_consumer_key' => $this->clientCredentials->getIdentifier(),
+            'oauth_nonce' => $this->nonce(),
             'oauth_signature_method' => $this->signature->method(),
             'oauth_timestamp' => $dateTime->format('U'),
-            'oauth_nonce' => $this->nonce(),
             'oauth_version' => '1.0',
         );
     }

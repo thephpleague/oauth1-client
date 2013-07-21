@@ -72,7 +72,14 @@ class User implements \IteratorAggregate
      *
      * @var string|array
      */
-    public $urls = null;
+    public $urls = array();
+
+    /**
+     * Any extra data.
+     *
+     * @var array
+     */
+    public $extra = array();
 
     /**
      * Set a property on the user.
