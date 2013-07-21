@@ -1,17 +1,19 @@
 <?php
 
-namespace League\OAuth1\Client\Server;
+namespace League\OAuth1\Client\Tests;
 
 use League\OAuth1\Client\Credentials\TokenCredentials;
+use League\OAuth1\Client\Server\Server;
+use League\OAuth1\Client\Server\User;
 
-class Twitter extends Server
+class ServerStub extends Server
 {
     /**
      * {@inheritdoc}
      */
     public function urlTemporaryCredentials()
     {
-        return 'https://api.twitter.com/oauth/request_token';
+        return 'http://www.example.com/temporary';
     }
 
     /**
@@ -19,7 +21,7 @@ class Twitter extends Server
      */
     public function urlAuthorization()
     {
-        return 'https://api.twitter.com/oauth/authenticate';
+        return 'http://www.example.com/authorize';
     }
 
     /**
@@ -27,7 +29,7 @@ class Twitter extends Server
      */
     public function urlTokenCredentials()
     {
-        return 'https://api.twitter.com/oauth/access_token';
+        return 'http://www.example.com/token';
     }
 
     /**
@@ -35,7 +37,7 @@ class Twitter extends Server
      */
     public function urlUserDetails()
     {
-        return 'https://api.twitter.com/1.1/account/verify_credentials.json';
+        return 'http://www.example.com/user';
     }
 
     /**
@@ -43,5 +45,8 @@ class Twitter extends Server
      */
     public function userDetails($data, TokenCredentials $tokenCredentials)
     {
+        $user = new User;
+        $user->firstName = $data['foo'];
+        return $user;
     }
 }

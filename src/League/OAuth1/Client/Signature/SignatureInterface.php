@@ -15,12 +15,15 @@ interface SignatureInterface
     public function __construct(ClientCredentialsInterface $clientCredentials);
 
     /**
-     * Set token credentials.
+     * Set the credentials used in the signature. These can be temporary
+     * credentials when getting token credentials during the OAuth
+     * authentication process, or token credentials when querying
+     * the API.
      *
-     * @param  CredentialsInterface  $tokenCredentials
+     * @param  CredentialsInterface  $credentials
      * @return void
      */
-    public function setTokenCredentials(CredentialsInterface $tokenCredentials);
+    public function setCredentials(CredentialsInterface $credentials);
 
     /**
      * Get the OAuth signature method.

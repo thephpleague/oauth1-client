@@ -7,14 +7,22 @@ use League\OAuth1\Client\Credentials\CredentialsInterface;
 
 abstract class Signature implements SignatureInterface
 {
+    /**
+     * The client credentials.
+     *
+     * @var ClientCredentialsInterface
+     */
     protected $clientCredentials;
 
-    protected $tokenCredentials;
+    /**
+     * The (temporary or token) credentials.
+     *
+     * @var CredentialsInterface
+     */
+    protected $credentials;
 
     /**
-     * Create a new signature instance.
-     *
-     * @param  ClientCredentialsInterface  $clientCredentials
+     * {@inheritDoc}
      */
     public function __construct(ClientCredentialsInterface $clientCredentials)
     {
@@ -22,14 +30,11 @@ abstract class Signature implements SignatureInterface
     }
 
     /**
-     * Set token credentials.
-     *
-     * @param  CredentialsInterface  $tokenCredentials
-     * @return void
+     * {@inheritDoc}
      */
-    public function setTokenCredentials(CredentialsInterface $tokenCredentials)
+    public function setCredentials(CredentialsInterface $credentials)
     {
-        $this->tokenCredentials = $tokenCredentials;
+        $this->credentials = $credentials;
     }
 
     /**
@@ -41,8 +46,8 @@ abstract class Signature implements SignatureInterface
     {
         $key = rawurlencode($this->clientCredentials->getSecret()).'&';
 
-        if ($this->tokenCredentials !== null) {
-            $key .= rawurlencode($this->tokenCredentials->getSecret());
+        if ($this->credentials !== null) {
+            $key .= rawurlencode($this->credentials->getSecret());
         }
 
         return $key;

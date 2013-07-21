@@ -9,9 +9,7 @@ use Symfony\Component\HttpFoundation\Request;
 class HmacSha1Signature extends Signature implements SignatureInterface
 {
     /**
-     * Get the OAuth signature method.
-     *
-     * @return string
+     * {@inheritDoc}
      */
     public function method()
     {
@@ -19,13 +17,7 @@ class HmacSha1Signature extends Signature implements SignatureInterface
     }
 
     /**
-     * Sign the given request for the client.
-     *
-     * @param  string  $uri
-     * @param  array   $credentials
-     * @param  string  $method
-     * @return string
-     * @see    OAuth 1.0 RFC 5849 Section 3.4.2
+     * {@inheritDoc}
      */
     public function sign($uri, array $parameters = array(), $method = 'POST')
     {
@@ -36,11 +28,26 @@ class HmacSha1Signature extends Signature implements SignatureInterface
         return base64_encode($this->hash($baseString));
     }
 
+    /**
+     * Create a Symfony request for the given HTTP method on a URI.
+     *
+     * @param  string  $uri
+     * @param  string  $method
+     * @return Request
+     */
     protected function createRequest($uri, $method = 'POST')
     {
         return Request::create($uri, $method);
     }
 
+    /**
+     * Generate a base string for a HMAC-SHA1 signature
+     * based on the given request and any parameters.
+     *
+     * @param  Request  $request
+     * @param  array    $request
+     * @return string
+     */
     protected function baseString(Request $request, array $parameters = array())
     {
         $baseString = rawurlencode($request->getMethod()).'&';
@@ -61,6 +68,12 @@ class HmacSha1Signature extends Signature implements SignatureInterface
         return $baseString;
     }
 
+    /**
+     * Hashes a string with the signature's key.
+     *
+     * @param  string  $string
+     * @return string
+     */
     protected function hash($string)
     {
         return hash_hmac('sha1', $string, $this->key(), true);

@@ -1,8 +1,14 @@
-oauth1
-======
+# The First OAuth Client Library You Won't Hate
 
 OAuth 1 Client is an OAuth [RFC 5849 standards-compliant](http://tools.ietf.org/html/rfc5849) library for authenticating against OAuth 1 servers.
 
+It has built in support for:
+
+* Twitter
+
+Adding support for other providers is trivial.
+
+The library requires PHP 5.3+ and is PSR-2 compatible.
 
 #### Terminology (as per specification):
 

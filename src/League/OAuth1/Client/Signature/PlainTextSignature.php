@@ -8,9 +8,7 @@ use League\OAuth1\Client\Credentials\CredentialsInterface;
 class PlainTextSignature extends Signature implements SignatureInterface
 {
     /**
-     * Get the OAuth signature method.
-     *
-     * @return string
+     * {@inheritDoc}
      */
     public function method()
     {
@@ -18,13 +16,7 @@ class PlainTextSignature extends Signature implements SignatureInterface
     }
 
     /**
-     * Sign the given request for the client.
-     *
-     * @param  string  $uri
-     * @param  array   $credentials
-     * @param  string  $method
-     * @return string
-     * @see    OAuth 1.0 RFC 5849 Section 3.4.4
+     * {@inheritDoc}
      */
     public function sign($uri, array $parameters = array(), $method = 'POST')
     {

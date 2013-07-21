@@ -39,7 +39,7 @@ class PlainTextSignatureTest extends PHPUnit_Framework_TestCase
         $signature = new PlainTextSignature($this->getMockClientCredentials());
         $this->assertEquals('clientsecret&', $signature->sign($uri = 'http://www.example.com/'));
 
-        $signature->setTokenCredentials($this->getMockTokenCredentials());
+        $signature->setCredentials($this->getMockCredentials());
         $this->assertEquals('clientsecret&tokensecret', $signature->sign($uri));
     }
 
@@ -50,10 +50,10 @@ class PlainTextSignatureTest extends PHPUnit_Framework_TestCase
         return $clientCredentials;
     }
 
-    protected function getMockTokenCredentials()
+    protected function getMockCredentials()
     {
-        $tokenCredentials = m::mock('League\OAuth1\Client\Credentials\CredentialsInterface');
-        $tokenCredentials->shouldReceive('getSecret')->andReturn('tokensecret');
-        return $tokenCredentials;
+        $credentials = m::mock('League\OAuth1\Client\Credentials\CredentialsInterface');
+        $credentials->shouldReceive('getSecret')->andReturn('tokensecret');
+        return $credentials;
     }
 }
