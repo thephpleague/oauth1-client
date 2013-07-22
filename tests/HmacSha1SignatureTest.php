@@ -41,7 +41,7 @@ class HmacSha1SignatureTest extends PHPUnit_Framework_TestCase
         $uri = 'http://www.example.com/?qux=corge';
         $parameters = array('foo' => 'bar', 'baz' => null);
 
-        $this->assertEquals('N0zOgFqsKUYYgd+3yFned8RSmW8=', $signature->sign($uri, $parameters));
+        $this->assertEquals('A3Y7C1SUHXR1EBYIUlT3d6QT1cQ=', $signature->sign($uri, $parameters));
     }
 
     protected function getMockClientCredentials()
