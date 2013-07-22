@@ -10,8 +10,7 @@
     },
     "require-dev": {
         "phpunit/phpunit": "*",
-        "mockery/mockery": "0.7.2",
-        "fzaninotto/faker": "*"
+        "mockery/mockery": "0.7.2"
     },
     "keywords": [
         "oauth",
