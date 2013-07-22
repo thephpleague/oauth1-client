@@ -5,6 +5,7 @@ OAuth 1 Client is an OAuth [RFC 5849 standards-compliant](http://tools.ietf.org/
 It has built in support for:
 
 * Twitter
+* Tumblr
 
 Adding support for other providers is trivial.
 
