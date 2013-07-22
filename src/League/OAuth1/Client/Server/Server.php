@@ -7,7 +7,7 @@ use Guzzle\Http\Exception\BadResponseException;
 use League\OAuth1\Client\Credentials\ClientCredentialsInterface;
 use League\OAuth1\Client\Credentials\ClientCredentials;
 use League\OAuth1\Client\Credentials\CredentialsInterface;
-use League\OAuth1\Client\Credentials\CredentialsExcpetion;
+use League\OAuth1\Client\Credentials\CredentialsException;
 use League\OAuth1\Client\Credentials\TemporaryCredentials;
 use League\OAuth1\Client\Credentials\TokenCredentials;
 use League\OAuth1\Client\Signature\HmacSha1Signature;
@@ -73,11 +73,7 @@ abstract class Server
                 'Authorization' => $this->temporaryCredentialsProtocolHeader($uri),
             ))->send();
         } catch (BadResponseException $e) {
-            $response = $e->getResponse();
-            $body = $response->getBody();
-            $statusCode = $response->getStatusCode();
-
-            throw new \Exception("Received error [$body] with status code [$statusCode] when retrieving temporary credentials.");
+            return $this->handleTemporaryCredentialsBadResponse($e);
         }
 
         return $this->createTemporaryCredentials($response->getBody());
@@ -138,16 +134,14 @@ abstract class Server
 
         $client = $this->createHttpClient();
 
+        $header = $this->protocolHeader('POST', $uri, $temporaryCredentials, $bodyParameters);
+
         try {
             $response = $client->post($uri, array(
-                'Authorization' => $this->protocolHeader('POST', $uri, $temporaryCredentials, $bodyParameters),
-            ), http_build_query($bodyParameters))->send();
+                'Authorization' => $header,
+            ), $bodyParameters)->send();
         } catch (BadResponseException $e) {
-            $response = $e->getResponse();
-            $body = $response->getBody();
-            $statusCode = $response->getStatusCode();
-
-            throw new \Exception("Received error [$body] with status code [$statusCode] when retrieving token credentials.");
+            return $this->handleTokenCredentialsBadResponse($e);
         }
 
         return $this->createTokenCredentials($response->getBody());
@@ -164,8 +158,6 @@ abstract class Server
         $uri = $this->urlUserDetails();
 
         $client = $this->createHttpClient();
-
-        $this->signature->setCredentials($tokenCredentials);
 
         try {
             $response = $client->get($uri, array(
@@ -254,6 +246,22 @@ abstract class Server
     }
 
     /**
+     * Handle a bad response coming back when getting temporary credentials.
+     *
+     * @param  BadResponseException
+     * @return void
+     * @throws CredentialsException
+     */
+    protected function handleTemporaryCredentialsBadResponse(BadResponseException $e)
+    {
+        $response = $e->getResponse();
+        $body = $response->getBody();
+        $statusCode = $response->getStatusCode();
+
+        throw new CredentialsException("Received HTTP status code [$statusCode] with message \"$body\" when getting temporary credentials.");
+    }
+
+    /**
      * Creates temporary credentials from the body response.
      *
      * @param  string  $body
@@ -275,6 +283,22 @@ abstract class Server
         $temporaryCredentials->setIdentifier($data['oauth_token']);
         $temporaryCredentials->setSecret($data['oauth_token_secret']);
         return $temporaryCredentials;
+    }
+
+    /**
+     * Handle a bad response coming back when getting token credentials.
+     *
+     * @param  BadResponseException
+     * @return void
+     * @throws CredentialsException
+     */
+    protected function handleTokenCredentialsBadResponse(BadResponseException $e)
+    {
+        $response = $e->getResponse();
+        $body = $response->getBody();
+        $statusCode = $response->getStatusCode();
+
+        throw new CredentialsException("Received HTTP status code [$statusCode] with message \"$body\" when getting token credentials.");
     }
 
     /**
@@ -366,6 +390,8 @@ abstract class Server
         $parameters = array_merge($this->baseProtocolParameters(), array(
             'oauth_token' => $credentials->getIdentifier(),
         ));
+
+        $this->signature->setCredentials($credentials);
 
         $parameters['oauth_signature'] = $this->signature->sign($uri, array_merge($parameters, $bodyParameters), $method);
 
