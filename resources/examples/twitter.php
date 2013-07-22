@@ -64,6 +64,10 @@ if (isset($_GET['user'])) {
     header("Location: http://{$_SERVER['HTTP_HOST']}/?user=user");
     exit;
 
+// Step 2.5 - denied request to authorize client
+} elseif (isset($_GET['denied'])) {
+    echo 'Hey! You denied the client access to your Twitter account! If you did this by mistake, you should <a href="?go=go">try again</a>.';
+
 // Step 2
 } elseif (isset($_GET['go'])) {
 
