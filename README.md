@@ -1,5 +1,9 @@
 # The First OAuth Client Library You Won't Hate
 
+[![Build Status](https://travis-ci.org/league/oauth1-client.png?branch=master)](https://travis-ci.org/league/oauth1-client)
+
+![Bitdeli](https://d2weczhvl823v0.cloudfront.net/league/oauth1-client/trend.png)
+
 OAuth 1 Client is an OAuth [RFC 5849 standards-compliant](http://tools.ietf.org/html/rfc5849) library for authenticating against OAuth 1 servers.
 
 It has built in support for:
