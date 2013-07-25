@@ -44,8 +44,7 @@ abstract class Server
      */
     public function __construct($clientCredentials, SignatureInterface $signature = null)
     {
-        // If our options are in fact an instance of client credentials,
-        // our options are actually our second argument.
+        // Pass through an array or client credentials, we don't care
         if (is_array($clientCredentials)) {
             $clientCredentials = $this->createClientCredentials($clientCredentials);
         } elseif ( ! $clientCredentials instanceof ClientCredentialsInterface) {
