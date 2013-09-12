@@ -228,7 +228,7 @@ abstract class Server
      */
     protected function createClientCredentials(array $clientCredentials)
     {
-        $keys = array('identifier', 'secret', 'callback_uri');
+        $keys = array('identifier', 'secret');
 
         foreach ($keys as $key) {
             if ( ! isset($clientCredentials[$key])) {
@@ -239,7 +239,10 @@ abstract class Server
         $_clientCredentials = new ClientCredentials;
         $_clientCredentials->setIdentifier($clientCredentials['identifier']);
         $_clientCredentials->setSecret($clientCredentials['secret']);
-        $_clientCredentials->setCallbackUri($clientCredentials['callback_uri']);
+
+        if (isset($clientCredentials['callback_uri'])) {
+            $_clientCredentials->setCallbackUri($clientCredentials['callback_uri']);
+        }
 
         return $_clientCredentials;
     }
