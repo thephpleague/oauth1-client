@@ -37,6 +37,13 @@ abstract class Server
     protected $responseType = 'json';
 
     /**
+     * Cached user details response.
+     *
+     * @var unkown
+     */
+    protected $cachedUserDetailsResponse;
+
+    /**
      * Create a new server instance.
      *
      * @param  ClientCredentialsInterface|array  $clientCredentials
@@ -150,44 +157,75 @@ abstract class Server
      * Get user details by providing valid token credentials.
      *
      * @param  TokenCredentials  $tokenCredentials
+     * @param  bool  $force
      * @return User
      */
-    public function getUserDetails(TokenCredentials $tokenCredentials)
+    public function getUserDetails(TokenCredentials $tokenCredentials, $force = false)
     {
-        $uri = $this->urlUserDetails();
-
-        $client = $this->createHttpClient();
-
-        try {
-            $response = $client->get($uri, array(
-                'Authorization' => $this->protocolHeader('GET', $uri, $tokenCredentials),
-            ))->send();
-        } catch (BadResponseException $e) {
-            $response = $e->getResponse();
-            $body = $response->getBody();
-            $statusCode = $response->getStatusCode();
-
-            throw new \Exception("Received error [$body] with status code [$statusCode] when retrieving token credentials.");
-        }
-
-        switch ($this->responseType) {
-            case 'json':
-                $data = $response->json();
-                break;
-
-            case 'xml':
-                $data = $response->xml();
-                break;
-
-            case 'string':
-                parse_str($response->getBody(), $data);
-                break;
-
-            default:
-                throw new \InvalidArgumentException("Invalid response type [{$this->responseType}].");
-        }
+        $data = $this->fetchUserDetails($tokenCredentials, $force);
 
         return $this->userDetails($data, $tokenCredentials);
+    }
+
+    public function getUserUid(TokenCredentials $tokenCredentials, $force = false)
+    {
+        $data = $this->fetchUserDetails($tokenCredentials, $force);
+
+        return $this->userUid($data, $tokenCredentials);
+    }
+
+    public function getUserEmail(TokenCredentials $tokenCredentials, $force = false)
+    {
+        $data = $this->fetchUserDetails($tokenCredentials, $force);
+
+        return $this->userEmail($data, $tokenCredentials);
+    }
+
+    public function getUserScreenName(TokenCredentials $tokenCredentials, $force = false)
+    {
+        $data = $this->fetchUserDetails($tokenCredentials, $force);
+
+        return $this->userScreenName($data, $tokenCredentials);
+    }
+
+    protected function fetchUserDetails(TokenCredentials $tokenCredentials, $force = true)
+    {
+        if ( ! $this->cachedUserDetailsResponse || $force == true) {
+            $url = $this->urlUserDetails();
+
+            $client = $this->createHttpClient();
+
+            try {
+                $response = $client->get($url, array(
+                    'Authorization' => $this->protocolHeader('GET', $url, $tokenCredentials),
+                ))->send();
+            } catch (BadResponseException $e) {
+                $response = $e->getResponse();
+                $body = $response->getBody();
+                $statusCode = $response->getStatusCode();
+
+                throw new \Exception("Received error [$body] with status code [$statusCode] when retrieving token credentials.");
+            }
+
+            switch ($this->responseType) {
+                case 'json':
+                    $this->cachedUserDetailsResponse = $response->json();
+                    break;
+
+                case 'xml':
+                    $this->cachedUserDetailsResponse = $response->xml();
+                    break;
+
+                case 'string':
+                    parse_str($response->getBody(), $this->cachedUserDetailsResponse);
+                    break;
+
+                default:
+                    throw new \InvalidArgumentException("Invalid response type [{$this->responseType}].");
+            }
+        }
+
+        return $this->cachedUserDetailsResponse;
     }
 
     /**

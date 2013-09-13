@@ -70,4 +70,28 @@ class Twitter extends Server
 
         return $user;
     }
+
+    /**
+     * {@inheritdoc}
+     */
+    public function userUid($data, TokenCredentials $tokenCredentials)
+    {
+        return $data['id'];
+    }
+
+    /**
+     * {@inheritdoc}
+     */
+    public function userEmail($data, TokenCredentials $tokenCredentials)
+    {
+        return;
+    }
+
+    /**
+     * {@inheritdoc}
+     */
+    public function userScreenName($data, TokenCredentials $tokenCredentials)
+    {
+        return $data['name'];
+    }
 }
