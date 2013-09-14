@@ -60,4 +60,40 @@ class Tumblr extends Server
 
         return $user;
     }
+
+    /**
+     * {@inheritdoc}
+     */
+    public function userUid($data, TokenCredentials $tokenCredentials)
+    {
+        if ( ! isset($data['response']['user']) || ! is_array($data['response']['user'])) {
+            return;
+        }
+
+        $data = $data['response']['user'];
+
+        return $data['name'];
+    }
+
+    /**
+     * {@inheritdoc}
+     */
+    public function userEmail($data, TokenCredentials $tokenCredentials)
+    {
+        return;
+    }
+
+    /**
+     * {@inheritdoc}
+     */
+    public function userScreenName($data, TokenCredentials $tokenCredentials)
+    {
+        if ( ! isset($data['response']['user']) || ! is_array($data['response']['user'])) {
+            return;
+        }
+
+        $data = $data['response']['user'];
+
+        return $data['name'];
+    }
 }
