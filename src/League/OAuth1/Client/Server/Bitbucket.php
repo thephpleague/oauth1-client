@@ -73,7 +73,7 @@ class Bitbucket extends Server
     */
     public function userUid($data, TokenCredentials $tokenCredentials)
     {
-        return;
+        return $data['user']['username'];
     }
 
     /**
