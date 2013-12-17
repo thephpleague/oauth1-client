@@ -7,7 +7,7 @@ use League\OAuth1\Client\Credentials\TokenCredentials;
 class Bitbucket extends Server
 {
     /**
-    * {@inheritdoc}
+    * {@inheritDoc}
     */
     public function urlTemporaryCredentials()
     {
@@ -15,7 +15,7 @@ class Bitbucket extends Server
     }
 
     /**
-    * {@inheritdoc}
+    * {@inheritDoc}
     */
     public function urlAuthorization()
     {
@@ -23,7 +23,7 @@ class Bitbucket extends Server
     }
 
     /**
-    * {@inheritdoc}
+    * {@inheritDoc}
     */
     public function urlTokenCredentials()
     {
@@ -31,7 +31,7 @@ class Bitbucket extends Server
     }
 
     /**
-    * {@inheritdoc}
+    * {@inheritDoc}
     */
     public function urlUserDetails()
     {
@@ -39,7 +39,7 @@ class Bitbucket extends Server
     }
 
     /**
-    * {@inheritdoc}
+    * {@inheritDoc}
     */
     public function userDetails($data, TokenCredentials $tokenCredentials)
     {
@@ -69,7 +69,7 @@ class Bitbucket extends Server
     }
 
     /**
-    * {@inheritdoc}
+    * {@inheritDoc}
     */
     public function userUid($data, TokenCredentials $tokenCredentials)
     {
@@ -77,7 +77,7 @@ class Bitbucket extends Server
     }
 
     /**
-    * {@inheritdoc}
+    * {@inheritDoc}
     */
     public function userEmail($data, TokenCredentials $tokenCredentials)
     {
@@ -85,7 +85,7 @@ class Bitbucket extends Server
     }
 
     /**
-    * {@inheritdoc}
+    * {@inheritDoc}
     */
     public function userScreenName($data, TokenCredentials $tokenCredentials)
     {

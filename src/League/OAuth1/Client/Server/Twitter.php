@@ -7,7 +7,7 @@ use League\OAuth1\Client\Credentials\TokenCredentials;
 class Twitter extends Server
 {
     /**
-     * {@inheritdoc}
+     * {@inheritDoc}
      */
     public function urlTemporaryCredentials()
     {
@@ -15,7 +15,7 @@ class Twitter extends Server
     }
 
     /**
-     * {@inheritdoc}
+     * {@inheritDoc}
      */
     public function urlAuthorization()
     {
@@ -23,7 +23,7 @@ class Twitter extends Server
     }
 
     /**
-     * {@inheritdoc}
+     * {@inheritDoc}
      */
     public function urlTokenCredentials()
     {
@@ -31,7 +31,7 @@ class Twitter extends Server
     }
 
     /**
-     * {@inheritdoc}
+     * {@inheritDoc}
      */
     public function urlUserDetails()
     {
@@ -39,7 +39,7 @@ class Twitter extends Server
     }
 
     /**
-     * {@inheritdoc}
+     * {@inheritDoc}
      */
     public function userDetails($data, TokenCredentials $tokenCredentials)
     {
@@ -72,7 +72,7 @@ class Twitter extends Server
     }
 
     /**
-     * {@inheritdoc}
+     * {@inheritDoc}
      */
     public function userUid($data, TokenCredentials $tokenCredentials)
     {
@@ -80,7 +80,7 @@ class Twitter extends Server
     }
 
     /**
-     * {@inheritdoc}
+     * {@inheritDoc}
      */
     public function userEmail($data, TokenCredentials $tokenCredentials)
     {
@@ -88,7 +88,7 @@ class Twitter extends Server
     }
 
     /**
-     * {@inheritdoc}
+     * {@inheritDoc}
      */
     public function userScreenName($data, TokenCredentials $tokenCredentials)
     {

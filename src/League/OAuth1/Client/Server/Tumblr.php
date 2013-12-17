@@ -7,7 +7,7 @@ use League\OAuth1\Client\Credentials\TokenCredentials;
 class Tumblr extends Server
 {
     /**
-     * {@inheritdoc}
+     * {@inheritDoc}
      */
     public function urlTemporaryCredentials()
     {
@@ -15,7 +15,7 @@ class Tumblr extends Server
     }
 
     /**
-     * {@inheritdoc}
+     * {@inheritDoc}
      */
     public function urlAuthorization()
     {
@@ -23,7 +23,7 @@ class Tumblr extends Server
     }
 
     /**
-     * {@inheritdoc}
+     * {@inheritDoc}
      */
     public function urlTokenCredentials()
     {
@@ -31,7 +31,7 @@ class Tumblr extends Server
     }
 
     /**
-     * {@inheritdoc}
+     * {@inheritDoc}
      */
     public function urlUserDetails()
     {
@@ -39,7 +39,7 @@ class Tumblr extends Server
     }
 
     /**
-     * {@inheritdoc}
+     * {@inheritDoc}
      */
     public function userDetails($data, TokenCredentials $tokenCredentials)
     {
@@ -62,7 +62,7 @@ class Tumblr extends Server
     }
 
     /**
-     * {@inheritdoc}
+     * {@inheritDoc}
      */
     public function userUid($data, TokenCredentials $tokenCredentials)
     {
@@ -76,7 +76,7 @@ class Tumblr extends Server
     }
 
     /**
-     * {@inheritdoc}
+     * {@inheritDoc}
      */
     public function userEmail($data, TokenCredentials $tokenCredentials)
     {
@@ -84,7 +84,7 @@ class Tumblr extends Server
     }
 
     /**
-     * {@inheritdoc}
+     * {@inheritDoc}
      */
     public function userScreenName($data, TokenCredentials $tokenCredentials)
     {
