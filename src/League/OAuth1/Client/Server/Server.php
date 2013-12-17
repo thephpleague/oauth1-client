@@ -167,6 +167,13 @@ abstract class Server
         return $this->userDetails($data, $tokenCredentials);
     }
 
+    /**
+     * Get the user's unique identifier (primary key).
+     *
+     * @param  TokenCredentials  $tokenCredentials
+     * @param  bool  $force
+     * @return User
+     */
     public function getUserUid(TokenCredentials $tokenCredentials, $force = false)
     {
         $data = $this->fetchUserDetails($tokenCredentials, $force);
@@ -174,6 +181,13 @@ abstract class Server
         return $this->userUid($data, $tokenCredentials);
     }
 
+    /**
+     * Get the user's email, if available.
+     *
+     * @param  TokenCredentials  $tokenCredentials
+     * @param  bool  $force
+     * @return User
+     */
     public function getUserEmail(TokenCredentials $tokenCredentials, $force = false)
     {
         $data = $this->fetchUserDetails($tokenCredentials, $force);
@@ -181,6 +195,13 @@ abstract class Server
         return $this->userEmail($data, $tokenCredentials);
     }
 
+    /**
+     * Get the user's screen name (username), if available.
+     *
+     * @param  TokenCredentials  $tokenCredentials
+     * @param  bool  $force
+     * @return User
+     */
     public function getUserScreenName(TokenCredentials $tokenCredentials, $force = false)
     {
         $data = $this->fetchUserDetails($tokenCredentials, $force);

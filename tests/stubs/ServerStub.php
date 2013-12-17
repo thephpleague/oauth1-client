@@ -49,4 +49,28 @@ class ServerStub extends Server
         $user->firstName = $data['foo'];
         return $user;
     }
+
+    /**
+     * {@inheritdoc}
+     */
+    public function userUid($data, TokenCredentials $tokenCredentials)
+    {
+        return isset($data['id']) ? $data['id'] : null;
+    }
+
+    /**
+     * {@inheritdoc}
+     */
+    public function userEmail($data, TokenCredentials $tokenCredentials)
+    {
+        return isset($data['contact_email']) ? $data['contact_email'] : null;
+    }
+
+    /**
+     * {@inheritdoc}
+     */
+    public function userScreenName($data, TokenCredentials $tokenCredentials)
+    {
+        return isset($data['username']) ? $data['username'] : null;
+    }
 }

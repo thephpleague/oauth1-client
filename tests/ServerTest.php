@@ -186,11 +186,14 @@ class ServerTest extends PHPUnit_Framework_TestCase
         }))->once()->andReturn($request = m::mock('stdClass'));
 
         $request->shouldReceive('send')->once()->andReturn($response = m::mock('stdClass'));
-        $response->shouldReceive('json')->once()->andReturn(array('foo' => 'bar'));
+        $response->shouldReceive('json')->once()->andReturn(array('foo' => 'bar', 'id' => 123, 'contact_email' => 'baz@qux.com', 'username' => 'fred'));
 
         $user = $server->getUserDetails($temporaryCredentials);
         $this->assertInstanceOf('League\OAuth1\Client\Server\User', $user);
         $this->assertEquals('bar', $user->firstName);
+        $this->assertEquals(123, $server->getUserUid($temporaryCredentials));
+        $this->assertEquals('baz@qux.com', $server->getUserEmail($temporaryCredentials));
+        $this->assertEquals('fred', $server->getUserScreenName($temporaryCredentials));
     }
 
     protected function getMockClientCredentials()
