@@ -1,4 +1,4 @@
-# The First OAuth Client Library You Won't Hate
+# OAuth 1.0 Client
 
 [![Build Status](https://travis-ci.org/php-loep/oauth1-client.png?branch=master)](https://travis-ci.org/php-loep/oauth1-client)
 
