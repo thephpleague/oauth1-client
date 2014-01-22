@@ -1,7 +1,6 @@
 {
     "name": "league/oauth1-client",
     "description": "OAuth 1.0 Client Library",
-    "homepage": "https://github.com/php-loep/oauth1-client",
     "license": "MIT",
     "require": {
         "php": ">=5.3.0",
