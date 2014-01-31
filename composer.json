@@ -30,8 +30,8 @@
         }
     ],
     "autoload": {
-        "psr-0": {
-            "League\\OAuth1\\Client": "src/"
+        "psr-4": {
+            "League\\OAuth1\\": "src/"
         }
     },
     "extra": {
