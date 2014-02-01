@@ -39,7 +39,7 @@ abstract class Server
     /**
      * Cached user details response.
      *
-     * @var unkown
+     * @var unknown
      */
     protected $cachedUserDetailsResponse;
 
@@ -309,7 +309,7 @@ abstract class Server
     /**
      * Handle a bad response coming back when getting temporary credentials.
      *
-     * @param  BadResponseException
+     * @param  BadResponseException $e
      * @return void
      * @throws CredentialsException
      */
@@ -349,7 +349,7 @@ abstract class Server
     /**
      * Handle a bad response coming back when getting token credentials.
      *
-     * @param  BadResponseException
+     * @param  BadResponseException $e
      * @return void
      * @throws CredentialsException
      */
@@ -443,7 +443,7 @@ abstract class Server
      * @param  string  $method
      * @param  string  $uri
      * @param  CredentialsInterface  $credentials
-     * @param  array  $bodyCredentials
+     * @param  array  $bodyParameters
      * @return string
      */
     protected function protocolHeader($method, $uri, CredentialsInterface $credentials, array $bodyParameters = array())

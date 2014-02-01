@@ -97,9 +97,9 @@ To begin, it's advisable that you include a login button on your website. Most s
 
 ### Retrieving Temporary Credentials
 
-The first step to authenticating with OAuth 1 is to retrieve temporary credentials. These have been referrred to as **request tokens** in earlier versions of OAuth 1.
+The first step to authenticating with OAuth 1 is to retrieve temporary credentials. These have been referred to as **request tokens** in earlier versions of OAuth 1.
 
-To do this, we'll retrieve and store temporary credentials in the sesssion, and redirect the user to the server:
+To do this, we'll retrieve and store temporary credentials in the session, and redirect the user to the server:
 
 ```php
 // Retrieve temporary credentials
@@ -147,7 +147,7 @@ var_dump($tokenCredentials->getSecret());
 
 In earlier versions of OAuth 1, the token credentials identifier and token credentials secret were referred to as **access token** and  **access token secret**. Don't be scared by the new terminology here - they are the same. This package is using the exact terminology in the RFC 5849 OAuth 1 standard.
 
-> Twitter will send back an error message in the `denied` query stirng parameter, allowing you to provide feedback. Some servers do not send back an error message, but rather do not provide the succesful `oauth_token` and `oauth_verifier` parameters.
+> Twitter will send back an error message in the `denied` query string parameter, allowing you to provide feedback. Some servers do not send back an error message, but rather do not provide the successful `oauth_token` and `oauth_verifier` parameters.
 
 ### Accessing User Information
 

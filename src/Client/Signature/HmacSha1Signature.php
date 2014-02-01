@@ -45,7 +45,7 @@ class HmacSha1Signature extends Signature implements SignatureInterface
      * based on the given request and any parameters.
      *
      * @param  Request  $request
-     * @param  array    $request
+     * @param  array    $parameters
      * @return string
      */
     protected function baseString(Request $request, array $parameters = array())
