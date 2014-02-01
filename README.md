@@ -1,21 +1,20 @@
 # OAuth 1.0 Client
 
-[![Build Status](https://travis-ci.org/php-loep/oauth1-client.png?branch=master)](https://travis-ci.org/php-loep/oauth1-client)
-
-![Bitdeli](https://d2weczhvl823v0.cloudfront.net/php-loep/oauth1-client/trend.png)
+[![Build Status](https://travis-ci.org/thephpleague/oauth1-client.png?branch=master)](https://travis-ci.org/thephpleague/oauth1-client)
+[![Total Downloads](https://poser.pugx.org/league/oauth1-client/downloads.png)](https://packagist.org/packages/league/oauth1-client)
+[![Latest Stable Version](https://poser.pugx.org/league/oauth1-client/v/stable.png)](https://packagist.org/packages/league/oauth1-client)
 
 OAuth 1 Client is an OAuth [RFC 5849 standards-compliant](http://tools.ietf.org/html/rfc5849) library for authenticating against OAuth 1 servers.
 
 It has built in support for:
 
-* Twitter
-* Tumblr
+- Bitbucket
+- Tumblr
+- Twitter
 
-Adding support for other providers is trivial.
+Adding support for other providers is trivial. The library requires PHP 5.3+ and is PSR-2 compatible.
 
-The library requires PHP 5.3+ and is PSR-2 compatible.
-
-#### Terminology (as per specification):
+#### Terminology (as per the RFC 5849 specification):
 
     client
         An HTTP client (per [RFC2616]) capable of making OAuth-
@@ -63,3 +62,139 @@ The library requires PHP 5.3+ and is PSR-2 compatible.
     Request Token and Secret:  temporary credentials
 
     Access Token and Secret:  token credentials
+
+
+## Install
+
+Via Composer
+
+```json
+{
+    "require": {
+        "league/oauth1-client": "~1.0"
+    }
+}
+```
+
+
+## Usage
+
+```php
+$server = new League\OAuth1\Client\Server\Twitter(array(
+    'identifier' => 'your-identifier',
+    'secret' => 'your-secret',
+    'callback_uri' => "http://your-callback-uri/",
+));
+```
+
+### Showing a Login Button
+
+To begin, it's advisable that you include a login button on your website. Most servers (Twitter, Tumblr etc) have resources available for making buttons that are familiar to users. Some servers actually require you use their buttons as part of their terms.
+
+```html
+<a href="authenticate.php">Login With Twitter</a>
+```
+
+### Retrieving Temporary Credentials
+
+The first step to authenticating with OAuth 1 is to retrieve temporary credentials. These have been referrred to as **request tokens** in earlier versions of OAuth 1.
+
+To do this, we'll retrieve and store temporary credentials in the sesssion, and redirect the user to the server:
+
+```php
+// Retrieve temporary credentials
+$temporaryCredentials = $server->getTemporaryCredentials();
+
+// Store credentials in the session, we'll need them later
+$_SESSION['temporary_credentials'] = serialize($temporaryCredentials);
+session_write_close();
+
+// Second part of OAuth 1.0 authentication is to redirect the
+// resource owner to the login screen on the server.
+$server->authorize($temporaryCredentials);
+```
+
+The user will be redirected to the familiar login screen on the server, where they will login to their account and authorise your app to access their data.
+
+### Retrieving Token Credentials
+
+Once the user has authenticated (or denied) your application, they will be redirected to the `callback_uri` which you specified when creating the server.
+
+> Note, some servers (such as Twitter) require that the callback URI you specify when authenticating matches what you registered with their app. This is to stop a potential third party impersonating you. This is actually part of the protocol however some servers choose to ignore this.
+>
+> Because of this, we actually require you specify a callback URI for all servers, regardless of whether the server requires it or not. This is good practice.
+
+You'll need to handle when the user is redirected back. This will involve retrieving token credentials, which you may then use to make calls to the server on behalf of the user. These have been referred to as **access tokens** in earlier versions of OAuth 1.
+
+```php
+if (isset($_GET['oauth_token']) && isset($_GET['oauth_verifier'])) {
+    // Retrieve the temporary credentials we saved before
+    $temporaryCredentials = unserialize($_SESSION['temporary_credentials']);
+
+    // We will now retrieve token credentials from the server
+    $tokenCredentials = $server->getTokenCredentials($temporaryCredentials, $_GET['oauth_token'], $_GET['oauth_verifier']);
+}
+```
+
+Now, you may choose to do what you need with the token credentials. You may store them in a database, in the session, or use them as one-off and then forget about them.
+
+All credentials, (`client credentials`, `temporary credentials` and `token credentials`) all implement `League\OAuth1\Client\Credentials\CredentialsInterface` and have two sets of setters and getters exposed:
+
+```php
+var_dump($tokenCredentials->getIdentifier());
+var_dump($tokenCredentials->getSecret());
+```
+
+In earlier versions of OAuth 1, the token credentials identifier and token credentials secret were referred to as **access token** and  **access token secret**. Don't be scared by the new terminology here - they are the same. This package is using the exact terminology in the RFC 5849 OAuth 1 standard.
+
+> Twitter will send back an error message in the `denied` query stirng parameter, allowing you to provide feedback. Some servers do not send back an error message, but rather do not provide the succesful `oauth_token` and `oauth_verifier` parameters.
+
+### Accessing User Information
+
+Now you have token credentials stored somewhere, you may use them to make calls against the server, as an authenticated user.
+
+While this package is not intended to be a wrapper for every server's API, it does include basic methods that you may use to retrieve limited information. An example of where this may be useful is if you are using social logins, you only need limited information to confirm who the user is.
+
+The four exposed methods are:
+
+```php
+// User is an instance of League\OAuth1\Client\Server\User
+$user = $server->getUserDetails($tokenCredentials);
+
+// UID is a string / integer unique representation of the user
+$uid = $server->getUserUid($tokenCredentials);
+
+// Email is either a string or null (as some providers do not supply this data)
+$email = $server->getUserEmail($tokenCredentials);
+
+// Screen name is also known as a username (Twitter handle etc)
+$screenName = $server->getUserScreenName($tokenCredentials);
+```
+
+> `League\OAuth1\Client\Server\User` exposes a number of default public properties and also stores any additional data in an extra array - `$user->extra`. You may also iterate over a user's properties as if it was an array, `foreach ($user as $key => $value)`.
+
+## Examples
+
+Examples may be found under the [resources/examples](https://github.com/thephpleague/oauth1-client/tree/master/resources/examples) directory, which take the usage instructions here and go into a bit more depth. They are working examples that would only you substitute in your client credentials to have working.
+
+## Testing
+
+``` bash
+$ phpunit
+```
+
+
+## Contributing
+
+Please see [CONTRIBUTING](https://github.com/thephpleague/oauth1-client/blob/master/CONTRIBUTING.md) for details.
+
+
+## Credits
+
+- [:author_name](https://github.com/:author_username)
+- [All Contributors](https://github.com/thephpleague/oauth1-client/contributors)
+
+
+## License
+
+The MIT License (MIT). Please see [License File](https://github.com/thephpleague/oauth1-client/blob/master/LICENSE) for more information.
