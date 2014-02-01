@@ -191,7 +191,7 @@ Please see [CONTRIBUTING](https://github.com/thephpleague/oauth1-client/blob/mas
 
 ## Credits
 
-- [:author_name](https://github.com/:author_username)
+- [Ben Corlett](https://github.com/bencorlett)
 - [All Contributors](https://github.com/thephpleague/oauth1-client/contributors)
 
 
