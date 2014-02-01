@@ -62,7 +62,7 @@ class Bitbucket extends Server
             }
         }
 
-    // Save all extra data
+        // Save all extra data
         $user->extra = array_diff_key($data, array_flip($used));
 
         return $user;

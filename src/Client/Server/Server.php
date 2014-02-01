@@ -158,7 +158,7 @@ abstract class Server
      *
      * @param  TokenCredentials  $tokenCredentials
      * @param  bool  $force
-     * @return User
+     * @return \League\OAuth1\Client\Server\User
      */
     public function getUserDetails(TokenCredentials $tokenCredentials, $force = false)
     {
@@ -172,7 +172,7 @@ abstract class Server
      *
      * @param  TokenCredentials  $tokenCredentials
      * @param  bool  $force
-     * @return User
+     * @return string|int
      */
     public function getUserUid(TokenCredentials $tokenCredentials, $force = false)
     {
@@ -186,7 +186,7 @@ abstract class Server
      *
      * @param  TokenCredentials  $tokenCredentials
      * @param  bool  $force
-     * @return User
+     * @return string|null
      */
     public function getUserEmail(TokenCredentials $tokenCredentials, $force = false)
     {
@@ -200,7 +200,7 @@ abstract class Server
      *
      * @param  TokenCredentials  $tokenCredentials
      * @param  bool  $force
-     * @return User
+     * @return string
      */
     public function getUserScreenName(TokenCredentials $tokenCredentials, $force = false)
     {
@@ -554,7 +554,7 @@ abstract class Server
      *
      * @param  mixed  $data
      * @param  TokenCredentials  $tokenCredentials
-     * @return User
+     * @return string
      */
     abstract public function userScreenName($data, TokenCredentials $tokenCredentials);
 }
