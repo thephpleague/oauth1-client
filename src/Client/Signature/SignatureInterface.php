@@ -36,7 +36,7 @@ interface SignatureInterface
      * Sign the given request for the client.
      *
      * @param  string  $uri
-     * @param  array   $credentials
+     * @param  array   $parameters
      * @param  string  $method
      * @return string
      */

@@ -16,7 +16,7 @@ session_start();
 if (isset($_GET['user'])) {
 
     // Check somebody hasn't manually entered this URL in,
-    // by checkign that we have the token credentials in
+    // by checking that we have the token credentials in
     // the session.
     if ( ! isset($_SESSION['token_credentials'])) {
         echo 'No token credentials.';
@@ -55,7 +55,7 @@ if (isset($_GET['user'])) {
     $tokenCredentials = $server->getTokenCredentials($temporaryCredentials, $_GET['oauth_token'], $_GET['oauth_verifier']);
 
     // Now, we'll store the token credentials and discard the temporary
-    // ones - they're irrevelent at this stage.
+    // ones - they're irrelevant at this stage.
     unset($_SESSION['temporary_credentials']);
     $_SESSION['token_credentials'] = serialize($tokenCredentials);
     session_write_close();
