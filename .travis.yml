@@ -4,9 +4,19 @@ php:
   - 5.3
   - 5.4
   - 5.5
+  - 5.6
+  - hhvm
 
 before_script:
-  - curl -s http://getcomposer.org/installer | php
-  - php composer.phar install --prefer-dist
+  - composer self-update
+  - composer install
+  - pyrus install pear/PHP_CodeSniffer
+  - phpenv rehash
 
-script: phpunit
+script:
+  - phpcs --standard=psr2 src/
+  - phpunit --coverage-text
+
+matrix:
+  allow_failures:
+    - php: hhvm
