@@ -4,7 +4,7 @@ namespace League\OAuth1\Client\Signature;
 
 use League\OAuth1\Client\Credentials\ClientCredentialsInterface;
 use League\OAuth1\Client\Credentials\CredentialsInterface;
-use Symfony\Component\HttpFoundation\Request;
+use Guzzle\Http\Url;
 
 class HmacSha1Signature extends Signature implements SignatureInterface
 {
@@ -21,40 +21,47 @@ class HmacSha1Signature extends Signature implements SignatureInterface
      */
     public function sign($uri, array $parameters = array(), $method = 'POST')
     {
-        $request = $this->createRequest($uri, $method);
+        $url = $this->createUrl($uri);
 
-        $baseString = $this->baseString($request, $parameters);
+        $baseString = $this->baseString($url, $method, $parameters);
 
         return base64_encode($this->hash($baseString));
     }
 
     /**
-     * Create a Symfony request for the given HTTP method on a URI.
+     * Create a Guzzle url for the given URI.
      *
      * @param  string  $uri
-     * @param  string  $method
-     * @return Request
+     * @return Url
      */
-    protected function createRequest($uri, $method = 'POST')
+    protected function createUrl($uri)
     {
-        return Request::create($uri, $method);
+        return Url::factory($uri);
     }
 
     /**
      * Generate a base string for a HMAC-SHA1 signature
-     * based on the given request and any parameters.
+     * based on the given a url, method, and any parameters.
      *
-     * @param  Request  $request
-     * @param  array    $parameters
+     * @param  Url $url
+     * @param string $method
+     * @param  array $parameters
      * @return string
      */
-    protected function baseString(Request $request, array $parameters = array())
+    protected function baseString(Url $url, $method = 'POST', array $parameters = array())
     {
-        $baseString = rawurlencode($request->getMethod()).'&';
-        $baseString .= rawurlencode($request->getSchemeAndHttpHost().$request->getPathInfo()).'&';
+        $baseString = rawurlencode($method).'&';
+
+        $schemeHostPath = Url::buildUrl(array(
+           'scheme' => $url->getScheme(),
+           'host'   => $url->getHost(),
+           'path'   => $url->getPath()
+        ));
+
+        $baseString .= rawurlencode($schemeHostPath).'&';
 
         $data = array();
-        parse_str($request->getQueryString(), $query);
+        parse_str($url->getQuery(), $query);
         foreach (array_merge($query, $parameters) as $key => $value) {
             $data[rawurlencode($key)] = rawurlencode($value);
         }
