@@ -44,7 +44,7 @@ class Tumblr extends Server
     public function userDetails($data, TokenCredentials $tokenCredentials)
     {
         // If the API has broke, return nothing
-        if ( ! isset($data['response']['user']) || ! is_array($data['response']['user'])) {
+        if (!isset($data['response']['user']) || !is_array($data['response']['user'])) {
             return;
         }
 
@@ -66,7 +66,7 @@ class Tumblr extends Server
      */
     public function userUid($data, TokenCredentials $tokenCredentials)
     {
-        if ( ! isset($data['response']['user']) || ! is_array($data['response']['user'])) {
+        if (!isset($data['response']['user']) || !is_array($data['response']['user'])) {
             return;
         }
 
@@ -88,7 +88,7 @@ class Tumblr extends Server
      */
     public function userScreenName($data, TokenCredentials $tokenCredentials)
     {
-        if ( ! isset($data['response']['user']) || ! is_array($data['response']['user'])) {
+        if (!isset($data['response']['user']) || !is_array($data['response']['user'])) {
             return;
         }
 

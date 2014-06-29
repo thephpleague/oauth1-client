@@ -60,7 +60,7 @@ class HmacSha1Signature extends Signature implements SignatureInterface
         }
 
         ksort($data);
-        array_walk($data, function(&$value, $key) {
+        array_walk($data, function (&$value, $key) {
             $value = $key.'='.$value;
         });
         $baseString .= rawurlencode(implode('&', $data));
