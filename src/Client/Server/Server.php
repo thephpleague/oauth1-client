@@ -54,7 +54,7 @@ abstract class Server
         // Pass through an array or client credentials, we don't care
         if (is_array($clientCredentials)) {
             $clientCredentials = $this->createClientCredentials($clientCredentials);
-        } elseif ( ! $clientCredentials instanceof ClientCredentialsInterface) {
+        } elseif (!$clientCredentials instanceof ClientCredentialsInterface) {
             throw new \InvalidArgumentException("Client credentials must be an array or valid object.");
         }
 
@@ -132,7 +132,10 @@ abstract class Server
     public function getTokenCredentials(TemporaryCredentials $temporaryCredentials, $temporaryIdentifier, $verifier)
     {
         if ($temporaryIdentifier !== $temporaryCredentials->getIdentifier()) {
-            throw new \InvalidArgumentException("Temporary identifier passed back by server does not match that of stored temporary credentials. Potential man-in-the-middle.");
+            throw new \InvalidArgumentException(
+                "Temporary identifier passed back by server does not match that of stored temporary credentials.
+                Potential man-in-the-middle."
+            );
         }
 
         $uri = $this->urlTokenCredentials();
@@ -211,7 +214,7 @@ abstract class Server
 
     protected function fetchUserDetails(TokenCredentials $tokenCredentials, $force = true)
     {
-        if ( ! $this->cachedUserDetailsResponse || $force == true) {
+        if (!$this->cachedUserDetailsResponse || $force == true) {
             $url = $this->urlUserDetails();
 
             $client = $this->createHttpClient();
@@ -225,7 +228,9 @@ abstract class Server
                 $body = $response->getBody();
                 $statusCode = $response->getStatusCode();
 
-                throw new \Exception("Received error [$body] with status code [$statusCode] when retrieving token credentials.");
+                throw new \Exception(
+                    "Received error [$body] with status code [$statusCode] when retrieving token credentials."
+                );
             }
 
             switch ($this->responseType) {
@@ -290,7 +295,7 @@ abstract class Server
         $keys = array('identifier', 'secret');
 
         foreach ($keys as $key) {
-            if ( ! isset($clientCredentials[$key])) {
+            if (!isset($clientCredentials[$key])) {
                 throw new \InvalidArgumentException("Missing client credentials key [$key] from options.");
             }
         }
@@ -319,7 +324,9 @@ abstract class Server
         $body = $response->getBody();
         $statusCode = $response->getStatusCode();
 
-        throw new CredentialsException("Received HTTP status code [$statusCode] with message \"$body\" when getting temporary credentials.");
+        throw new CredentialsException(
+            "Received HTTP status code [$statusCode] with message \"$body\" when getting temporary credentials."
+        );
     }
 
     /**
@@ -332,11 +339,11 @@ abstract class Server
     {
         parse_str($body, $data);
 
-        if ( ! $data || ! is_array($data)) {
+        if (!$data || !is_array($data)) {
             throw new CredentialsException("Unable to parse temporary credentials response.");
         }
 
-        if ( ! isset($data['oauth_callback_confirmed']) || $data['oauth_callback_confirmed'] != 'true') {
+        if (!isset($data['oauth_callback_confirmed']) || $data['oauth_callback_confirmed'] != 'true') {
             throw new CredentialsException("Error in retrieving temporary credentials.");
         }
 
@@ -359,7 +366,9 @@ abstract class Server
         $body = $response->getBody();
         $statusCode = $response->getStatusCode();
 
-        throw new CredentialsException("Received HTTP status code [$statusCode] with message \"$body\" when getting token credentials.");
+        throw new CredentialsException(
+            "Received HTTP status code [$statusCode] with message \"$body\" when getting token credentials."
+        );
     }
 
     /**
@@ -372,7 +381,7 @@ abstract class Server
     {
         parse_str($body, $data);
 
-        if ( ! $data || ! is_array($data)) {
+        if (!$data || !is_array($data)) {
             throw new CredentialsException("Unable to parse token credentials response.");
         }
 
@@ -454,7 +463,11 @@ abstract class Server
 
         $this->signature->setCredentials($credentials);
 
-        $parameters['oauth_signature'] = $this->signature->sign($uri, array_merge($parameters, $bodyParameters), $method);
+        $parameters['oauth_signature'] = $this->signature->sign(
+            $uri,
+            array_merge($parameters, $bodyParameters),
+            $method
+        );
 
         return $this->normalizeProtocolParameters($parameters);
     }
@@ -468,8 +481,7 @@ abstract class Server
      */
     protected function normalizeProtocolParameters(array $parameters)
     {
-        array_walk($parameters, function(&$value, $key)
-        {
+        array_walk($parameters, function (&$value, $key) {
             $value = rawurlencode($key).'="'.rawurlencode($value).'"';
         });
 
