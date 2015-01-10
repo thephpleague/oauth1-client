@@ -103,9 +103,9 @@ abstract class Server
         $parameters = array('oauth_token' => $temporaryIdentifier);
 
         $url = $this->urlAuthorization();
-        $query_string = http_build_query($parameters);
+        $queryString = http_build_query($parameters);
 
-        return $this->buildUrl($url, $query_string);
+        return $this->buildUrl($url, $queryString);
     }
 
     /**
@@ -510,13 +510,13 @@ abstract class Server
      * exisiting '?' character in host
      *
      * @param  string $host
-     * @param  string $query_string
+     * @param  string $queryString
      *
      * @return string
      */
-    protected function buildUrl($host, $query_string)
+    protected function buildUrl($host, $queryString)
     {
-        return $host . (strpos($host, '?') !== false ? '&' : '?') . $query_string;
+        return $host . (strpos($host, '?') !== false ? '&' : '?') . $queryString;
     }
 
     /**
