@@ -507,7 +507,7 @@ abstract class Server
 
     /**
      * Build a url by combining hostname and query string after checking for
-     * exisiting '?' character in host
+     * exisiting '?' character in host.
      *
      * @param  string $host
      * @param  string $queryString
