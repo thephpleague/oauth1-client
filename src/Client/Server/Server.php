@@ -516,7 +516,7 @@ abstract class Server
      */
     protected function buildUrl($host, $query_string)
     {
-        return $host . (strpos($host, '?') !== FALSE ? '&' : '?') . $query_string;
+        return $host . (strpos($host, '?') !== false ? '&' : '?') . $query_string;
     }
 
     /**
