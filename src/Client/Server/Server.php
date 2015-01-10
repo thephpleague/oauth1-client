@@ -102,7 +102,10 @@ abstract class Server
 
         $parameters = array('oauth_token' => $temporaryIdentifier);
 
-        return $this->urlAuthorization().'?'.http_build_query($parameters);
+        $url = $this->urlAuthorization();
+        $query_string = http_build_query($parameters);
+
+        return $this->buildUrl($url, $query_string);
     }
 
     /**
@@ -500,6 +503,20 @@ abstract class Server
         $pool = '0123456789abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ';
 
         return substr(str_shuffle(str_repeat($pool, 5)), 0, $length);
+    }
+
+    /**
+     * Build a url by combining hostname and query string after checking for
+     * exisiting '?' character in host
+     *
+     * @param  string $host
+     * @param  string $query_string
+     *
+     * @return string
+     */
+    protected function buildUrl($host, $query_string)
+    {
+        return $host . (strpos($host, '?') !== FALSE ? '&' : '?') . $query_string;
     }
 
     /**
