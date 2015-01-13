@@ -42,7 +42,7 @@ class TrelloTest extends PHPUnit_Framework_TestCase
 
     public function testGettingTemporaryCredentials()
     {
-        $server = m::mock('Stevenmaguire\OAuth1\Client\Server\Trello[createHttpClient]');
+        $server = m::mock('League\OAuth1\Client\Server\Trello[createHttpClient]');
         $server->__construct($this->getMockClientCredentials());
 
         $server->shouldReceive('createHttpClient')->andReturn($client = m::mock('stdClass'));
@@ -192,7 +192,7 @@ class TrelloTest extends PHPUnit_Framework_TestCase
 
     public function testGettingTokenCredentials()
     {
-        $server = m::mock('Stevenmaguire\OAuth1\Client\Server\Trello[createHttpClient]');
+        $server = m::mock('League\OAuth1\Client\Server\Trello[createHttpClient]');
         $server->__construct($this->getMockClientCredentials());
 
         $temporaryCredentials = m::mock('League\OAuth1\Client\Credentials\TemporaryCredentials');
@@ -227,7 +227,7 @@ class TrelloTest extends PHPUnit_Framework_TestCase
 
     public function testGettingUserDetails()
     {
-        $server = m::mock('Stevenmaguire\OAuth1\Client\Server\Trello[createHttpClient,protocolHeader]');
+        $server = m::mock('League\OAuth1\Client\Server\Trello[createHttpClient,protocolHeader]');
         $server->__construct($this->getMockClientCredentials());
 
         $temporaryCredentials = m::mock('League\OAuth1\Client\Credentials\TokenCredentials');
