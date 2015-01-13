@@ -53,7 +53,7 @@ class Trello extends Server
     }
 
     /**
-     * Set the access token
+     * Set the access token.
      *
      * @param string $accessToken
      *
@@ -66,7 +66,7 @@ class Trello extends Server
     }
 
     /**
-     * Set the application expiration
+     * Set the application expiration.
      *
      * @param string $applicationExpiration
      *
@@ -79,7 +79,7 @@ class Trello extends Server
     }
 
     /**
-     * Get application expiration
+     * Get application expiration.
      *
      * @return string
      */
@@ -89,7 +89,7 @@ class Trello extends Server
     }
 
     /**
-     * Set the application name
+     * Set the application name.
      *
      * @param string $applicationName
      *
@@ -102,7 +102,7 @@ class Trello extends Server
     }
 
     /**
-     * Get application name
+     * Get application name.
      *
      * @return string|null
      */
@@ -112,7 +112,7 @@ class Trello extends Server
     }
 
     /**
-     * Set the application scope
+     * Set the application scope.
      *
      * @param string $applicationScope
      *
@@ -125,7 +125,7 @@ class Trello extends Server
     }
 
     /**
-     * Get application scope
+     * Get application scope.
      *
      * @return string
      */
@@ -208,7 +208,7 @@ class Trello extends Server
     }
 
     /**
-     * Build authorization query parameters
+     * Build authorization query parameters.
      *
      * @return string
      */
@@ -225,7 +225,7 @@ class Trello extends Server
     }
 
     /**
-     * Parse configuration array to set attributes
+     * Parse configuration array to set attributes.
      *
      * @param  array $configuration
      */
