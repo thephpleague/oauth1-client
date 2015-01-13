@@ -214,12 +214,12 @@ class Trello extends Server
      */
     private function buildAuthorizationQueryParameters()
     {
-        $params = [
+        $params = array(
             'response_type' => 'fragment',
             'scope' => $this->getApplicationScope(),
             'expiration' => $this->getApplicationExpiration(),
             'name' => $this->getApplicationName()
-        ];
+        );
 
         return http_build_query($params);
     }
@@ -231,12 +231,12 @@ class Trello extends Server
      */
     private function parseConfigurationArray(array $configuration = array())
     {
-        $config_attribute_map = [
+        $config_attribute_map = array(
             'identifier' => 'applicationKey',
             'expiration' => 'applicationExpiration',
             'name' => 'applicationName',
             'scope' => 'applicationScope'
-        ];
+        );
 
         foreach ($config_attribute_map as $config => $attr) {
             if (isset($configuration[$config])) {
