@@ -86,7 +86,7 @@ Via Composer
 ### Trello
 
 ```php
-$server =  new \Stevenmaguire\OAuth2\Client\Server\Trello(array(
+$server =  new League\OAuth1\Client\Server\Trello(array(
     'identifier' => 'your-identifier',
     'secret' => 'your-secret',
     'callback_uri' => 'http://your-callback-uri/',
