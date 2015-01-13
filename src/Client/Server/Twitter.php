@@ -56,7 +56,6 @@ class Twitter extends Server
 
         foreach ($data as $key => $value) {
             if (strpos($key, 'url') !== false) {
-
                 if (!in_array($key, $used)) {
                     $used[] = $key;
                 }
