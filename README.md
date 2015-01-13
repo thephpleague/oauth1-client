@@ -83,6 +83,16 @@ Via Composer
 
 ## Usage
 
+### Bitbucket
+
+```php
+$server = new League\OAuth1\Client\Server\Bitbucket(array(
+    'identifier' => 'your-identifier',
+    'secret' => 'your-secret',
+    'callback_uri' => "http://your-callback-uri/",
+));
+```
+
 ### Trello
 
 ```php
@@ -93,6 +103,16 @@ $server =  new League\OAuth1\Client\Server\Trello(array(
     'name' => 'your-application-name', // optional, defaults to null
     'expiration' => 'your-application-expiration', // optional ('never', '1day', '2days'), defaults to '1day'
     'scope' => 'your-application-scope' // optional ('read', 'read,write'), defaults to 'read'
+));
+```
+
+### Tumblr
+
+```php
+$server = new League\OAuth1\Client\Server\Tumblr(array(
+    'identifier' => 'your-identifier',
+    'secret' => 'your-secret',
+    'callback_uri' => "http://your-callback-uri/",
 ));
 ```
 
