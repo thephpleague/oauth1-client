@@ -18,7 +18,11 @@
         "idp",
         "identity",
         "sso",
-        "single sign on"
+        "single sign on",
+        "bitbucket",
+        "trello",
+        "tumblr",
+        "twitter"
     ],
     "authors": [
         {
