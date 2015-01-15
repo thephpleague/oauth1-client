@@ -1,11 +1,11 @@
 # OAuth 1.0 Client
 
-[![Latest Stable Version](https://img.shields.io/github/release/thephpleague/oauth1-client.svg?style=flat-square)](https://github.com/thephpleague/oauth1-client/releases)
+[![Latest Stable Version](https://img.shields.io/github/release/league/oauth1-client.svg?style=flat-square)](https://github.com/thephpleague/oauth1-client/releases)
 [![Software License](https://img.shields.io/badge/license-MIT-brightgreen.svg?style=flat-square)](LICENSE.md)
 [![Build Status](https://img.shields.io/travis/thephpleague/oauth1-client/master.svg?style=flat-square&1)](https://travis-ci.org/thephpleague/oauth1-client)
 [![Coverage Status](https://img.shields.io/scrutinizer/coverage/g/thephpleague/oauth1-client.svg?style=flat-square)](https://scrutinizer-ci.com/g/thephpleague/oauth1-client/code-structure)
 [![Quality Score](https://img.shields.io/scrutinizer/g/thephpleague/oauth1-client.svg?style=flat-square)](https://scrutinizer-ci.com/g/thephpleague/oauth1-client)
-[![Total Downloads](https://img.shields.io/packagist/dt/thephpleague/oauth1-client.svg?style=flat-square)](https://packagist.org/packages/thephpleague/oauth1-client)
+[![Total Downloads](https://img.shields.io/packagist/dt/league/oauth1-client.svg?style=flat-square)](https://packagist.org/packages/thephpleague/oauth1-client)
 
 OAuth 1 Client is an OAuth [RFC 5849 standards-compliant](http://tools.ietf.org/html/rfc5849) library for authenticating against OAuth 1 servers.
 
