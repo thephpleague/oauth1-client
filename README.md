@@ -1,14 +1,18 @@
 # OAuth 1.0 Client
 
-[![Build Status](https://travis-ci.org/thephpleague/oauth1-client.png?branch=master)](https://travis-ci.org/thephpleague/oauth1-client)
-[![Total Downloads](https://poser.pugx.org/league/oauth1-client/downloads.png)](https://packagist.org/packages/league/oauth1-client)
-[![Latest Stable Version](https://poser.pugx.org/league/oauth1-client/v/stable.png)](https://packagist.org/packages/league/oauth1-client)
+[![Latest Stable Version](https://img.shields.io/github/release/thephpleague/oauth1-client.svg?style=flat-square)](https://github.com/thephpleague/oauth1-client/releases)
+[![Software License](https://img.shields.io/badge/license-MIT-brightgreen.svg?style=flat-square)](LICENSE.md)
+[![Build Status](https://img.shields.io/travis/thephpleague/oauth1-client/master.svg?style=flat-square&1)](https://travis-ci.org/thephpleague/oauth1-client)
+[![Coverage Status](https://img.shields.io/scrutinizer/coverage/g/thephpleague/oauth1-client.svg?style=flat-square)](https://scrutinizer-ci.com/g/thephpleague/oauth1-client/code-structure)
+[![Quality Score](https://img.shields.io/scrutinizer/g/thephpleague/oauth1-client.svg?style=flat-square)](https://scrutinizer-ci.com/g/thephpleague/oauth1-client)
+[![Total Downloads](https://img.shields.io/packagist/dt/thephpleague/oauth1-client.svg?style=flat-square)](https://packagist.org/packages/thephpleague/oauth1-client)
 
 OAuth 1 Client is an OAuth [RFC 5849 standards-compliant](http://tools.ietf.org/html/rfc5849) library for authenticating against OAuth 1 servers.
 
 It has built in support for:
 
 - Bitbucket
+- Trello
 - Tumblr
 - Twitter
 
@@ -78,6 +82,41 @@ Via Composer
 
 
 ## Usage
+
+### Bitbucket
+
+```php
+$server = new League\OAuth1\Client\Server\Bitbucket(array(
+    'identifier' => 'your-identifier',
+    'secret' => 'your-secret',
+    'callback_uri' => "http://your-callback-uri/",
+));
+```
+
+### Trello
+
+```php
+$server =  new League\OAuth1\Client\Server\Trello(array(
+    'identifier' => 'your-identifier',
+    'secret' => 'your-secret',
+    'callback_uri' => 'http://your-callback-uri/',
+    'name' => 'your-application-name', // optional, defaults to null
+    'expiration' => 'your-application-expiration', // optional ('never', '1day', '2days'), defaults to '1day'
+    'scope' => 'your-application-scope' // optional ('read', 'read,write'), defaults to 'read'
+));
+```
+
+### Tumblr
+
+```php
+$server = new League\OAuth1\Client\Server\Tumblr(array(
+    'identifier' => 'your-identifier',
+    'secret' => 'your-secret',
+    'callback_uri' => "http://your-callback-uri/",
+));
+```
+
+### Twitter
 
 ```php
 $server = new League\OAuth1\Client\Server\Twitter(array(
@@ -192,6 +231,7 @@ Please see [CONTRIBUTING](https://github.com/thephpleague/oauth1-client/blob/mas
 ## Credits
 
 - [Ben Corlett](https://github.com/bencorlett)
+- [Steven Maguire](https://github.com/stevenmaguire)
 - [All Contributors](https://github.com/thephpleague/oauth1-client/contributors)
 
 
