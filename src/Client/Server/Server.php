@@ -44,6 +44,13 @@ abstract class Server
     protected $cachedUserDetailsResponse;
 
     /**
+     * Optional user agent
+     *
+     * @var string
+     */
+    protected $userAgent;
+
+    /**
      * Create a new server instance.
      *
      * @param  ClientCredentialsInterface|array  $clientCredentials
@@ -74,10 +81,12 @@ abstract class Server
 
         $client = $this->createHttpClient();
 
+        $header = $this->temporaryCredentialsProtocolHeader($uri);
+        $authorization_header = array('Authorization' => $header);
+        $headers = $this->buildHttpClientHeaders($authorization_header);
+
         try {
-            $response = $client->post($uri, array(
-                'Authorization' => $this->temporaryCredentialsProtocolHeader($uri),
-            ))->send();
+            $response = $client->post($uri, $headers)->send();
         } catch (BadResponseException $e) {
             return $this->handleTemporaryCredentialsBadResponse($e);
         }
@@ -147,11 +156,11 @@ abstract class Server
         $client = $this->createHttpClient();
 
         $header = $this->protocolHeader('POST', $uri, $temporaryCredentials, $bodyParameters);
+        $authorization_header = array('Authorization' => $header);
+        $headers = $this->buildHttpClientHeaders($authorization_header);
 
         try {
-            $response = $client->post($uri, array(
-                'Authorization' => $header,
-            ), $bodyParameters)->send();
+            $response = $client->post($uri, $headers, $bodyParameters)->send();
         } catch (BadResponseException $e) {
             return $this->handleTokenCredentialsBadResponse($e);
         }
@@ -222,10 +231,12 @@ abstract class Server
 
             $client = $this->createHttpClient();
 
+            $header = $this->protocolHeader('GET', $url, $tokenCredentials);
+            $authorization_header = array('Authorization' => $header);
+            $headers = $this->buildHttpClientHeaders($authorization_header);
+
             try {
-                $response = $client->get($url, array(
-                    'Authorization' => $this->protocolHeader('GET', $url, $tokenCredentials),
-                ))->send();
+                $response = $client->get($url, $headers)->send();
             } catch (BadResponseException $e) {
                 $response = $e->getResponse();
                 $body = $response->getBody();
@@ -285,6 +296,44 @@ abstract class Server
     public function createHttpClient()
     {
         return new GuzzleClient();
+    }
+
+    /**
+     * Set the user agent value.
+     *
+     * @param  string $userAgent
+     *
+     * @return Server
+     */
+    public function setUserAgent($userAgent = null)
+    {
+        $this->userAgent = $userAgent;
+        return $this;
+    }
+
+    /**
+     * Get Guzzle HTTP client default headers.
+     *
+     * @return array
+     */
+    protected function getHttpClientDefaultHeaders()
+    {
+        $default_headers = array();
+        if (!empty($this->userAgent)) {
+            $default_headers['User-Agent'] = $this->userAgent;
+        }
+        return $default_headers;
+    }
+
+    /**
+     * Build Guzzle HTTP client headers.
+     *
+     * @return array
+     */
+    protected function buildHttpClientHeaders($headers = array())
+    {
+        $default_headers = $this->getHttpClientDefaultHeaders();
+        return array_merge($headers, $default_headers);
     }
 
     /**

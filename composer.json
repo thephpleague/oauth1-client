@@ -8,7 +8,8 @@
     },
     "require-dev": {
         "phpunit/phpunit": "*",
-        "mockery/mockery": "0.7.2"
+        "mockery/mockery": "0.7.2",
+        "satooshi/php-coveralls": "dev-master"
     },
     "keywords": [
         "oauth",
