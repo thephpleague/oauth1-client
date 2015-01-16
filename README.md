@@ -1,6 +1,6 @@
 # OAuth 1.0 Client
 
-[![Latest Stable Version](https://img.shields.io/github/release/league/oauth1-client.svg?style=flat-square)](https://github.com/thephpleague/oauth1-client/releases)
+[![Latest Stable Version](https://img.shields.io/github/release/thephpleague/oauth1-client.svg?style=flat-square)](https://github.com/thephpleague/oauth1-client/releases)
 [![Software License](https://img.shields.io/badge/license-MIT-brightgreen.svg?style=flat-square)](LICENSE.md)
 [![Build Status](https://img.shields.io/travis/thephpleague/oauth1-client/master.svg?style=flat-square&1)](https://travis-ci.org/thephpleague/oauth1-client)
 [![Coverage Status](https://img.shields.io/scrutinizer/coverage/g/thephpleague/oauth1-client.svg?style=flat-square)](https://scrutinizer-ci.com/g/thephpleague/oauth1-client/code-structure)
