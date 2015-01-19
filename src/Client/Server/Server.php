@@ -82,8 +82,8 @@ abstract class Server
         $client = $this->createHttpClient();
 
         $header = $this->temporaryCredentialsProtocolHeader($uri);
-        $authorization_header = array('Authorization' => $header);
-        $headers = $this->buildHttpClientHeaders($authorization_header);
+        $authorizationHeader = array('Authorization' => $header);
+        $headers = $this->buildHttpClientHeaders($authorizationHeader);
 
         try {
             $response = $client->post($uri, $headers)->send();
@@ -156,8 +156,8 @@ abstract class Server
         $client = $this->createHttpClient();
 
         $header = $this->protocolHeader('POST', $uri, $temporaryCredentials, $bodyParameters);
-        $authorization_header = array('Authorization' => $header);
-        $headers = $this->buildHttpClientHeaders($authorization_header);
+        $authorizationHeader = array('Authorization' => $header);
+        $headers = $this->buildHttpClientHeaders($authorizationHeader);
 
         try {
             $response = $client->post($uri, $headers, $bodyParameters)->send();
@@ -232,8 +232,8 @@ abstract class Server
             $client = $this->createHttpClient();
 
             $header = $this->protocolHeader('GET', $url, $tokenCredentials);
-            $authorization_header = array('Authorization' => $header);
-            $headers = $this->buildHttpClientHeaders($authorization_header);
+            $authorizationHeader = array('Authorization' => $header);
+            $headers = $this->buildHttpClientHeaders($authorizationHeader);
 
             try {
                 $response = $client->get($url, $headers)->send();
@@ -318,11 +318,11 @@ abstract class Server
      */
     protected function getHttpClientDefaultHeaders()
     {
-        $default_headers = array();
+        $defaultHeaders = array();
         if (!empty($this->userAgent)) {
-            $default_headers['User-Agent'] = $this->userAgent;
+            $defaultHeaders['User-Agent'] = $this->userAgent;
         }
-        return $default_headers;
+        return $defaultHeaders;
     }
 
     /**
@@ -332,8 +332,8 @@ abstract class Server
      */
     protected function buildHttpClientHeaders($headers = array())
     {
-        $default_headers = $this->getHttpClientDefaultHeaders();
-        return array_merge($headers, $default_headers);
+        $defaultHeaders = $this->getHttpClientDefaultHeaders();
+        return array_merge($headers, $defaultHeaders);
     }
 
     /**
