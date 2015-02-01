@@ -45,6 +45,7 @@ class Bitbucket extends Server
     {
         $user = new User;
 
+        $user->uid = $data['user']['username'];
         $user->nickname = $data['user']['username'];
         $user->name = $data['user']['display_name'];
         $user->imageUrl = $data['user']['avatar'];
