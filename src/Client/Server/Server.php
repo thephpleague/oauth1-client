@@ -224,6 +224,13 @@ abstract class Server
         return $this->userScreenName($data, $tokenCredentials);
     }
 
+    /**
+     * Fetch user details from the remote service
+     *
+     * @param  TokenCredentials  $tokenCredentials
+     * @param  bool  $force
+     * @return array HTTP client response
+     */
     protected function fetchUserDetails(TokenCredentials $tokenCredentials, $force = true)
     {
         if (!$this->cachedUserDetailsResponse || $force == true) {
@@ -509,9 +516,13 @@ abstract class Server
      */
     protected function protocolHeader($method, $uri, CredentialsInterface $credentials, array $bodyParameters = array())
     {
-        $parameters = array_merge($this->baseProtocolParameters(), array(
-            'oauth_token' => $credentials->getIdentifier(),
-        ));
+        $parameters = array_merge(
+            $this->baseProtocolParameters(),
+            $this->additionalProtocolParameters(),
+            array(
+                'oauth_token' => $credentials->getIdentifier(),
+            )
+        );
 
         $this->signature->setCredentials($credentials);
 
