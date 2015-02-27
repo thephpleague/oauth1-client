@@ -18,6 +18,16 @@ It has built in support for:
 
 Adding support for other providers is trivial. The library requires PHP 5.3+ and is PSR-2 compatible.
 
+### Third-Party Providers
+
+If you would like to support other providers, please make them available as a Composer package, then link to them
+below.
+
+These providers allow integration with other providers not supported by `oauth1-client`. They may require an older version
+so please help them out with a pull request if you notice this.
+
+- [Intuit](https://packagist.org/packages/wheniwork/oauth1-intuit)
+
 #### Terminology (as per the RFC 5849 specification):
 
     client
