@@ -236,6 +236,34 @@ class ServerTest extends PHPUnit_Framework_TestCase
         $this->assertEquals('fred', $server->getUserScreenName($temporaryCredentials));
     }
 
+    public function testGettingHeaders()
+    {
+        $server = new ServerStub($this->getMockClientCredentials());
+
+        $tokenCredentials = m::mock('League\OAuth1\Client\Credentials\TokenCredentials');
+        $tokenCredentials->shouldReceive('getIdentifier')->andReturn('mock_identifier');
+        $tokenCredentials->shouldReceive('getSecret')->andReturn('mock_secret');
+
+        // OAuth protocol specifies a strict number of
+        // headers should be sent, in the correct order.
+        // We'll validate that here.
+        $pattern = '/OAuth oauth_consumer_key=".*?", oauth_nonce="[a-zA-Z0-9]+", oauth_signature_method="HMAC-SHA1", oauth_timestamp="\d{10}", oauth_version="1.0", oauth_token="mock_identifier", oauth_signature=".*?"/';
+
+        // With a GET request
+        $headers = $server->getHeaders($tokenCredentials, 'GET', 'http://example.com/');
+        $this->assertTrue(isset($headers['Authorization']));
+
+        $matches = preg_match($pattern, $headers['Authorization']);
+        $this->assertEquals(1, $matches, 'Asserting that the authorization header contains the correct expression.');
+
+        // With a POST request
+        $headers = $server->getHeaders($tokenCredentials, 'POST', 'http://example.com/', array('body' => 'params'));
+        $this->assertTrue(isset($headers['Authorization']));
+
+        $matches = preg_match($pattern, $headers['Authorization']);
+        $this->assertEquals(1, $matches, 'Asserting that the authorization header contains the correct expression.');
+    }
+
     protected function getMockClientCredentials()
     {
         return array(

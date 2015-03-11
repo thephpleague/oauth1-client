@@ -155,9 +155,7 @@ abstract class Server
 
         $client = $this->createHttpClient();
 
-        $header = $this->protocolHeader('POST', $uri, $temporaryCredentials, $bodyParameters);
-        $authorizationHeader = array('Authorization' => $header);
-        $headers = $this->buildHttpClientHeaders($authorizationHeader);
+        $headers = $this->getHeaders($temporaryCredentials, 'POST', $uri, $bodyParameters);
 
         try {
             $response = $client->post($uri, $headers, $bodyParameters)->send();
@@ -238,9 +236,7 @@ abstract class Server
 
             $client = $this->createHttpClient();
 
-            $header = $this->protocolHeader('GET', $url, $tokenCredentials);
-            $authorizationHeader = array('Authorization' => $header);
-            $headers = $this->buildHttpClientHeaders($authorizationHeader);
+            $headers = $this->getHeaders($tokenCredentials, 'GET', $url);
 
             try {
                 $response = $client->get($url, $headers)->send();
@@ -316,6 +312,23 @@ abstract class Server
     {
         $this->userAgent = $userAgent;
         return $this;
+    }
+
+    /**
+     * Get all headers required to created an authenticated request.
+     *
+     * @param  CredentialsInterface $credentials
+     * @param  string  $method
+     * @param  string  $url
+     * @param  array   $bodyParameters
+     * @return array
+     */
+    public function getHeaders(CredentialsInterface $credentials, $method, $url, array $bodyParameters = array())
+    {
+        $header = $this->protocolHeader(strtoupper($method), $url, $credentials, $bodyParameters);
+        $authorizationHeader = array('Authorization' => $header);
+        $headers = $this->buildHttpClientHeaders($authorizationHeader);
+        return $headers;
     }
 
     /**
