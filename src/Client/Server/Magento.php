@@ -51,7 +51,7 @@ class Magento extends Server
     public function urlAuthorization()
     {
         return $this->isAdmin
-            ? $this->baseUri . '/admin/oauth_authorize'
+            ? $this->adminUrl
             : $this->baseUri . '/oauth/authorize';
     }
 
@@ -145,13 +145,17 @@ class Magento extends Server
         if (isset($url['host'])) {
             throw new \Exception('Missing Magento Host');
         }
-
         $url = parse_url($configuration['host']);
         $this->baseUri = sprintf('%s://%s', $url['scheme'], $url['host']);
         if (isset($url['path'])) {
             $this->baseUri .= '/' . trim($url['path'], '/');
         }
-
         $this->isAdmin = !empty($configuration['admin']);
+        if (!empty($configuration['adminUrl'])) {
+            $this->adminUrl = $configuration['adminUrl']. '/oauth_authorize';
+        } else {
+            $this->adminUrl = $this->baseUri . '/admin/oauth_authorize';
+        }
+
     }
 }
