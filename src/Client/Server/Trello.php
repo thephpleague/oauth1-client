@@ -49,6 +49,7 @@ class Trello extends Server
         parent::__construct($clientCredentials, $signature);
         if (is_array($clientCredentials)) {
             $this->parseConfigurationArray($clientCredentials);
+            $this->parseConfiguration($clientCredentials);
         }
     }
 
@@ -229,18 +230,18 @@ class Trello extends Server
      *
      * @param  array $configuration
      */
-    private function parseConfigurationArray(array $configuration = array())
+    private function parseConfiguration(array $configuration = array())
     {
-        $config_attribute_map = array(
+        $configToPropertyMap = array(
             'identifier' => 'applicationKey',
             'expiration' => 'applicationExpiration',
             'name' => 'applicationName',
             'scope' => 'applicationScope'
         );
 
-        foreach ($config_attribute_map as $config => $attr) {
+        foreach ($configToPropertyMap as $config => $property) {
             if (isset($configuration[$config])) {
-                $this->$attr = $configuration[$config];
+                $this->$property = $configuration[$config];
             }
         }
     }
