@@ -6,7 +6,7 @@ use League\OAuth1\Client\Credentials\TemporaryCredentials;
 use League\OAuth1\Client\Credentials\TokenCredentials;
 
 /**
- * Magento OAuth 1.0a
+ * Magento OAuth 1.0a.
  *
  * This class reflects two Magento oddities:
  *  - Magento does not offer a user info endpoint for the currently
@@ -21,14 +21,15 @@ use League\OAuth1\Client\Credentials\TokenCredentials;
 class Magento extends Server
 {
     /**
-     * oauth_verifier stored for use with
+     * oauth_verifier stored for use with.
+     *
      * @var string
      */
     private $verifier;
 
     /**
-    * {@inheritDoc}
-    */
+     * {@inheritDoc}
+     */
     public function __construct($clientCredentials, SignatureInterface $signature = null)
     {
         parent::__construct($clientCredentials, $signature);
@@ -38,96 +39,97 @@ class Magento extends Server
     }
 
     /**
-    * {@inheritDoc}
-    */
+     * {@inheritDoc}
+     */
     public function urlTemporaryCredentials()
     {
-        return $this->baseUri . '/oauth/initiate';
+        return $this->baseUri.'/oauth/initiate';
     }
 
     /**
-    * {@inheritDoc}
-    */
+     * {@inheritDoc}
+     */
     public function urlAuthorization()
     {
         return $this->isAdmin
             ? $this->adminUrl
-            : $this->baseUri . '/oauth/authorize';
+            : $this->baseUri.'/oauth/authorize';
     }
 
     /**
-    * {@inheritDoc}
-    */
+     * {@inheritDoc}
+     */
     public function urlTokenCredentials()
     {
-        return $this->baseUri .'/oauth/token';
+        return $this->baseUri.'/oauth/token';
     }
 
-
     /**
-    * {@inheritDoc}
-    */
+     * {@inheritDoc}
+     */
     public function urlUserDetails()
     {
         return '';
     }
 
     /**
-    * {@inheritDoc}
-    */
+     * {@inheritDoc}
+     */
     public function userDetails($data, TokenCredentials $tokenCredentials)
     {
-        return new User;
+        return new User();
     }
 
     /**
-    * {@inheritDoc}
-    */
+     * {@inheritDoc}
+     */
     public function userUid($data, TokenCredentials $tokenCredentials)
     {
         return;
     }
 
     /**
-    * {@inheritDoc}
-    */
+     * {@inheritDoc}
+     */
     public function userEmail($data, TokenCredentials $tokenCredentials)
     {
         return;
     }
 
     /**
-    * {@inheritDoc}
-    */
+     * {@inheritDoc}
+     */
     public function userScreenName($data, TokenCredentials $tokenCredentials)
     {
         return;
     }
 
     /**
-    * {@inheritDoc}
-    */
+     * {@inheritDoc}
+     */
     public function getTokenCredentials(TemporaryCredentials $temporaryCredentials, $temporaryIdentifier, $verifier)
     {
         $this->verifier = $verifier;
+
         return parent::getTokenCredentials($temporaryCredentials, $temporaryIdentifier, $verifier);
     }
 
     /**
-    * {@inheritDoc}
-    */
+     * {@inheritDoc}
+     */
     protected function additionalProtocolParameters()
     {
         return array(
-            'oauth_verifier' => $this->verifier
+            'oauth_verifier' => $this->verifier,
         );
     }
 
     /**
-     * Magento does not implement a user info endpoint
+     * Magento does not implement a user info endpoint.
      *
-     * @param  TokenCredentials $tokenCredentials
-     * @param  bool $force
+     * @param TokenCredentials $tokenCredentials
+     * @param bool             $force
+     *
      * @return array empty array
      */
     protected function fetchUserDetails(TokenCredentials $tokenCredentials, $force = true)
@@ -138,7 +140,7 @@ class Magento extends Server
     /**
      * Parse configuration array to set attributes.
      *
-     * @param  array $configuration
+     * @param array $configuration
      */
     private function parseConfigurationArray(array $configuration = array())
     {
@@ -148,14 +150,13 @@ class Magento extends Server
         $url = parse_url($configuration['host']);
         $this->baseUri = sprintf('%s://%s', $url['scheme'], $url['host']);
         if (isset($url['path'])) {
-            $this->baseUri .= '/' . trim($url['path'], '/');
+            $this->baseUri .= '/'.trim($url['path'], '/');
         }
         $this->isAdmin = !empty($configuration['admin']);
         if (!empty($configuration['adminUrl'])) {
-            $this->adminUrl = $configuration['adminUrl']. '/oauth_authorize';
+            $this->adminUrl = $configuration['adminUrl'].'/oauth_authorize';
         } else {
-            $this->adminUrl = $this->baseUri . '/admin/oauth_authorize';
+            $this->adminUrl = $this->baseUri.'/admin/oauth_authorize';
         }
-
     }
 }

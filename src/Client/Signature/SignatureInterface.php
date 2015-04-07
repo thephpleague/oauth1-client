@@ -10,7 +10,7 @@ interface SignatureInterface
     /**
      * Create a new signature instance.
      *
-     * @param  ClientCredentialsInterface  $clientCredentials
+     * @param ClientCredentialsInterface $clientCredentials
      */
     public function __construct(ClientCredentialsInterface $clientCredentials);
 
@@ -20,8 +20,7 @@ interface SignatureInterface
      * authentication process, or token credentials when querying
      * the API.
      *
-     * @param  CredentialsInterface  $credentials
-     * @return void
+     * @param CredentialsInterface $credentials
      */
     public function setCredentials(CredentialsInterface $credentials);
 
@@ -35,9 +34,10 @@ interface SignatureInterface
     /**
      * Sign the given request for the client.
      *
-     * @param  string  $uri
-     * @param  array   $parameters
-     * @param  string  $method
+     * @param string $uri
+     * @param array  $parameters
+     * @param string $method
+     *
      * @return string
      */
     public function sign($uri, array $parameters = array(), $method = 'POST');

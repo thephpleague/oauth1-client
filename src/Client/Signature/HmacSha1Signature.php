@@ -2,8 +2,6 @@
 
 namespace League\OAuth1\Client\Signature;
 
-use League\OAuth1\Client\Credentials\ClientCredentialsInterface;
-use League\OAuth1\Client\Credentials\CredentialsInterface;
 use Guzzle\Http\Url;
 
 class HmacSha1Signature extends Signature implements SignatureInterface
@@ -31,7 +29,8 @@ class HmacSha1Signature extends Signature implements SignatureInterface
     /**
      * Create a Guzzle url for the given URI.
      *
-     * @param  string  $uri
+     * @param string $uri
+     *
      * @return Url
      */
     protected function createUrl($uri)
@@ -43,9 +42,10 @@ class HmacSha1Signature extends Signature implements SignatureInterface
      * Generate a base string for a HMAC-SHA1 signature
      * based on the given a url, method, and any parameters.
      *
-     * @param  Url $url
+     * @param Url    $url
      * @param string $method
-     * @param  array $parameters
+     * @param array  $parameters
+     *
      * @return string
      */
     protected function baseString(Url $url, $method = 'POST', array $parameters = array())
@@ -55,7 +55,7 @@ class HmacSha1Signature extends Signature implements SignatureInterface
         $schemeHostPath = Url::buildUrl(array(
            'scheme' => $url->getScheme(),
            'host'   => $url->getHost(),
-           'path'   => $url->getPath()
+           'path'   => $url->getPath(),
         ));
 
         $baseString .= rawurlencode($schemeHostPath).'&';
@@ -78,7 +78,8 @@ class HmacSha1Signature extends Signature implements SignatureInterface
     /**
      * Hashes a string with the signature's key.
      *
-     * @param  string  $string
+     * @param string $string
+     *
      * @return string
      */
     protected function hash($string)

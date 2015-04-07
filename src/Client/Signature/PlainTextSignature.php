@@ -2,9 +2,6 @@
 
 namespace League\OAuth1\Client\Signature;
 
-use League\OAuth1\Client\Credentials\ClientCredentialsInterface;
-use League\OAuth1\Client\Credentials\CredentialsInterface;
-
 class PlainTextSignature extends Signature implements SignatureInterface
 {
     /**

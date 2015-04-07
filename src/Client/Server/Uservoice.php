@@ -32,7 +32,7 @@ class Uservoice extends Server
      */
     public function urlTemporaryCredentials()
     {
-        return $this->base . "/oauth/request_token";
+        return $this->base.'/oauth/request_token';
     }
 
     /**
@@ -40,7 +40,7 @@ class Uservoice extends Server
      */
     public function urlAuthorization()
     {
-        return $this->base . "/oauth/authorize";
+        return $this->base.'/oauth/authorize';
     }
 
     /**
@@ -48,7 +48,7 @@ class Uservoice extends Server
      */
     public function urlTokenCredentials()
     {
-        return $this->base . "/oauth/access_token";
+        return $this->base.'/oauth/access_token';
     }
 
     /**
@@ -56,7 +56,7 @@ class Uservoice extends Server
      */
     public function urlUserDetails()
     {
-        return $this->base . "/api/v1/users/current.json";
+        return $this->base.'/api/v1/users/current.json';
     }
 
     /**
@@ -66,13 +66,13 @@ class Uservoice extends Server
     {
         $user = new User();
 
-        $user->uid = $data["user"]["id"];
-        $user->name = $data["user"]["name"];
-        $user->imageUrl = $data["user"]["avatar_url"];
-        $user->email = $data["user"]["email"];
+        $user->uid = $data['user']['id'];
+        $user->name = $data['user']['name'];
+        $user->imageUrl = $data['user']['avatar_url'];
+        $user->email = $data['user']['email'];
 
-        if ($data["user"]["name"]) {
-            $parts = explode(" ", $data["user"]["name"]);
+        if ($data['user']['name']) {
+            $parts = explode(' ', $data['user']['name']);
 
             if (count($parts) > 0) {
                 $user->firstName = $parts[0];
@@ -83,7 +83,7 @@ class Uservoice extends Server
             }
         }
 
-        $user->urls[] = $data["user"]["url"];
+        $user->urls[] = $data['user']['url'];
 
         return $user;
     }
@@ -93,7 +93,7 @@ class Uservoice extends Server
      */
     public function userUid($data, TokenCredentials $tokenCredentials)
     {
-        return $data["user"]["id"];
+        return $data['user']['id'];
     }
 
     /**
@@ -101,7 +101,7 @@ class Uservoice extends Server
      */
     public function userEmail($data, TokenCredentials $tokenCredentials)
     {
-        return $data["user"]["email"];
+        return $data['user']['email'];
     }
 
     /**
@@ -109,7 +109,7 @@ class Uservoice extends Server
      */
     public function userScreenName($data, TokenCredentials $tokenCredentials)
     {
-        return $data["user"]["name"];
+        return $data['user']['name'];
     }
 
     /**
@@ -121,10 +121,10 @@ class Uservoice extends Server
      */
     private function parseConfigurationArray(array $configuration = array())
     {
-        if (isset($configuration["host"])) {
-            throw new InvalidArgumentException("Missing host");
+        if (isset($configuration['host'])) {
+            throw new InvalidArgumentException('Missing host');
         }
 
-        $this->base = trim($configuration["host"], "/");
+        $this->base = trim($configuration['host'], '/');
     }
 }

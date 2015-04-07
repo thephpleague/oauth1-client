@@ -50,7 +50,7 @@ class Tumblr extends Server
 
         $data = $data['response']['user'];
 
-        $user = new User;
+        $user = new User();
 
         $user->nickname = $data['name'];
 

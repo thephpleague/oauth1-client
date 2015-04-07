@@ -7,43 +7,43 @@ use League\OAuth1\Client\Credentials\TokenCredentials;
 class Bitbucket extends Server
 {
     /**
-    * {@inheritDoc}
-    */
+     * {@inheritDoc}
+     */
     public function urlTemporaryCredentials()
     {
         return 'https://bitbucket.org/api/1.0/oauth/request_token';
     }
 
     /**
-    * {@inheritDoc}
-    */
+     * {@inheritDoc}
+     */
     public function urlAuthorization()
     {
         return 'https://bitbucket.org/api/1.0/oauth/authenticate';
     }
 
     /**
-    * {@inheritDoc}
-    */
+     * {@inheritDoc}
+     */
     public function urlTokenCredentials()
     {
         return 'https://bitbucket.org/api/1.0/oauth/access_token';
     }
 
     /**
-    * {@inheritDoc}
-    */
+     * {@inheritDoc}
+     */
     public function urlUserDetails()
     {
         return 'https://bitbucket.org/api/1.0/user';
     }
 
     /**
-    * {@inheritDoc}
-    */
+     * {@inheritDoc}
+     */
     public function userDetails($data, TokenCredentials $tokenCredentials)
     {
-        $user = new User;
+        $user = new User();
 
         $user->uid = $data['user']['username'];
         $user->nickname = $data['user']['username'];
@@ -71,24 +71,24 @@ class Bitbucket extends Server
     }
 
     /**
-    * {@inheritDoc}
-    */
+     * {@inheritDoc}
+     */
     public function userUid($data, TokenCredentials $tokenCredentials)
     {
         return $data['user']['username'];
     }
 
     /**
-    * {@inheritDoc}
-    */
+     * {@inheritDoc}
+     */
     public function userEmail($data, TokenCredentials $tokenCredentials)
     {
         return;
     }
 
     /**
-    * {@inheritDoc}
-    */
+     * {@inheritDoc}
+     */
     public function userScreenName($data, TokenCredentials $tokenCredentials)
     {
         return $data['user']['display_name'];

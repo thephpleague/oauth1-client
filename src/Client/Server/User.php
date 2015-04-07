@@ -84,9 +84,8 @@ class User implements \IteratorAggregate
     /**
      * Set a property on the user.
      *
-     * @param  string  $key
-     * @param  mixed   $value
-     * @return void
+     * @param string $key
+     * @param mixed  $value
      */
     public function __set($key, $value)
     {
@@ -98,7 +97,8 @@ class User implements \IteratorAggregate
     /**
      * Get a property from the user.
      *
-     * @param  string  $key
+     * @param string $key
+     *
      * @return mixed
      */
     public function __get($key)

@@ -14,8 +14,7 @@ interface CredentialsInterface
     /**
      * Set the credentials identifier.
      *
-     * @param  string  $identifier
-     * @return void
+     * @param string $identifier
      */
     public function setIdentifier($identifier);
 
@@ -29,8 +28,7 @@ interface CredentialsInterface
     /**
      * Set the credentials secret.
      *
-     * @param  string  $secret
-     * @return void
+     * @param string $secret
      */
     public function setSecret($secret);
 }

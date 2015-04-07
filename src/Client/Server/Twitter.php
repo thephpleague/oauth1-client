@@ -43,7 +43,7 @@ class Twitter extends Server
      */
     public function userDetails($data, TokenCredentials $tokenCredentials)
     {
-        $user = new User;
+        $user = new User();
 
         $user->uid = $data['id'];
         $user->nickname = $data['screen_name'];
