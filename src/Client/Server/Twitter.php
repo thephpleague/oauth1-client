@@ -35,7 +35,7 @@ class Twitter extends Server
      */
     public function urlUserDetails()
     {
-        return 'https://api.twitter.com/1.1/account/verify_credentials.json';
+        return 'https://api.twitter.com/1.1/account/verify_credentials.json?include_email=true';
     }
 
     /**
@@ -51,8 +51,12 @@ class Twitter extends Server
         $user->location = $data['location'];
         $user->description = $data['description'];
         $user->imageUrl = $data['profile_image_url'];
+        $user->email = null;
+        if (isset($data['email'])) {
+            $user->email = $data['email'];
+        }
 
-        $used = array('id', 'screen_name', 'name', 'location', 'description', 'profile_image_url');
+        $used = array('id', 'screen_name', 'name', 'location', 'description', 'profile_image_url', 'email');
 
         foreach ($data as $key => $value) {
             if (strpos($key, 'url') !== false) {
