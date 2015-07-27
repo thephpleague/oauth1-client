@@ -238,7 +238,7 @@ abstract class Server
      */
     protected function fetchUserDetails(TokenCredentials $tokenCredentials, $force = true)
     {
-        if (!$this->cachedUserDetailsResponse || $force == true) {
+        if (!$this->cachedUserDetailsResponse || $force) {
             $url = $this->urlUserDetails();
 
             $client = $this->createHttpClient();
