@@ -21,6 +21,27 @@ use League\OAuth1\Client\Credentials\TokenCredentials;
 class Magento extends Server
 {
     /**
+     * Admin url
+     *
+     * @var string
+     */
+    protected $adminUrl;
+
+    /**
+     * Base uri
+     *
+     * @var string
+     */
+    protected $baseUri;
+
+    /**
+     * Server is admin
+     *
+     * @var boolean
+     */
+    protected $isAdmin = false;
+
+    /**
      * oauth_verifier stored for use with.
      *
      * @var string
@@ -144,7 +165,7 @@ class Magento extends Server
      */
     private function parseConfigurationArray(array $configuration = array())
     {
-        if (isset($url['host'])) {
+        if (isset($configuration['host'])) {
             throw new \Exception('Missing Magento Host');
         }
         $url = parse_url($configuration['host']);
