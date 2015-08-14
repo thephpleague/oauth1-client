@@ -7,9 +7,9 @@
         "guzzle/guzzle": "3.*"
     },
     "require-dev": {
-        "phpunit/phpunit": "*",
-        "mockery/mockery": "0.7.2",
-        "satooshi/php-coveralls": "dev-master"
+        "phpunit/phpunit": "~4.0",
+        "mockery/mockery": "~0.9",
+        "squizlabs/php_codesniffer": "~2.0"
     },
     "keywords": [
         "oauth",
