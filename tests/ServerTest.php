@@ -67,6 +67,14 @@ class ServerTest extends PHPUnit_Framework_TestCase
         $this->assertEquals($credentials, $server->getClientCredentials());
     }
 
+    /**
+     * @expectedException InvalidArgumentException
+     **/
+    public function testCreatingWithInvalidInput()
+    {
+        $server = new ServerStub(uniqid());
+    }
+
     public function testGettingTemporaryCredentials()
     {
         $server = m::mock('League\OAuth1\Client\Tests\ServerStub[createHttpClient]', array($this->getMockClientCredentials()));
