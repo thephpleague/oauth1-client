@@ -42,12 +42,12 @@ class XingTest extends PHPUnit_Framework_TestCase
 
     public function testGettingTemporaryCredentials()
     {
-        $server = m::mock('League\OAuth1\Client\Server\Xing[createHttpClient]',array($this->getMockClientCredentials()));
+        $server = m::mock('League\OAuth1\Client\Server\Xing[createHttpClient]', array($this->getMockClientCredentials()));
 
         $server->shouldReceive('createHttpClient')->andReturn($client = m::mock('stdClass'));
 
         $me = $this;
-        $client->shouldReceive('post')->with('https://api.xing.com/v1/request_token', m::on(function($headers) use ($me) {
+        $client->shouldReceive('post')->with('https://api.xing.com/v1/request_token', m::on(function ($headers) use ($me) {
             $me->assertTrue(isset($headers['Authorization']));
 
             // OAuth protocol specifies a strict number of
@@ -98,7 +98,7 @@ class XingTest extends PHPUnit_Framework_TestCase
 
     public function testGettingTokenCredentials()
     {
-        $server = m::mock('League\OAuth1\Client\Server\Xing[createHttpClient]',array($this->getMockClientCredentials()));
+        $server = m::mock('League\OAuth1\Client\Server\Xing[createHttpClient]', array($this->getMockClientCredentials()));
 
         $temporaryCredentials = m::mock('League\OAuth1\Client\Credentials\TemporaryCredentials');
         $temporaryCredentials->shouldReceive('getIdentifier')->andReturn('temporarycredentialsidentifier');
@@ -107,7 +107,7 @@ class XingTest extends PHPUnit_Framework_TestCase
         $server->shouldReceive('createHttpClient')->andReturn($client = m::mock('stdClass'));
 
         $me = $this;
-        $client->shouldReceive('post')->with('https://api.xing.com/v1/access_token', m::on(function($headers) use ($me) {
+        $client->shouldReceive('post')->with('https://api.xing.com/v1/access_token', m::on(function ($headers) use ($me) {
             $me->assertTrue(isset($headers['Authorization']));
 
             // OAuth protocol specifies a strict number of
@@ -132,7 +132,7 @@ class XingTest extends PHPUnit_Framework_TestCase
 
     public function testGettingUserDetails()
     {
-        $server = m::mock('League\OAuth1\Client\Server\Xing[createHttpClient,protocolHeader]',array($this->getMockClientCredentials()));
+        $server = m::mock('League\OAuth1\Client\Server\Xing[createHttpClient,protocolHeader]', array($this->getMockClientCredentials()));
 
         $temporaryCredentials = m::mock('League\OAuth1\Client\Credentials\TokenCredentials');
         $temporaryCredentials->shouldReceive('getIdentifier')->andReturn('tokencredentialsidentifier');
@@ -141,7 +141,7 @@ class XingTest extends PHPUnit_Framework_TestCase
         $server->shouldReceive('createHttpClient')->andReturn($client = m::mock('stdClass'));
 
         $me = $this;
-        $client->shouldReceive('get')->with('https://api.xing.com/v1/users/me', m::on(function($headers) use ($me) {
+        $client->shouldReceive('get')->with('https://api.xing.com/v1/users/me', m::on(function ($headers) use ($me) {
             $me->assertTrue(isset($headers['Authorization']));
 
             // OAuth protocol specifies a strict number of
@@ -192,7 +192,7 @@ class XingTest extends PHPUnit_Framework_TestCase
 
     private function getUserPayload()
     {
-	$user = '{
+        $user = '{
 		"users":[
 			{
 			"id":"17144430_0f9409",
