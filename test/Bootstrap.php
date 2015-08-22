@@ -1,6 +1,6 @@
 <?php
 
-namespace LeagueTests\OAuth2\Client;
+namespace LeagueTests\OAuth1\Client;
 
 error_reporting(E_ALL | E_STRICT);
 chdir(__DIR__);
