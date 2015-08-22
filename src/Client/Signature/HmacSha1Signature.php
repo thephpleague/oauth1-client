@@ -54,8 +54,8 @@ class HmacSha1Signature extends Signature implements SignatureInterface
 
         $schemeHostPath = Url::buildUrl(array(
            'scheme' => $url->getScheme(),
-           'host'   => $url->getHost(),
-           'path'   => $url->getPath(),
+           'host' => $url->getHost(),
+           'path' => $url->getPath(),
         ));
 
         $baseString .= rawurlencode($schemeHostPath).'&';

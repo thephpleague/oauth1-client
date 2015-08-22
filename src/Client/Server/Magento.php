@@ -21,23 +21,23 @@ use League\OAuth1\Client\Credentials\TokenCredentials;
 class Magento extends Server
 {
     /**
-     * Admin url
+     * Admin url.
      *
      * @var string
      */
     protected $adminUrl;
 
     /**
-     * Base uri
+     * Base uri.
      *
      * @var string
      */
     protected $baseUri;
 
     /**
-     * Server is admin
+     * Server is admin.
      *
-     * @var boolean
+     * @var bool
      */
     protected $isAdmin = false;
 
