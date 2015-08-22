@@ -15,6 +15,7 @@ It has built in support for:
 - Trello
 - Tumblr
 - Twitter
+- Xing
 
 Adding support for other providers is trivial. The library requires PHP 5.3+ and is PSR-2 compatible.
 
@@ -132,6 +133,16 @@ $server = new League\OAuth1\Client\Server\Tumblr(array(
 $server = new League\OAuth1\Client\Server\Twitter(array(
     'identifier' => 'your-identifier',
     'secret' => 'your-secret',
+    'callback_uri' => "http://your-callback-uri/",
+));
+```
+
+### Xing
+
+```php
+$server = new League\OAuth1\Client\Server\Xing(array(
+    'identifier' => 'your-consumer-key',
+    'secret' => 'your-consumer-secret',
     'callback_uri' => "http://your-callback-uri/",
 ));
 ```
