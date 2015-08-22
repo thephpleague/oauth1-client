@@ -1,25 +1,18 @@
 <?php
+/**
+ * This file is part of the league/oauth1-client library
+ *
+ * For the full copyright and license information, please view the LICENSE
+ * file that was distributed with this source code.
+ *
+ * @copyright Copyright (c) Ben Corlett <hello@webcomm.io>
+ * @license http://opensource.org/licenses/MIT MIT
+ * @link http://thephpleague.com/oauth1-client/ Documentation
+ * @link https://packagist.org/packages/league/oauth1-client Packagist
+ * @link https://github.com/thephpleague/oauth1-client GitHub
+ */
 
 namespace League\OAuth1\Client\Tests;
-
-/*
- * Part of the Sentry package.
- *
- * NOTICE OF LICENSE
- *
- * Licensed under the 3-clause BSD License.
- *
- * This source file is subject to the 3-clause BSD License that is
- * bundled with this package in the LICENSE file.  It is also available at
- * the following URL: http://www.opensource.org/licenses/BSD-3-Clause
- *
- * @package    Sentry
- * @version    2.0.0
- * @author     Cartalyst LLC
- * @license    BSD License (3-clause)
- * @copyright  (c) 2011 - 2013, Cartalyst LLC
- * @link       http://cartalyst.com
- */
 
 use League\OAuth1\Client\Signature\PlainTextSignature;
 use Mockery as m;

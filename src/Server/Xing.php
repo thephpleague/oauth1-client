@@ -1,4 +1,16 @@
 <?php
+/**
+ * This file is part of the league/oauth1-client library
+ *
+ * For the full copyright and license information, please view the LICENSE
+ * file that was distributed with this source code.
+ *
+ * @copyright Copyright (c) Ben Corlett <hello@webcomm.io>
+ * @license http://opensource.org/licenses/MIT MIT
+ * @link http://thephpleague.com/oauth1-client/ Documentation
+ * @link https://packagist.org/packages/league/oauth1-client Packagist
+ * @link https://github.com/thephpleague/oauth1-client GitHub
+ */
 
 namespace League\OAuth1\Client\Server;
 
@@ -7,7 +19,7 @@ use League\OAuth1\Client\Credentials\TokenCredentials;
 class Xing extends Server
 {
     const XING_API_ENDPOINT = 'https://api.xing.com';
-    
+
     /**
     * {@inheritDoc}
     */
@@ -45,7 +57,7 @@ class Xing extends Server
             throw new \Exception('Not possible to get user info');
         }
         $data = $data['users'][0];
-        
+
         $user = new User();
         $user->uid = $data['id'];
         $user->nickname = $data['display_name'];
@@ -53,16 +65,16 @@ class Xing extends Server
         $user->firstName = $data['first_name'];
         $user->lastName = $data['last_name'];
         $user->location = $data['private_address']['country'];
-        
+
         if ($user->location == '') {
             $user->location = $data['business_address']['country'];
         }
         $user->description = $data['employment_status'];
         $user->imageUrl = $data['photo_urls']['maxi_thumb'];
         $user->email = $data['active_email'];
-        
+
         $user->urls['permalink'] = $data['permalink'];
-        
+
         return $user;
     }
     /**
