@@ -128,7 +128,8 @@ abstract class Server
         $url = $this->getAuthorizationUrl($temporaryIdentifier);
 
         header('Location: '.$url);
-        exit;
+
+        return;
     }
 
     /**
@@ -237,7 +238,7 @@ abstract class Server
      */
     protected function fetchUserDetails(TokenCredentials $tokenCredentials, $force = true)
     {
-        if (!$this->cachedUserDetailsResponse || $force == true) {
+        if (!$this->cachedUserDetailsResponse || $force) {
             $url = $this->urlUserDetails();
 
             $client = $this->createHttpClient();

@@ -41,6 +41,7 @@ class PlainTextSignatureTest extends PHPUnit_Framework_TestCase
 
         $signature->setCredentials($this->getMockCredentials());
         $this->assertEquals('clientsecret&tokensecret', $signature->sign($uri));
+        $this->assertEquals('PLAINTEXT', $signature->method());
     }
 
     protected function getMockClientCredentials()
