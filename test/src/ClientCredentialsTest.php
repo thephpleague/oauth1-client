@@ -1,5 +1,8 @@
-<?php namespace League\OAuth1\Client\Tests;
-/**
+<?php
+
+namespace League\OAuth1\Client\Tests;
+
+/*
  * Part of the Sentry package.
  *
  * NOTICE OF LICENSE
@@ -26,8 +29,6 @@ class ClientCredentialsTest extends PHPUnit_Framework_TestCase
 {
     /**
      * Close mockery.
-     *
-     * @return void
      */
     public function tearDown()
     {
@@ -36,7 +37,7 @@ class ClientCredentialsTest extends PHPUnit_Framework_TestCase
 
     public function testManipulating()
     {
-        $credentials = new ClientCredentials;
+        $credentials = new ClientCredentials();
         $this->assertNull($credentials->getIdentifier());
         $credentials->setIdentifier('foo');
         $this->assertEquals('foo', $credentials->getIdentifier());

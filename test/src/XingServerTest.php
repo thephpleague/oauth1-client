@@ -1,16 +1,16 @@
-<?php namespace League\OAuth1\Client\Tests;
+<?php
+
+namespace League\OAuth1\Client\Tests;
 
 use League\OAuth1\Client\Server\Xing;
 use League\OAuth1\Client\Credentials\ClientCredentials;
 use Mockery as m;
 use PHPUnit_Framework_TestCase;
 
-class XingTest extends PHPUnit_Framework_TestCase
+class XingServerTest extends PHPUnit_Framework_TestCase
 {
     /**
      * Close mockery.
-     *
-     * @return void
      */
     public function tearDown()
     {
@@ -30,7 +30,7 @@ class XingTest extends PHPUnit_Framework_TestCase
 
     public function testCreatingWithObject()
     {
-        $credentials = new ClientCredentials;
+        $credentials = new ClientCredentials();
         $credentials->setIdentifier('myidentifier');
         $credentials->setSecret('mysecret');
         $credentials->setCallbackUri('http://app.dev/');
@@ -249,6 +249,7 @@ class XingTest extends PHPUnit_Framework_TestCase
 				},
 			"premium_services":[]
 			}]}';
+
         return json_decode($user, true);
     }
 }

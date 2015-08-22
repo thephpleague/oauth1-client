@@ -1,16 +1,16 @@
-<?php namespace League\OAuth1\Client\Tests;
+<?php
+
+namespace League\OAuth1\Client\Tests;
 
 use League\OAuth1\Client\Server\Trello;
 use League\OAuth1\Client\Credentials\ClientCredentials;
 use Mockery as m;
 use PHPUnit_Framework_TestCase;
 
-class TrelloTest extends PHPUnit_Framework_TestCase
+class TrelloServerTest extends PHPUnit_Framework_TestCase
 {
     /**
      * Close mockery.
-     *
-     * @return void
      */
     public function tearDown()
     {
@@ -30,7 +30,7 @@ class TrelloTest extends PHPUnit_Framework_TestCase
 
     public function testCreatingWithObject()
     {
-        $credentials = new ClientCredentials;
+        $credentials = new ClientCredentials();
         $credentials->setIdentifier('myidentifier');
         $credentials->setSecret('mysecret');
         $credentials->setCallbackUri('http://app.dev/');
@@ -47,7 +47,7 @@ class TrelloTest extends PHPUnit_Framework_TestCase
         $server->shouldReceive('createHttpClient')->andReturn($client = m::mock('stdClass'));
 
         $me = $this;
-        $client->shouldReceive('post')->with('https://trello.com/1/OAuthGetRequestToken', m::on(function($headers) use ($me) {
+        $client->shouldReceive('post')->with('https://trello.com/1/OAuthGetRequestToken', m::on(function ($headers) use ($me) {
             $me->assertTrue(isset($headers['Authorization']));
 
             // OAuth protocol specifies a strict number of
@@ -200,7 +200,7 @@ class TrelloTest extends PHPUnit_Framework_TestCase
         $server->shouldReceive('createHttpClient')->andReturn($client = m::mock('stdClass'));
 
         $me = $this;
-        $client->shouldReceive('post')->with('https://trello.com/1/OAuthGetAccessToken', m::on(function($headers) use ($me) {
+        $client->shouldReceive('post')->with('https://trello.com/1/OAuthGetAccessToken', m::on(function ($headers) use ($me) {
             $me->assertTrue(isset($headers['Authorization']));
 
             // OAuth protocol specifies a strict number of
@@ -234,7 +234,7 @@ class TrelloTest extends PHPUnit_Framework_TestCase
         $server->shouldReceive('createHttpClient')->andReturn($client = m::mock('stdClass'));
 
         $me = $this;
-        $client->shouldReceive('get')->with('https://trello.com/1/members/me?key='.$this->getApplicationKey().'&token='.$this->getAccessToken(), m::on(function($headers) use ($me) {
+        $client->shouldReceive('get')->with('https://trello.com/1/members/me?key='.$this->getApplicationKey().'&token='.$this->getAccessToken(), m::on(function ($headers) use ($me) {
             $me->assertTrue(isset($headers['Authorization']));
 
             // OAuth protocol specifies a strict number of
@@ -342,6 +342,7 @@ class TrelloTest extends PHPUnit_Framework_TestCase
             "premiumFeatures": [],
             "idBoardsPinned": null
         }';
+
         return json_decode($user, true);
     }
 }

@@ -1,5 +1,8 @@
-<?php namespace League\OAuth1\Client\Tests;
-/**
+<?php
+
+namespace League\OAuth1\Client\Tests;
+
+/*
  * Part of the Sentry package.
  *
  * NOTICE OF LICENSE
@@ -26,8 +29,6 @@ class ServerTest extends PHPUnit_Framework_TestCase
 {
     /**
      * Setup resources and dependencies.
-     *
-     * @return void
      */
     public static function setUpBeforeClass()
     {
@@ -36,8 +37,6 @@ class ServerTest extends PHPUnit_Framework_TestCase
 
     /**
      * Close mockery.
-     *
-     * @return void
      */
     public function tearDown()
     {
@@ -57,7 +56,7 @@ class ServerTest extends PHPUnit_Framework_TestCase
 
     public function testCreatingWithObject()
     {
-        $credentials = new ClientCredentials;
+        $credentials = new ClientCredentials();
         $credentials->setIdentifier('myidentifier');
         $credentials->setSecret('mysecret');
         $credentials->setCallbackUri('http://app.dev/');
@@ -82,7 +81,7 @@ class ServerTest extends PHPUnit_Framework_TestCase
         $server->shouldReceive('createHttpClient')->andReturn($client = m::mock('stdClass'));
 
         $me = $this;
-        $client->shouldReceive('post')->with('http://www.example.com/temporary', m::on(function($headers) use ($me) {
+        $client->shouldReceive('post')->with('http://www.example.com/temporary', m::on(function ($headers) use ($me) {
             $me->assertTrue(isset($headers['Authorization']));
 
             // OAuth protocol specifies a strict number of
@@ -142,7 +141,7 @@ class ServerTest extends PHPUnit_Framework_TestCase
         $server->shouldReceive('createHttpClient')->andReturn($client = m::mock('stdClass'));
 
         $me = $this;
-        $client->shouldReceive('post')->with('http://www.example.com/token', m::on(function($headers) use ($me) {
+        $client->shouldReceive('post')->with('http://www.example.com/token', m::on(function ($headers) use ($me) {
             $me->assertTrue(isset($headers['Authorization']));
             $me->assertFalse(isset($headers['User-Agent']));
 
@@ -178,7 +177,7 @@ class ServerTest extends PHPUnit_Framework_TestCase
         $server->shouldReceive('createHttpClient')->andReturn($client = m::mock('stdClass'));
 
         $me = $this;
-        $client->shouldReceive('post')->with('http://www.example.com/token', m::on(function($headers) use ($me, $userAgent) {
+        $client->shouldReceive('post')->with('http://www.example.com/token', m::on(function ($headers) use ($me, $userAgent) {
             $me->assertTrue(isset($headers['Authorization']));
             $me->assertTrue(isset($headers['User-Agent']));
             $me->assertEquals($userAgent, $headers['User-Agent']);
@@ -201,7 +200,6 @@ class ServerTest extends PHPUnit_Framework_TestCase
         $this->assertInstanceOf('League\OAuth1\Client\Credentials\TokenCredentials', $credentials);
         $this->assertEquals('tokencredentialsidentifier', $credentials->getIdentifier());
         $this->assertEquals('tokencredentialssecret', $credentials->getSecret());
-
     }
 
     public function testGettingUserDetails()
@@ -215,7 +213,7 @@ class ServerTest extends PHPUnit_Framework_TestCase
         $server->shouldReceive('createHttpClient')->andReturn($client = m::mock('stdClass'));
 
         $me = $this;
-        $client->shouldReceive('get')->with('http://www.example.com/user', m::on(function($headers) use ($me) {
+        $client->shouldReceive('get')->with('http://www.example.com/user', m::on(function ($headers) use ($me) {
             $me->assertTrue(isset($headers['Authorization']));
 
             // OAuth protocol specifies a strict number of

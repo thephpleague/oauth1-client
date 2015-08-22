@@ -1,5 +1,8 @@
-<?php namespace League\OAuth1\Client\Tests;
-/**
+<?php
+
+namespace League\OAuth1\Client\Tests;
+
+/*
  * Part of the Sentry package.
  *
  * NOTICE OF LICENSE
@@ -26,8 +29,6 @@ class PlainTextSignatureTest extends PHPUnit_Framework_TestCase
 {
     /**
      * Close mockery.
-     *
-     * @return void
      */
     public function tearDown()
     {
@@ -48,6 +49,7 @@ class PlainTextSignatureTest extends PHPUnit_Framework_TestCase
     {
         $clientCredentials = m::mock('League\OAuth1\Client\Credentials\ClientCredentialsInterface');
         $clientCredentials->shouldReceive('getSecret')->andReturn('clientsecret');
+
         return $clientCredentials;
     }
 
@@ -55,6 +57,7 @@ class PlainTextSignatureTest extends PHPUnit_Framework_TestCase
     {
         $credentials = m::mock('League\OAuth1\Client\Credentials\CredentialsInterface');
         $credentials->shouldReceive('getSecret')->andReturn('tokensecret');
+
         return $credentials;
     }
 }
