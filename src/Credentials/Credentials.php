@@ -14,7 +14,7 @@
 
 namespace League\OAuth1\Client\Credentials;
 
-abstract class Credentials implements CredentialsInterface
+abstract class Credentials
 {
     /**
      * The credentials identifier.
@@ -31,6 +31,18 @@ abstract class Credentials implements CredentialsInterface
     protected $secret;
 
     /**
+     * Create a new credentials instance.
+     *
+     * @param string $identifier
+     * @param string $secret
+     */
+    public function __construct($identifier, $secret)
+    {
+        $this->identifier = (string) $identifier;
+        $this->secret = (string) $secret;
+    }
+
+    /**
      * {@inheritDoc}
      */
     public function getIdentifier()
@@ -41,24 +53,8 @@ abstract class Credentials implements CredentialsInterface
     /**
      * {@inheritDoc}
      */
-    public function setIdentifier($identifier)
-    {
-        $this->identifier = $identifier;
-    }
-
-    /**
-     * {@inheritDoc}
-     */
     public function getSecret()
     {
         return $this->secret;
-    }
-
-    /**
-     * {@inheritDoc}
-     */
-    public function setSecret($secret)
-    {
-        $this->secret = $secret;
     }
 }

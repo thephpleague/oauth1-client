@@ -30,12 +30,8 @@ class ClientCredentialsTest extends PHPUnit_Framework_TestCase
 
     public function testManipulating()
     {
-        $credentials = new ClientCredentials();
-        $this->assertNull($credentials->getIdentifier());
-        $credentials->setIdentifier('foo');
+        $credentials = new ClientCredentials('foo', 'bar');
         $this->assertEquals('foo', $credentials->getIdentifier());
-        $this->assertNull($credentials->getSecret());
-        $credentials->setSecret('foo');
-        $this->assertEquals('foo', $credentials->getSecret());
+        $this->assertEquals('bar', $credentials->getSecret());
     }
 }

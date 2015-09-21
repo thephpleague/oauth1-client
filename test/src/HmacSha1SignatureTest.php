@@ -40,7 +40,7 @@ class HmacSha1SignatureTest extends PHPUnit_Framework_TestCase
 
     protected function getMockClientCredentials()
     {
-        $clientCredentials = m::mock('League\OAuth1\Client\Credentials\ClientCredentialsInterface');
+        $clientCredentials = m::mock('League\OAuth1\Client\Credentials\ClientCredentials');
         $clientCredentials->shouldReceive('getSecret')->andReturn('clientsecret');
 
         return $clientCredentials;

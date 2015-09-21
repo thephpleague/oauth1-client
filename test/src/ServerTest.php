@@ -41,7 +41,7 @@ class ServerTest extends PHPUnit_Framework_TestCase
         $server = new ServerStub($this->getMockClientCredentials());
 
         $credentials = $server->getClientCredentials();
-        $this->assertInstanceOf('League\OAuth1\Client\Credentials\ClientCredentialsInterface', $credentials);
+        $this->assertInstanceOf('League\OAuth1\Client\Credentials\ClientCredentials', $credentials);
         $this->assertEquals('myidentifier', $credentials->getIdentifier());
         $this->assertEquals('mysecret', $credentials->getSecret());
         $this->assertEquals('http://app.dev/', $credentials->getCallbackUri());
@@ -49,10 +49,7 @@ class ServerTest extends PHPUnit_Framework_TestCase
 
     public function testCreatingWithObject()
     {
-        $credentials = new ClientCredentials();
-        $credentials->setIdentifier('myidentifier');
-        $credentials->setSecret('mysecret');
-        $credentials->setCallbackUri('http://app.dev/');
+        $credentials = new ClientCredentials('myidentifier', 'mysecret', 'http://app.dev/');
 
         $server = new ServerStub($credentials);
 

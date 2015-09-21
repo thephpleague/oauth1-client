@@ -14,7 +14,7 @@
 
 namespace League\OAuth1\Client\Credentials;
 
-class ClientCredentials extends Credentials implements ClientCredentialsInterface
+class ClientCredentials extends Credentials
 {
     /**
      * The credentials callback URI.
@@ -24,18 +24,25 @@ class ClientCredentials extends Credentials implements ClientCredentialsInterfac
     protected $callbackUri;
 
     /**
-     * {@inheritDoc}
+     * Create a new client credentials instance.
+     *
+     * @param string $identifier
+     * @param string $secret
      */
-    public function getCallbackUri()
+    public function __construct($identifier, $secret, $callbackUri = null)
     {
-        return $this->callbackUri;
+        parent::__construct($identifier, $secret);
+
+        if ($callbackUri !== null) {
+            $this->callbackUri = (string) $callbackUri;
+        }
     }
 
     /**
      * {@inheritDoc}
      */
-    public function setCallbackUri($callbackUri)
+    public function getCallbackUri()
     {
-        $this->callbackUri = $callbackUri;
+        return $this->callbackUri;
     }
 }

@@ -14,17 +14,17 @@
 
 namespace League\OAuth1\Client\Signature;
 
-use League\OAuth1\Client\Credentials\ClientCredentialsInterface;
-use League\OAuth1\Client\Credentials\CredentialsInterface;
+use League\OAuth1\Client\Credentials\ClientCredentials;
+use League\OAuth1\Client\Credentials\Credentials;
 
 interface SignatureInterface
 {
     /**
      * Create a new signature instance.
      *
-     * @param ClientCredentialsInterface $clientCredentials
+     * @param ClientCredentials $clientCredentials
      */
-    public function __construct(ClientCredentialsInterface $clientCredentials);
+    public function __construct(ClientCredentials $clientCredentials);
 
     /**
      * Set the credentials used in the signature. These can be temporary
@@ -32,9 +32,9 @@ interface SignatureInterface
      * authentication process, or token credentials when querying
      * the API.
      *
-     * @param CredentialsInterface $credentials
+     * @param Credentials $credentials
      */
-    public function setCredentials(CredentialsInterface $credentials);
+    public function setCredentials(Credentials $credentials);
 
     /**
      * Get the OAuth signature method.

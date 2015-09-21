@@ -16,9 +16,8 @@ namespace League\OAuth1\Client\Server;
 
 use Guzzle\Service\Client as GuzzleClient;
 use Guzzle\Http\Exception\BadResponseException;
-use League\OAuth1\Client\Credentials\ClientCredentialsInterface;
 use League\OAuth1\Client\Credentials\ClientCredentials;
-use League\OAuth1\Client\Credentials\CredentialsInterface;
+use League\OAuth1\Client\Credentials\Credentials;
 use League\OAuth1\Client\Credentials\CredentialsException;
 use League\OAuth1\Client\Credentials\TemporaryCredentials;
 use League\OAuth1\Client\Credentials\TokenCredentials;
@@ -65,7 +64,7 @@ abstract class Server
     /**
      * Create a new server instance.
      *
-     * @param ClientCredentialsInterface|array $clientCredentials
+     * @param ClientCredentials|array $clientCredentials
      * @param SignatureInterface               $signature
      */
     public function __construct($clientCredentials, SignatureInterface $signature = null)
@@ -73,7 +72,7 @@ abstract class Server
         // Pass through an array or client credentials, we don't care
         if (is_array($clientCredentials)) {
             $clientCredentials = $this->createClientCredentials($clientCredentials);
-        } elseif (!$clientCredentials instanceof ClientCredentialsInterface) {
+        } elseif (!$clientCredentials instanceof ClientCredentials) {
             throw new \InvalidArgumentException('Client credentials must be an array or valid object.');
         }
 
@@ -293,7 +292,7 @@ abstract class Server
     /**
      * Get the client credentials associated with the server.
      *
-     * @return ClientCredentialsInterface
+     * @return ClientCredentials
      */
     public function getClientCredentials()
     {
@@ -337,14 +336,14 @@ abstract class Server
     /**
      * Get all headers required to created an authenticated request.
      *
-     * @param CredentialsInterface $credentials
+     * @param Credentials $credentials
      * @param string               $method
      * @param string               $url
      * @param array                $bodyParameters
      *
      * @return array
      */
-    public function getHeaders(CredentialsInterface $credentials, $method, $url, array $bodyParameters = array())
+    public function getHeaders(Credentials $credentials, $method, $url, array $bodyParameters = array())
     {
         $header = $this->protocolHeader(strtoupper($method), $url, $credentials, $bodyParameters);
         $authorizationHeader = array('Authorization' => $header);
@@ -397,13 +396,11 @@ abstract class Server
             }
         }
 
-        $_clientCredentials = new ClientCredentials();
-        $_clientCredentials->setIdentifier($clientCredentials['identifier']);
-        $_clientCredentials->setSecret($clientCredentials['secret']);
-
-        if (isset($clientCredentials['callback_uri'])) {
-            $_clientCredentials->setCallbackUri($clientCredentials['callback_uri']);
-        }
+        $_clientCredentials = new ClientCredentials(
+            $clientCredentials['identifier'],
+            $clientCredentials['secret'],
+            $clientCredentials['callback_uri']
+        );
 
         return $_clientCredentials;
     }
@@ -445,9 +442,10 @@ abstract class Server
             throw new CredentialsException('Error in retrieving temporary credentials.');
         }
 
-        $temporaryCredentials = new TemporaryCredentials();
-        $temporaryCredentials->setIdentifier($data['oauth_token']);
-        $temporaryCredentials->setSecret($data['oauth_token_secret']);
+        $temporaryCredentials = new TemporaryCredentials(
+            $data['oauth_token'],
+            $data['oauth_token_secret']
+        );
 
         return $temporaryCredentials;
     }
@@ -489,9 +487,10 @@ abstract class Server
             throw new CredentialsException("Error [{$data['error']}] in retrieving token credentials.");
         }
 
-        $tokenCredentials = new TokenCredentials();
-        $tokenCredentials->setIdentifier($data['oauth_token']);
-        $tokenCredentials->setSecret($data['oauth_token_secret']);
+        $tokenCredentials = new TokenCredentials(
+            $data['oauth_token'],
+            $data['oauth_token_secret']
+        );
 
         return $tokenCredentials;
     }
@@ -554,12 +553,12 @@ abstract class Server
      *
      * @param string               $method
      * @param string               $uri
-     * @param CredentialsInterface $credentials
+     * @param Credentials $credentials
      * @param array                $bodyParameters
      *
      * @return string
      */
-    protected function protocolHeader($method, $uri, CredentialsInterface $credentials, array $bodyParameters = array())
+    protected function protocolHeader($method, $uri, Credentials $credentials, array $bodyParameters = array())
     {
         $parameters = array_merge(
             $this->baseProtocolParameters(),

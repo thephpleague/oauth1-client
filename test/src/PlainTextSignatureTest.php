@@ -40,7 +40,7 @@ class PlainTextSignatureTest extends PHPUnit_Framework_TestCase
 
     protected function getMockClientCredentials()
     {
-        $clientCredentials = m::mock('League\OAuth1\Client\Credentials\ClientCredentialsInterface');
+        $clientCredentials = m::mock('League\OAuth1\Client\Credentials\ClientCredentials');
         $clientCredentials->shouldReceive('getSecret')->andReturn('clientsecret');
 
         return $clientCredentials;
@@ -48,7 +48,7 @@ class PlainTextSignatureTest extends PHPUnit_Framework_TestCase
 
     protected function getMockCredentials()
     {
-        $credentials = m::mock('League\OAuth1\Client\Credentials\CredentialsInterface');
+        $credentials = m::mock('League\OAuth1\Client\Credentials\Credentials');
         $credentials->shouldReceive('getSecret')->andReturn('tokensecret');
 
         return $credentials;

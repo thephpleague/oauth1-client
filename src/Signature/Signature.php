@@ -14,29 +14,29 @@
 
 namespace League\OAuth1\Client\Signature;
 
-use League\OAuth1\Client\Credentials\ClientCredentialsInterface;
-use League\OAuth1\Client\Credentials\CredentialsInterface;
+use League\OAuth1\Client\Credentials\ClientCredentials;
+use League\OAuth1\Client\Credentials\Credentials;
 
 abstract class Signature implements SignatureInterface
 {
     /**
      * The client credentials.
      *
-     * @var ClientCredentialsInterface
+     * @var ClientCredentials
      */
     protected $clientCredentials;
 
     /**
      * The (temporary or token) credentials.
      *
-     * @var CredentialsInterface
+     * @var Credentials
      */
     protected $credentials;
 
     /**
      * {@inheritDoc}
      */
-    public function __construct(ClientCredentialsInterface $clientCredentials)
+    public function __construct(ClientCredentials $clientCredentials)
     {
         $this->clientCredentials = $clientCredentials;
     }
@@ -44,7 +44,7 @@ abstract class Signature implements SignatureInterface
     /**
      * {@inheritDoc}
      */
-    public function setCredentials(CredentialsInterface $credentials)
+    public function setCredentials(Credentials $credentials)
     {
         $this->credentials = $credentials;
     }
