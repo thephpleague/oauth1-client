@@ -58,12 +58,12 @@ class ServerTest extends PHPUnit_Framework_TestCase
 
     public function testGettingTemporaryCredentials()
     {
-        $server = m::mock('League\OAuth1\Client\Test\Server\Fake[createHttpClient]', array($this->getMockClientCredentials()));
+        $server = m::mock('League\OAuth1\Client\Test\Server\Fake[getRequestFactory,getHttpClient]', array($this->getMockClientCredentials()));
 
-        $server->shouldReceive('createHttpClient')->andReturn($client = m::mock('stdClass'));
+        $server->shouldReceive('getRequestFactory')->andReturn($requestFactory = m::mock('stdClass'));
 
         $me = $this;
-        $client->shouldReceive('post')->with('http://www.example.com/temporary', m::on(function ($headers) use ($me) {
+        $requestFactory->shouldReceive('getRequest')->with('GET', 'http://www.example.com/temporary', m::on(function ($headers) use ($me) {
             $me->assertTrue(isset($headers['Authorization']));
 
             // OAuth protocol specifies a strict number of
@@ -77,7 +77,8 @@ class ServerTest extends PHPUnit_Framework_TestCase
             return true;
         }))->once()->andReturn($request = m::mock('stdClass'));
 
-        $request->shouldReceive('send')->once()->andReturn($response = m::mock('stdClass'));
+        $server->shouldReceive('getHttpClient')->andReturn($httpClient = m::mock('stdClass'));
+        $httpClient->shouldReceive('send')->with($request)->once()->andReturn($response = m::mock('stdClass'));
         $response->shouldReceive('getBody')->andReturn('oauth_token=temporarycredentialsidentifier&oauth_token_secret=temporarycredentialssecret&oauth_callback_confirmed=true');
 
         $credentials = $server->getTemporaryCredentials();
@@ -114,16 +115,16 @@ class ServerTest extends PHPUnit_Framework_TestCase
 
     public function testGettingTokenCredentials()
     {
-        $server = m::mock('League\OAuth1\Client\Test\Server\Fake[createHttpClient]', array($this->getMockClientCredentials()));
+        $server = m::mock('League\OAuth1\Client\Test\Server\Fake[getRequestFactory,getHttpClient]', array($this->getMockClientCredentials()));
 
         $temporaryCredentials = m::mock('League\OAuth1\Client\Credentials\TemporaryCredentials');
         $temporaryCredentials->shouldReceive('getIdentifier')->andReturn('temporarycredentialsidentifier');
         $temporaryCredentials->shouldReceive('getSecret')->andReturn('temporarycredentialssecret');
 
-        $server->shouldReceive('createHttpClient')->andReturn($client = m::mock('stdClass'));
+        $server->shouldReceive('getRequestFactory')->andReturn($requestFactory = m::mock('stdClass'));
 
         $me = $this;
-        $client->shouldReceive('post')->with('http://www.example.com/token', m::on(function ($headers) use ($me) {
+        $requestFactory->shouldReceive('getRequest')->with('POST', 'http://www.example.com/token', m::on(function ($headers) use ($me) {
             $me->assertTrue(isset($headers['Authorization']));
             $me->assertFalse(isset($headers['User-Agent']));
 
@@ -138,7 +139,8 @@ class ServerTest extends PHPUnit_Framework_TestCase
             return true;
         }), array('oauth_verifier' => 'myverifiercode'))->once()->andReturn($request = m::mock('stdClass'));
 
-        $request->shouldReceive('send')->once()->andReturn($response = m::mock('stdClass'));
+        $server->shouldReceive('getHttpClient')->andReturn($httpClient = m::mock('stdClass'));
+        $httpClient->shouldReceive('send')->with($request)->once()->andReturn($response = m::mock('stdClass'));
         $response->shouldReceive('getBody')->andReturn('oauth_token=tokencredentialsidentifier&oauth_token_secret=tokencredentialssecret');
 
         $credentials = $server->getTokenCredentials($temporaryCredentials, 'temporarycredentialsidentifier', 'myverifiercode');
@@ -150,16 +152,16 @@ class ServerTest extends PHPUnit_Framework_TestCase
     public function testGettingTokenCredentialsWithUserAgent()
     {
         $userAgent = 'FooBar';
-        $server = m::mock('League\OAuth1\Client\Test\Server\Fake[createHttpClient]', array($this->getMockClientCredentials()));
+        $server = m::mock('League\OAuth1\Client\Test\Server\Fake[getRequestFactory,getHttpClient]', array($this->getMockClientCredentials()));
 
         $temporaryCredentials = m::mock('League\OAuth1\Client\Credentials\TemporaryCredentials');
         $temporaryCredentials->shouldReceive('getIdentifier')->andReturn('temporarycredentialsidentifier');
         $temporaryCredentials->shouldReceive('getSecret')->andReturn('temporarycredentialssecret');
 
-        $server->shouldReceive('createHttpClient')->andReturn($client = m::mock('stdClass'));
+        $server->shouldReceive('getRequestFactory')->andReturn($requestFactory = m::mock('stdClass'));
 
         $me = $this;
-        $client->shouldReceive('post')->with('http://www.example.com/token', m::on(function ($headers) use ($me, $userAgent) {
+        $requestFactory->shouldReceive('getRequest')->with('POST', 'http://www.example.com/token', m::on(function ($headers) use ($me, $userAgent) {
             $me->assertTrue(isset($headers['Authorization']));
             $me->assertTrue(isset($headers['User-Agent']));
             $me->assertEquals($userAgent, $headers['User-Agent']);
@@ -175,7 +177,8 @@ class ServerTest extends PHPUnit_Framework_TestCase
             return true;
         }), array('oauth_verifier' => 'myverifiercode'))->once()->andReturn($request = m::mock('stdClass'));
 
-        $request->shouldReceive('send')->once()->andReturn($response = m::mock('stdClass'));
+        $server->shouldReceive('getHttpClient')->andReturn($httpClient = m::mock('stdClass'));
+        $httpClient->shouldReceive('send')->with($request)->once()->andReturn($response = m::mock('stdClass'));
         $response->shouldReceive('getBody')->andReturn('oauth_token=tokencredentialsidentifier&oauth_token_secret=tokencredentialssecret');
 
         $credentials = $server->setUserAgent($userAgent)->getTokenCredentials($temporaryCredentials, 'temporarycredentialsidentifier', 'myverifiercode');
@@ -186,16 +189,16 @@ class ServerTest extends PHPUnit_Framework_TestCase
 
     public function testGettingUserDetails()
     {
-        $server = m::mock('League\OAuth1\Client\Test\Server\Fake[createHttpClient,protocolHeader]', array($this->getMockClientCredentials()));
+        $server = m::mock('League\OAuth1\Client\Test\Server\Fake[getRequestFactory,getHttpClient,protocolHeader]', array($this->getMockClientCredentials()));
 
         $temporaryCredentials = m::mock('League\OAuth1\Client\Credentials\TokenCredentials');
         $temporaryCredentials->shouldReceive('getIdentifier')->andReturn('tokencredentialsidentifier');
         $temporaryCredentials->shouldReceive('getSecret')->andReturn('tokencredentialssecret');
 
-        $server->shouldReceive('createHttpClient')->andReturn($client = m::mock('stdClass'));
+        $server->shouldReceive('getRequestFactory')->andReturn($requestFactory = m::mock('stdClass'));
 
         $me = $this;
-        $client->shouldReceive('get')->with('http://www.example.com/user', m::on(function ($headers) use ($me) {
+        $requestFactory->shouldReceive('getRequest')->with('GET', 'http://www.example.com/user', m::on(function ($headers) use ($me) {
             $me->assertTrue(isset($headers['Authorization']));
 
             // OAuth protocol specifies a strict number of
@@ -209,8 +212,9 @@ class ServerTest extends PHPUnit_Framework_TestCase
             return true;
         }))->once()->andReturn($request = m::mock('stdClass'));
 
-        $request->shouldReceive('send')->once()->andReturn($response = m::mock('stdClass'));
-        $response->shouldReceive('json')->once()->andReturn(array('foo' => 'bar', 'id' => 123, 'contact_email' => 'baz@qux.com', 'username' => 'fred'));
+        $server->shouldReceive('getHttpClient')->andReturn($httpClient = m::mock('stdClass'));
+        $httpClient->shouldReceive('send')->with($request)->once()->andReturn($response = m::mock('stdClass'));
+        $response->shouldReceive('getBody')->once()->andReturn(json_encode(['foo' => 'bar', 'id' => 123, 'contact_email' => 'baz@qux.com', 'username' => 'fred']));
 
         $user = $server->getUserDetails($temporaryCredentials);
         $this->assertInstanceOf('League\OAuth1\Client\Server\User', $user);

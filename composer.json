@@ -4,7 +4,6 @@
     "license": "MIT",
     "require": {
         "php": ">=5.5.0",
-        "guzzle/guzzle": "^3.9",
         "guzzlehttp/guzzle": "^6.0",
         "ircmaxell/random-lib": "^1.1"
     },

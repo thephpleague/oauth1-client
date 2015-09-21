@@ -14,8 +14,8 @@
 
 namespace League\OAuth1\Client\Server;
 
-use Guzzle\Service\Client as GuzzleClient;
-use Guzzle\Http\Exception\BadResponseException;
+use GuzzleHttp\Client as HttpClient;
+use GuzzleHttp\Exception\BadResponseException;
 use League\OAuth1\Client\Credentials\ClientCredentials;
 use League\OAuth1\Client\Credentials\Credentials;
 use League\OAuth1\Client\Credentials\CredentialsException;
@@ -23,6 +23,7 @@ use League\OAuth1\Client\Credentials\TemporaryCredentials;
 use League\OAuth1\Client\Credentials\TokenCredentials;
 use League\OAuth1\Client\Signature\HmacSha1Signature;
 use League\OAuth1\Client\Signature\SignatureInterface;
+use League\OAuth1\Client\Tool\RequestFactory;
 
 abstract class Server
 {
@@ -39,6 +40,16 @@ abstract class Server
      * @var SignatureInterface
      */
     protected $signature;
+
+    /**
+     * @var RequestFactory
+     */
+    protected $requestFactory;
+
+    /**
+     * @var HttpClientInterface
+     */
+    protected $httpClient;
 
     /**
      * The response type for data returned from API calls.
@@ -78,6 +89,9 @@ abstract class Server
 
         $this->clientCredentials = $clientCredentials;
         $this->signature = $signature ?: new HmacSha1Signature($clientCredentials);
+
+        $this->requestFactory = new RequestFactory();
+        $this->httpClient = new HttpClient();
     }
 
     /**
@@ -90,14 +104,17 @@ abstract class Server
     {
         $uri = $this->urlTemporaryCredentials();
 
-        $client = $this->createHttpClient();
-
         $header = $this->temporaryCredentialsProtocolHeader($uri);
         $authorizationHeader = array('Authorization' => $header);
         $headers = $this->buildHttpClientHeaders($authorizationHeader);
 
         try {
-            $response = $client->post($uri, $headers)->send();
+            $request = $this->getRequestFactory()->getRequest(
+                'GET',
+                $uri,
+                $headers
+            );
+            $response = $this->getHttpClient()->send($request);
         } catch (BadResponseException $e) {
             return $this->handleTemporaryCredentialsBadResponse($e);
         }
@@ -166,12 +183,16 @@ abstract class Server
         $uri = $this->urlTokenCredentials();
         $bodyParameters = array('oauth_verifier' => $verifier);
 
-        $client = $this->createHttpClient();
-
         $headers = $this->getHeaders($temporaryCredentials, 'POST', $uri, $bodyParameters);
 
         try {
-            $response = $client->post($uri, $headers, $bodyParameters)->send();
+            $request = $this->getRequestFactory()->getRequest(
+                'POST',
+                $uri,
+                $headers,
+                $bodyParameters
+            );
+            $response = $this->getHttpClient()->send($request);
         } catch (BadResponseException $e) {
             return $this->handleTokenCredentialsBadResponse($e);
         }
@@ -250,14 +271,17 @@ abstract class Server
     protected function fetchUserDetails(TokenCredentials $tokenCredentials, $force = true)
     {
         if (!$this->cachedUserDetailsResponse || $force) {
-            $url = $this->urlUserDetails();
+            $uri = $this->urlUserDetails();
 
-            $client = $this->createHttpClient();
-
-            $headers = $this->getHeaders($tokenCredentials, 'GET', $url);
+            $headers = $this->getHeaders($tokenCredentials, 'GET', $uri);
 
             try {
-                $response = $client->get($url, $headers)->send();
+                $request = $this->getRequestFactory()->getRequest(
+                    'GET',
+                    $uri,
+                    $headers
+                );
+                $response = $this->getHttpClient()->send($request);
             } catch (BadResponseException $e) {
                 $response = $e->getResponse();
                 $body = $response->getBody();
@@ -270,11 +294,11 @@ abstract class Server
 
             switch ($this->responseType) {
                 case 'json':
-                    $this->cachedUserDetailsResponse = $response->json();
+                    $this->cachedUserDetailsResponse = json_decode((string) $response->getBody(), true);
                     break;
 
                 case 'xml':
-                    $this->cachedUserDetailsResponse = $response->xml();
+                    $this->cachedUserDetailsResponse = simplexml_load_string((string) $response->getBody());
                     break;
 
                 case 'string':
@@ -310,16 +334,6 @@ abstract class Server
     }
 
     /**
-     * Creates a Guzzle HTTP client for the given URL.
-     *
-     * @return GuzzleClient
-     */
-    public function createHttpClient()
-    {
-        return new GuzzleClient();
-    }
-
-    /**
      * Set the user agent value.
      *
      * @param string $userAgent
@@ -350,6 +364,16 @@ abstract class Server
         $headers = $this->buildHttpClientHeaders($authorizationHeader);
 
         return $headers;
+    }
+
+    public function getRequestFactory()
+    {
+        return $this->requestFactory;
+    }
+
+    public function getHttpClient()
+    {
+        return $this->httpClient;
     }
 
     /**
