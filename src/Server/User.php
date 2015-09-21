@@ -14,7 +14,9 @@
 
 namespace League\OAuth1\Client\Server;
 
-class User implements \IteratorAggregate
+use IteratorAggregate;
+
+class User implements IteratorAggregate, ResourceOwnerInterface
 {
     /**
      * The user's unique ID.
@@ -94,37 +96,30 @@ class User implements \IteratorAggregate
     public $extra = array();
 
     /**
-     * Set a property on the user.
-     *
-     * @param string $key
-     * @param mixed  $value
-     */
-    public function __set($key, $value)
-    {
-        if (isset($this->{$key})) {
-            $this->{$key} = $value;
-        }
-    }
-
-    /**
-     * Get a property from the user.
-     *
-     * @param string $key
-     *
-     * @return mixed
-     */
-    public function __get($key)
-    {
-        if (isset($this->{$key})) {
-            return $this->{$key};
-        }
-    }
-
-    /**
      * {@inheritDoc}
      */
     public function getIterator()
     {
         return new \ArrayIterator($this);
+    }
+
+    /**
+     * Returns the identifier of the authorised resource owner.
+     *
+     * @return mixed
+     */
+    public function getId()
+    {
+        return $this->id;
+    }
+
+    /**
+     * Returns all of the owner details available as an array.
+     *
+     * @return array
+     */
+    public function toArray()
+    {
+        return get_object_vars($this);
     }
 }

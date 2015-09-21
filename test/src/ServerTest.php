@@ -229,6 +229,19 @@ class ServerTest extends PHPUnit_Framework_TestCase
         $this->assertEquals(123, $server->getUserUid($temporaryCredentials));
         $this->assertEquals('baz@qux.com', $server->getUserEmail($temporaryCredentials));
         $this->assertEquals('fred', $server->getUserScreenName($temporaryCredentials));
+        $this->assertEquals([
+            'uid' => null,
+            'nickname' => null,
+            'name' => null,
+            'firstName' => 'bar',
+            'lastName' => null,
+            'email' => null,
+            'location' => null,
+            'description' => null,
+            'imageUrl' => null,
+            'urls' => [],
+            'extra' => [],
+        ], $user->toArray());
     }
 
     public function testGettingHeaders()
