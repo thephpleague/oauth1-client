@@ -12,7 +12,7 @@
  * @link https://github.com/thephpleague/oauth1-client GitHub
  */
 
-namespace LeagueTests\OAuth1\Client;
+namespace LeagueTest\OAuth1\Client;
 
 error_reporting(E_ALL | E_STRICT);
 chdir(__DIR__);

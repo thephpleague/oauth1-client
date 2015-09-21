@@ -12,13 +12,13 @@
  * @link https://github.com/thephpleague/oauth1-client GitHub
  */
 
-namespace League\OAuth1\Client\Tests;
+namespace League\OAuth1\Client\Test\Server;
 
 use League\OAuth1\Client\Credentials\TokenCredentials;
 use League\OAuth1\Client\Server\Server;
 use League\OAuth1\Client\Server\User;
 
-class ServerStub extends Server
+class Fake extends Server
 {
     /**
      * {@inheritdoc}

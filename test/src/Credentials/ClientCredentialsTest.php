@@ -12,7 +12,7 @@
  * @link https://github.com/thephpleague/oauth1-client GitHub
  */
 
-namespace League\OAuth1\Client\Tests;
+namespace League\OAuth1\Client\Test\Credentials;
 
 use League\OAuth1\Client\Credentials\ClientCredentials;
 use Mockery as m;

@@ -12,13 +12,13 @@
  * @link https://github.com/thephpleague/oauth1-client GitHub
  */
 
-namespace League\OAuth1\Client\Tests;
+namespace League\OAuth1\Client\Tests\Server;
 
-use League\OAuth1\Client\Signature\PlainTextSignature;
+use League\OAuth1\Client\Signature\HmacSha1Signature;
 use Mockery as m;
 use PHPUnit_Framework_TestCase;
 
-class PlainTextSignatureTest extends PHPUnit_Framework_TestCase
+class HmacSha1SignatureTest extends PHPUnit_Framework_TestCase
 {
     /**
      * Close mockery.
@@ -30,12 +30,12 @@ class PlainTextSignatureTest extends PHPUnit_Framework_TestCase
 
     public function testSigningRequest()
     {
-        $signature = new PlainTextSignature($this->getMockClientCredentials());
-        $this->assertEquals('clientsecret&', $signature->sign($uri = 'http://www.example.com/'));
+        $signature = new HmacSha1Signature($this->getMockClientCredentials());
 
-        $signature->setCredentials($this->getMockCredentials());
-        $this->assertEquals('clientsecret&tokensecret', $signature->sign($uri));
-        $this->assertEquals('PLAINTEXT', $signature->method());
+        $uri = 'http://www.example.com/?qux=corge';
+        $parameters = array('foo' => 'bar', 'baz' => null);
+
+        $this->assertEquals('A3Y7C1SUHXR1EBYIUlT3d6QT1cQ=', $signature->sign($uri, $parameters));
     }
 
     protected function getMockClientCredentials()
@@ -44,13 +44,5 @@ class PlainTextSignatureTest extends PHPUnit_Framework_TestCase
         $clientCredentials->shouldReceive('getSecret')->andReturn('clientsecret');
 
         return $clientCredentials;
-    }
-
-    protected function getMockCredentials()
-    {
-        $credentials = m::mock('League\OAuth1\Client\Credentials\Credentials');
-        $credentials->shouldReceive('getSecret')->andReturn('tokensecret');
-
-        return $credentials;
     }
 }

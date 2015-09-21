@@ -12,7 +12,7 @@
  * @link https://github.com/thephpleague/oauth1-client GitHub
  */
 
-namespace League\OAuth1\Client\Tests;
+namespace League\OAuth1\Client\Test\Server;
 
 use League\OAuth1\Client\Credentials\ClientCredentials;
 use Mockery as m;
@@ -20,14 +20,6 @@ use PHPUnit_Framework_TestCase;
 
 class ServerTest extends PHPUnit_Framework_TestCase
 {
-    /**
-     * Setup resources and dependencies.
-     */
-    public static function setUpBeforeClass()
-    {
-        require_once __DIR__.'/stubs/ServerStub.php';
-    }
-
     /**
      * Close mockery.
      */
@@ -38,7 +30,7 @@ class ServerTest extends PHPUnit_Framework_TestCase
 
     public function testCreatingWithArray()
     {
-        $server = new ServerStub($this->getMockClientCredentials());
+        $server = new Fake($this->getMockClientCredentials());
 
         $credentials = $server->getClientCredentials();
         $this->assertInstanceOf('League\OAuth1\Client\Credentials\ClientCredentials', $credentials);
@@ -51,7 +43,7 @@ class ServerTest extends PHPUnit_Framework_TestCase
     {
         $credentials = new ClientCredentials('myidentifier', 'mysecret', 'http://app.dev/');
 
-        $server = new ServerStub($credentials);
+        $server = new Fake($credentials);
 
         $this->assertEquals($credentials, $server->getClientCredentials());
     }
@@ -61,12 +53,12 @@ class ServerTest extends PHPUnit_Framework_TestCase
      **/
     public function testCreatingWithInvalidInput()
     {
-        $server = new ServerStub(uniqid());
+        $server = new Fake(uniqid());
     }
 
     public function testGettingTemporaryCredentials()
     {
-        $server = m::mock('League\OAuth1\Client\Tests\ServerStub[createHttpClient]', array($this->getMockClientCredentials()));
+        $server = m::mock('League\OAuth1\Client\Test\Server\Fake[createHttpClient]', array($this->getMockClientCredentials()));
 
         $server->shouldReceive('createHttpClient')->andReturn($client = m::mock('stdClass'));
 
@@ -96,7 +88,7 @@ class ServerTest extends PHPUnit_Framework_TestCase
 
     public function testGettingAuthorizationUrl()
     {
-        $server = new ServerStub($this->getMockClientCredentials());
+        $server = new Fake($this->getMockClientCredentials());
 
         $expected = 'http://www.example.com/authorize?oauth_token=foo';
 
@@ -112,7 +104,7 @@ class ServerTest extends PHPUnit_Framework_TestCase
      */
     public function testGettingTokenCredentialsFailsWithManInTheMiddle()
     {
-        $server = new ServerStub($this->getMockClientCredentials());
+        $server = new Fake($this->getMockClientCredentials());
 
         $credentials = m::mock('League\OAuth1\Client\Credentials\TemporaryCredentials');
         $credentials->shouldReceive('getIdentifier')->andReturn('foo');
@@ -122,7 +114,7 @@ class ServerTest extends PHPUnit_Framework_TestCase
 
     public function testGettingTokenCredentials()
     {
-        $server = m::mock('League\OAuth1\Client\Tests\ServerStub[createHttpClient]', array($this->getMockClientCredentials()));
+        $server = m::mock('League\OAuth1\Client\Test\Server\Fake[createHttpClient]', array($this->getMockClientCredentials()));
 
         $temporaryCredentials = m::mock('League\OAuth1\Client\Credentials\TemporaryCredentials');
         $temporaryCredentials->shouldReceive('getIdentifier')->andReturn('temporarycredentialsidentifier');
@@ -158,7 +150,7 @@ class ServerTest extends PHPUnit_Framework_TestCase
     public function testGettingTokenCredentialsWithUserAgent()
     {
         $userAgent = 'FooBar';
-        $server = m::mock('League\OAuth1\Client\Tests\ServerStub[createHttpClient]', array($this->getMockClientCredentials()));
+        $server = m::mock('League\OAuth1\Client\Test\Server\Fake[createHttpClient]', array($this->getMockClientCredentials()));
 
         $temporaryCredentials = m::mock('League\OAuth1\Client\Credentials\TemporaryCredentials');
         $temporaryCredentials->shouldReceive('getIdentifier')->andReturn('temporarycredentialsidentifier');
@@ -194,7 +186,7 @@ class ServerTest extends PHPUnit_Framework_TestCase
 
     public function testGettingUserDetails()
     {
-        $server = m::mock('League\OAuth1\Client\Tests\ServerStub[createHttpClient,protocolHeader]', array($this->getMockClientCredentials()));
+        $server = m::mock('League\OAuth1\Client\Test\Server\Fake[createHttpClient,protocolHeader]', array($this->getMockClientCredentials()));
 
         $temporaryCredentials = m::mock('League\OAuth1\Client\Credentials\TokenCredentials');
         $temporaryCredentials->shouldReceive('getIdentifier')->andReturn('tokencredentialsidentifier');
@@ -243,7 +235,7 @@ class ServerTest extends PHPUnit_Framework_TestCase
 
     public function testGettingHeaders()
     {
-        $server = new ServerStub($this->getMockClientCredentials());
+        $server = new Fake($this->getMockClientCredentials());
 
         $tokenCredentials = m::mock('League\OAuth1\Client\Credentials\TokenCredentials');
         $tokenCredentials->shouldReceive('getIdentifier')->andReturn('mock_identifier');
