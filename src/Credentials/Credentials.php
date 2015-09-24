@@ -1,17 +1,18 @@
 <?php
+
 /**
- * This file is part of the league/oauth1-client library
+ * This file is part of the league/oauth1-client library.
  *
  * For the full copyright and license information, please view the LICENSE
  * file that was distributed with this source code.
  *
  * @copyright Copyright (c) Ben Corlett <hello@webcomm.io>
  * @license http://opensource.org/licenses/MIT MIT
+ *
  * @link http://thephpleague.com/oauth1-client/ Documentation
  * @link https://packagist.org/packages/league/oauth1-client Packagist
  * @link https://github.com/thephpleague/oauth1-client GitHub
  */
-
 namespace League\OAuth1\Client\Credentials;
 
 abstract class Credentials
@@ -43,7 +44,7 @@ abstract class Credentials
     }
 
     /**
-     * {@inheritDoc}
+     * {@inheritdoc}
      */
     public function getIdentifier()
     {
@@ -51,7 +52,7 @@ abstract class Credentials
     }
 
     /**
-     * {@inheritDoc}
+     * {@inheritdoc}
      */
     public function getSecret()
     {

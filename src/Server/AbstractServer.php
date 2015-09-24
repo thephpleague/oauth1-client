@@ -1,17 +1,18 @@
 <?php
+
 /**
- * This file is part of the league/oauth1-client library
+ * This file is part of the league/oauth1-client library.
  *
  * For the full copyright and license information, please view the LICENSE
  * file that was distributed with this source code.
  *
  * @copyright Copyright (c) Ben Corlett <hello@webcomm.io>
  * @license http://opensource.org/licenses/MIT MIT
+ *
  * @link http://thephpleague.com/oauth1-client/ Documentation
  * @link https://packagist.org/packages/league/oauth1-client Packagist
  * @link https://github.com/thephpleague/oauth1-client GitHub
  */
-
 namespace League\OAuth1\Client\Server;
 
 use GuzzleHttp\Client as HttpClient;
@@ -76,7 +77,7 @@ abstract class AbstractServer
      * Create a new server instance.
      *
      * @param ClientCredentials|array $clientCredentials
-     * @param SignatureInterface               $signature
+     * @param SignatureInterface      $signature
      */
     public function __construct($clientCredentials, SignatureInterface $signature = null)
     {
@@ -351,9 +352,9 @@ abstract class AbstractServer
      * Get all headers required to created an authenticated request.
      *
      * @param Credentials $credentials
-     * @param string               $method
-     * @param string               $url
-     * @param array                $bodyParameters
+     * @param string      $method
+     * @param string      $url
+     * @param array       $bodyParameters
      *
      * @return array
      */
@@ -575,10 +576,10 @@ abstract class AbstractServer
      * credentials, based on the URI, method, given credentials & body query
      * string.
      *
-     * @param string               $method
-     * @param string               $uri
+     * @param string      $method
+     * @param string      $uri
      * @param Credentials $credentials
-     * @param array                $bodyParameters
+     * @param array       $bodyParameters
      *
      * @return string
      */
