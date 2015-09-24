@@ -15,10 +15,10 @@
 namespace League\OAuth1\Client\Test\Server;
 
 use League\OAuth1\Client\Credentials\TokenCredentials;
-use League\OAuth1\Client\Server\Server;
+use League\OAuth1\Client\Server\AbstractServer;
 use League\OAuth1\Client\Server\User;
 
-class Fake extends Server
+class Fake extends AbstractServer
 {
     /**
      * {@inheritdoc}

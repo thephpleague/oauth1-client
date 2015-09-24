@@ -25,7 +25,7 @@ use League\OAuth1\Client\Signature\HmacSha1Signature;
 use League\OAuth1\Client\Signature\SignatureInterface;
 use League\OAuth1\Client\Tool\RequestFactory;
 
-abstract class Server
+abstract class AbstractServer
 {
     /**
      * Client credentials.
