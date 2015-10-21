@@ -172,7 +172,7 @@ class Magento extends Server
         $url = parse_url($configuration['host']);
         $this->baseUri = sprintf('%s://%s', $url['scheme'], $url['host']);
 
-        if(isset($url['port'])) {
+        if (isset($url['port'])) {
             $this->baseUri .= ':'.$url['port'];
         }
 
