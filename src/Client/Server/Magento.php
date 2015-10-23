@@ -162,14 +162,20 @@ class Magento extends Server
      * Parse configuration array to set attributes.
      *
      * @param array $configuration
+     * @throws \Exception
      */
     private function parseConfigurationArray(array $configuration = array())
     {
-        if (isset($configuration['host'])) {
+        if (!isset($configuration['host'])) {
             throw new \Exception('Missing Magento Host');
         }
         $url = parse_url($configuration['host']);
         $this->baseUri = sprintf('%s://%s', $url['scheme'], $url['host']);
+
+        if (isset($url['port'])) {
+            $this->baseUri .= ':'.$url['port'];
+        }
+
         if (isset($url['path'])) {
             $this->baseUri .= '/'.trim($url['path'], '/');
         }
