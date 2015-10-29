@@ -83,12 +83,8 @@ so please help them out with a pull request if you notice this.
 
 Via Composer
 
-```json
-{
-    "require": {
-        "league/oauth1-client": "~1.0"
-    }
-}
+```shell
+$ composer require league/oauth1-client
 ```
 
 
