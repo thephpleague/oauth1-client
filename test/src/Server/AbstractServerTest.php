@@ -18,7 +18,7 @@ use League\OAuth1\Client\Credentials\ClientCredentials;
 use Mockery as m;
 use PHPUnit_Framework_TestCase;
 
-class ServerTest extends PHPUnit_Framework_TestCase
+class AbstractServerTest extends PHPUnit_Framework_TestCase
 {
     /**
      * Close mockery.
@@ -37,23 +37,6 @@ class ServerTest extends PHPUnit_Framework_TestCase
         $this->assertEquals('myidentifier', $credentials->getIdentifier());
         $this->assertEquals('mysecret', $credentials->getSecret());
         $this->assertEquals('http://app.dev/', $credentials->getCallbackUri());
-    }
-
-    public function testCreatingWithObject()
-    {
-        $credentials = new ClientCredentials('myidentifier', 'mysecret', 'http://app.dev/');
-
-        $server = new Fake($credentials);
-
-        $this->assertEquals($credentials, $server->getClientCredentials());
-    }
-
-    /**
-     * @expectedException InvalidArgumentException
-     **/
-    public function testCreatingWithInvalidInput()
-    {
-        $server = new Fake(uniqid());
     }
 
     public function testGettingTemporaryCredentials()

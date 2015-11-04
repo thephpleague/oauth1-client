@@ -76,23 +76,31 @@ abstract class AbstractServer
     /**
      * Create a new server instance.
      *
-     * @param ClientCredentials|array $clientCredentials
-     * @param SignatureInterface      $signature
+     * @param array $options
+     * @param array $collaborators
      */
-    public function __construct($clientCredentials, SignatureInterface $signature = null)
+    public function __construct(array $options, array $collaborators = [] /*SignatureInterface $signature = null*/)
     {
-        // Pass through an array or client credentials, we don't care
-        if (is_array($clientCredentials)) {
-            $clientCredentials = $this->createClientCredentials($clientCredentials);
-        } elseif (!$clientCredentials instanceof ClientCredentials) {
-            throw new \InvalidArgumentException('Client credentials must be an array or valid object.');
+        $this->clientCredentials = $this->extractClientCredentials($options);
+
+        if (empty($collaborators['signature'])) {
+            $collaborators['signature'] = new HmacSha1Signature($this->clientCredentials);
+        }
+        $this->signature = $collaborators['signature'];
+
+        if (empty($collaborators['requestFactory'])) {
+            $collaborators['requestFactory'] = new RequestFactory();
+        }
+        $this->requestFactory = $collaborators['requestFactory'];
+
+        if (empty($collaborators['httpClient'])) {
+            $client_options = ['timeout'];
+            $collaborators['httpClient'] = new HttpClient(
+                array_intersect_key($options, array_flip($client_options))
+            );
         }
 
-        $this->clientCredentials = $clientCredentials;
-        $this->signature = $signature ?: new HmacSha1Signature($clientCredentials);
-
-        $this->requestFactory = new RequestFactory();
-        $this->httpClient = new HttpClient();
+        $this->httpClient = $collaborators['httpClient'];
     }
 
     /**
@@ -404,30 +412,15 @@ abstract class AbstractServer
         return array_merge($headers, $defaultHeaders);
     }
 
-    /**
-     * Creates a client credentials instance from an array of credentials.
-     *
-     * @param array $clientCredentials
-     *
-     * @return ClientCredentials
-     */
-    protected function createClientCredentials(array $clientCredentials)
+    private function extractClientCredentials(array $options)
     {
-        $keys = array('identifier', 'secret');
-
-        foreach ($keys as $key) {
-            if (!isset($clientCredentials[$key])) {
-                throw new \InvalidArgumentException("Missing client credentials key [$key] from options.");
+        foreach (['identifier', 'secret', 'callback_uri'] as $required) {
+            if (!array_key_exists($required, $options)) {
+                throw new \InvalidArgumentException("Expected {$required} option to create client credentials.");
             }
         }
 
-        $_clientCredentials = new ClientCredentials(
-            $clientCredentials['identifier'],
-            $clientCredentials['secret'],
-            $clientCredentials['callback_uri']
-        );
-
-        return $_clientCredentials;
+        return new ClientCredentials($options['identifier'], $options['secret'], $options['callback_uri']);
     }
 
     /**
