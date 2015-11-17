@@ -15,6 +15,8 @@
  */
 namespace League\OAuth1\Client\Credentials;
 
+use League\OAuth1\Client\Exceptions\ConfigurationException;
+
 class ClientCredentials extends Credentials
 {
     /**
@@ -40,7 +42,32 @@ class ClientCredentials extends Credentials
     }
 
     /**
-     * {@inheritdoc}
+     * Attempts to create client credentials from given options.
+     *
+     * @param  array   $options
+     *
+     * @return ClientCredentials
+     * @throws League\OAuth1\Client\Exceptions\ConfigurationException
+     */
+    public static function createFromOptions(array $options)
+    {
+        array_map(function ($required) use ($options) {
+            if (!array_key_exists($required, $options)) {
+                ConfigurationException::handleMissingRequiredOption($required);
+            } // @codeCoverageIgnore
+        }, ['identifier', 'secret', 'callbackUri']);
+
+        return new static(
+            $options['identifier'],
+            $options['secret'],
+            $options['callbackUri']
+        );
+    }
+
+    /**
+     * Gets currently configured callback uri.
+     *
+     * @return string
      */
     public function getCallbackUri()
     {

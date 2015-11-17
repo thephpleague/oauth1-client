@@ -15,14 +15,12 @@
  */
 namespace League\OAuth1\Client\Tool;
 
-use GuzzleHttp\Psr7\Request;
-
 /**
  * Used to produce PSR-7 Request instances.
  *
  * @link https://github.com/guzzle/guzzle/pull/1101
  */
-class RequestFactory implements RequestFactoryInterface
+interface RequestFactoryInterface
 {
     /**
      * Creates a PSR-7 Request instance.
@@ -33,7 +31,7 @@ class RequestFactory implements RequestFactoryInterface
      * @param string|resource|StreamInterface $body    Message body.
      * @param string                          $version HTTP protocol version.
      *
-     * @return Request
+     * @return Psr\Http\Message\RequestInterface
      */
     public static function getRequest(
         $method,
@@ -41,7 +39,5 @@ class RequestFactory implements RequestFactoryInterface
         array $headers = array(),
         $body = null,
         $version = '1.1'
-    ) {
-        return new Request($method, $uri, $headers, $body, $version);
-    }
+    );
 }

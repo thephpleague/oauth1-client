@@ -14,9 +14,31 @@
 
 namespace League\OAuth1\Client\Test\Server;
 
+use GuzzleHttp\Client as HttpClient;
+use GuzzleHttp\Exception\ClientException;
+use GuzzleHttp\Handler\MockHandler;
+use GuzzleHttp\HandlerStack;
+use GuzzleHttp\Psr7\Response;
 use League\OAuth1\Client\Credentials\ClientCredentials;
+use League\OAuth1\Client\Credentials\Credentials;
+use League\OAuth1\Client\Credentials\TemporaryCredentials;
+use League\OAuth1\Client\Credentials\TokenCredentials;
+use League\OAuth1\Client\Exceptions\Exception;
+use League\OAuth1\Client\Exceptions\ConfigurationException;
+use League\OAuth1\Client\Exceptions\CredentialsException;
+use League\OAuth1\Client\Server\GenericResourceOwner;
+use League\OAuth1\Client\Server\GenericServer;
+use League\OAuth1\Client\Signature\HmacSha1Signature;
+use League\OAuth1\Client\Signature\SignatureInterface;
+use League\OAuth1\Client\Tool\Crypto;
+use League\OAuth1\Client\Tool\RequestFactory;
+use League\OAuth1\Client\Tool\RequestFactoryInterface;
+use League\OAuth1\Client\Test\Server\Fake;
 use Mockery as m;
 use PHPUnit_Framework_TestCase;
+use Psr\Http\Message\ResponseInterface;
+use Psr\Http\Message\RequestInterface;
+use Psr\Http\Message\UriInterface;
 
 class AbstractServerTest extends PHPUnit_Framework_TestCase
 {
@@ -28,220 +50,67 @@ class AbstractServerTest extends PHPUnit_Framework_TestCase
         m::close();
     }
 
-    public function testCreatingWithArray()
+    protected function getServerMock(array $collaborators = array(), $useFake = false)
     {
-        $server = new Fake($this->getMockClientCredentials());
+        if ($useFake) {
+            return m::mock(
+                new Fake($this->getMockClientCredentials(), $collaborators)
+            );
+        }
 
-        $credentials = $server->getClientCredentials();
-        $this->assertInstanceOf('League\OAuth1\Client\Credentials\ClientCredentials', $credentials);
-        $this->assertEquals('myidentifier', $credentials->getIdentifier());
-        $this->assertEquals('mysecret', $credentials->getSecret());
-        $this->assertEquals('http://app.dev/', $credentials->getCallbackUri());
+        return m::mock(
+            new GenericServer($this->getGenericServerCredentials(), $collaborators)
+        );
     }
 
-    public function testGettingTemporaryCredentials()
+    protected function getRequestMock()
     {
-        $server = m::mock('League\OAuth1\Client\Test\Server\Fake[getRequestFactory,getHttpClient]', array($this->getMockClientCredentials()));
+        $request = RequestFactory::getRequest('GET', 'http://foo.bar');
 
-        $server->shouldReceive('getRequestFactory')->andReturn($requestFactory = m::mock('stdClass'));
-
-        $requestFactory->shouldReceive('getRequest')->with('GET', 'http://www.example.com/temporary', m::on(function ($headers) {
-            $this->assertTrue(isset($headers['Authorization']));
-
-            // OAuth protocol specifies a strict number of
-            // headers should be sent, in the correct order.
-            // We'll validate that here.
-            $pattern = '/OAuth oauth_consumer_key=".*?", oauth_nonce="[a-zA-Z0-9]+", oauth_signature_method="HMAC-SHA1", oauth_timestamp="\d{10}", oauth_version="1.0", oauth_callback="'.preg_quote('http%3A%2F%2Fapp.dev%2F', '/').'", oauth_signature=".*?"/';
-
-            $matches = preg_match($pattern, $headers['Authorization']);
-            $this->assertEquals(1, $matches, 'Asserting that the authorization header contains the correct expression.');
-
-            return true;
-        }))->once()->andReturn($request = m::mock('stdClass'));
-
-        $server->shouldReceive('getHttpClient')->andReturn($httpClient = m::mock('stdClass'));
-        $httpClient->shouldReceive('send')->with($request)->once()->andReturn($response = m::mock('stdClass'));
-        $response->shouldReceive('getBody')->andReturn('oauth_token=temporarycredentialsidentifier&oauth_token_secret=temporarycredentialssecret&oauth_callback_confirmed=true');
-
-        $credentials = $server->getTemporaryCredentials();
-        $this->assertInstanceOf('League\OAuth1\Client\Credentials\TemporaryCredentials', $credentials);
-        $this->assertEquals('temporarycredentialsidentifier', $credentials->getIdentifier());
-        $this->assertEquals('temporarycredentialssecret', $credentials->getSecret());
+        return $request;
     }
 
-    public function testGettingAuthorizationUrl()
+    protected function getResponseMock()
     {
-        $server = new Fake($this->getMockClientCredentials());
-
-        $expected = 'http://www.example.com/authorize?oauth_token=foo';
-
-        $this->assertEquals($expected, $server->getAuthorizationUrl('foo'));
-
-        $credentials = m::mock('League\OAuth1\Client\Credentials\TemporaryCredentials');
-        $credentials->shouldReceive('getIdentifier')->andReturn('foo');
-        $this->assertEquals($expected, $server->getAuthorizationUrl($credentials));
+        return m::mock(ResponseInterface::class);
     }
 
-    /**
-     * @expectedException InvalidArgumentException
-     */
-    public function testGettingTokenCredentialsFailsWithManInTheMiddle()
+
+    protected function getHttpClientMock($request, $payload = '', $status = 200)
     {
-        $server = new Fake($this->getMockClientCredentials());
+        $response = $this->getResponseMock();
+        $response->shouldReceive('getBody')->andReturn($payload);
 
-        $credentials = m::mock('League\OAuth1\Client\Credentials\TemporaryCredentials');
-        $credentials->shouldReceive('getIdentifier')->andReturn('foo');
+        if ($status < 300) {
+            $client = m::mock(HttpClient::class);
+            $client->shouldReceive('send')->with($request)->once()->andReturn($response);
+        } else {
+            $mock = new MockHandler([
+                new Response($status, [], $payload),
+            ]);
+            $handler = HandlerStack::create($mock);
+            $client = new HttpClient(['handler' => $handler]);
+        }
 
-        $server->getTokenCredentials($credentials, 'bar', 'verifier');
+        return $client;
     }
 
-    public function testGettingTokenCredentials()
+    protected function getTemporaryCredentialsMock()
     {
-        $server = m::mock('League\OAuth1\Client\Test\Server\Fake[getRequestFactory,getHttpClient]', array($this->getMockClientCredentials()));
-
-        $temporaryCredentials = m::mock('League\OAuth1\Client\Credentials\TemporaryCredentials');
+        $temporaryCredentials = m::mock(TemporaryCredentials::class)->makePartial();
         $temporaryCredentials->shouldReceive('getIdentifier')->andReturn('temporarycredentialsidentifier');
         $temporaryCredentials->shouldReceive('getSecret')->andReturn('temporarycredentialssecret');
 
-        $server->shouldReceive('getRequestFactory')->andReturn($requestFactory = m::mock('stdClass'));
-
-        $requestFactory->shouldReceive('getRequest')->with('POST', 'http://www.example.com/token', m::on(function ($headers) {
-            $this->assertTrue(isset($headers['Authorization']));
-            $this->assertFalse(isset($headers['User-Agent']));
-
-            // OAuth protocol specifies a strict number of
-            // headers should be sent, in the correct order.
-            // We'll validate that here.
-            $pattern = '/OAuth oauth_consumer_key=".*?", oauth_nonce="[a-zA-Z0-9]+", oauth_signature_method="HMAC-SHA1", oauth_timestamp="\d{10}", oauth_version="1.0", oauth_token="temporarycredentialsidentifier", oauth_signature=".*?"/';
-
-            $matches = preg_match($pattern, $headers['Authorization']);
-            $this->assertEquals(1, $matches, 'Asserting that the authorization header contains the correct expression.');
-
-            return true;
-        }), array('oauth_verifier' => 'myverifiercode'))->once()->andReturn($request = m::mock('stdClass'));
-
-        $server->shouldReceive('getHttpClient')->andReturn($httpClient = m::mock('stdClass'));
-        $httpClient->shouldReceive('send')->with($request)->once()->andReturn($response = m::mock('stdClass'));
-        $response->shouldReceive('getBody')->andReturn('oauth_token=tokencredentialsidentifier&oauth_token_secret=tokencredentialssecret');
-
-        $credentials = $server->getTokenCredentials($temporaryCredentials, 'temporarycredentialsidentifier', 'myverifiercode');
-        $this->assertInstanceOf('League\OAuth1\Client\Credentials\TokenCredentials', $credentials);
-        $this->assertEquals('tokencredentialsidentifier', $credentials->getIdentifier());
-        $this->assertEquals('tokencredentialssecret', $credentials->getSecret());
+        return $temporaryCredentials;
     }
 
-    public function testGettingTokenCredentialsWithUserAgent()
+    protected function getTokenCredentialsMock()
     {
-        $userAgent = 'FooBar';
-        $server = m::mock('League\OAuth1\Client\Test\Server\Fake[getRequestFactory,getHttpClient]', array($this->getMockClientCredentials()));
+        $tokenCredentials = m::mock(TokenCredentials::class);
+        $tokenCredentials->shouldReceive('getIdentifier')->andReturn('tokencredentialsidentifier');
+        $tokenCredentials->shouldReceive('getSecret')->andReturn('tokencredentialssecret');
 
-        $temporaryCredentials = m::mock('League\OAuth1\Client\Credentials\TemporaryCredentials');
-        $temporaryCredentials->shouldReceive('getIdentifier')->andReturn('temporarycredentialsidentifier');
-        $temporaryCredentials->shouldReceive('getSecret')->andReturn('temporarycredentialssecret');
-
-        $server->shouldReceive('getRequestFactory')->andReturn($requestFactory = m::mock('stdClass'));
-
-        $requestFactory->shouldReceive('getRequest')->with('POST', 'http://www.example.com/token', m::on(function ($headers) use ($userAgent) {
-            $this->assertTrue(isset($headers['Authorization']));
-            $this->assertTrue(isset($headers['User-Agent']));
-            $this->assertEquals($userAgent, $headers['User-Agent']);
-
-            // OAuth protocol specifies a strict number of
-            // headers should be sent, in the correct order.
-            // We'll validate that here.
-            $pattern = '/OAuth oauth_consumer_key=".*?", oauth_nonce="[a-zA-Z0-9]+", oauth_signature_method="HMAC-SHA1", oauth_timestamp="\d{10}", oauth_version="1.0", oauth_token="temporarycredentialsidentifier", oauth_signature=".*?"/';
-
-            $matches = preg_match($pattern, $headers['Authorization']);
-            $this->assertEquals(1, $matches, 'Asserting that the authorization header contains the correct expression.');
-
-            return true;
-        }), array('oauth_verifier' => 'myverifiercode'))->once()->andReturn($request = m::mock('stdClass'));
-
-        $server->shouldReceive('getHttpClient')->andReturn($httpClient = m::mock('stdClass'));
-        $httpClient->shouldReceive('send')->with($request)->once()->andReturn($response = m::mock('stdClass'));
-        $response->shouldReceive('getBody')->andReturn('oauth_token=tokencredentialsidentifier&oauth_token_secret=tokencredentialssecret');
-
-        $credentials = $server->setUserAgent($userAgent)->getTokenCredentials($temporaryCredentials, 'temporarycredentialsidentifier', 'myverifiercode');
-        $this->assertInstanceOf('League\OAuth1\Client\Credentials\TokenCredentials', $credentials);
-        $this->assertEquals('tokencredentialsidentifier', $credentials->getIdentifier());
-        $this->assertEquals('tokencredentialssecret', $credentials->getSecret());
-    }
-
-    public function testGettingUserDetails()
-    {
-        $server = m::mock('League\OAuth1\Client\Test\Server\Fake[getRequestFactory,getHttpClient,protocolHeader]', array($this->getMockClientCredentials()));
-
-        $temporaryCredentials = m::mock('League\OAuth1\Client\Credentials\TokenCredentials');
-        $temporaryCredentials->shouldReceive('getIdentifier')->andReturn('tokencredentialsidentifier');
-        $temporaryCredentials->shouldReceive('getSecret')->andReturn('tokencredentialssecret');
-
-        $server->shouldReceive('getRequestFactory')->andReturn($requestFactory = m::mock('stdClass'));
-
-        $requestFactory->shouldReceive('getRequest')->with('GET', 'http://www.example.com/user', m::on(function ($headers) {
-            $this->assertTrue(isset($headers['Authorization']));
-
-            // OAuth protocol specifies a strict number of
-            // headers should be sent, in the correct order.
-            // We'll validate that here.
-            $pattern = '/OAuth oauth_consumer_key=".*?", oauth_nonce="[a-zA-Z0-9]+", oauth_signature_method="HMAC-SHA1", oauth_timestamp="\d{10}", oauth_version="1.0", oauth_token="tokencredentialsidentifier", oauth_signature=".*?"/';
-
-            $matches = preg_match($pattern, $headers['Authorization']);
-            $this->assertEquals(1, $matches, 'Asserting that the authorization header contains the correct expression.');
-
-            return true;
-        }))->once()->andReturn($request = m::mock('stdClass'));
-
-        $server->shouldReceive('getHttpClient')->andReturn($httpClient = m::mock('stdClass'));
-        $httpClient->shouldReceive('send')->with($request)->once()->andReturn($response = m::mock('stdClass'));
-        $response->shouldReceive('getBody')->once()->andReturn(json_encode(['foo' => 'bar', 'id' => 123, 'contact_email' => 'baz@qux.com', 'username' => 'fred']));
-
-        $user = $server->getUserDetails($temporaryCredentials);
-        $this->assertInstanceOf('League\OAuth1\Client\Server\User', $user);
-        $this->assertEquals('bar', $user->firstName);
-        $this->assertEquals(123, $server->getUserUid($temporaryCredentials));
-        $this->assertEquals('baz@qux.com', $server->getUserEmail($temporaryCredentials));
-        $this->assertEquals('fred', $server->getUserScreenName($temporaryCredentials));
-        $this->assertEquals([
-            'uid' => null,
-            'nickname' => null,
-            'name' => null,
-            'firstName' => 'bar',
-            'lastName' => null,
-            'email' => null,
-            'location' => null,
-            'description' => null,
-            'imageUrl' => null,
-            'urls' => [],
-            'extra' => [],
-        ], $user->toArray());
-    }
-
-    public function testGettingHeaders()
-    {
-        $server = new Fake($this->getMockClientCredentials());
-
-        $tokenCredentials = m::mock('League\OAuth1\Client\Credentials\TokenCredentials');
-        $tokenCredentials->shouldReceive('getIdentifier')->andReturn('mock_identifier');
-        $tokenCredentials->shouldReceive('getSecret')->andReturn('mock_secret');
-
-        // OAuth protocol specifies a strict number of
-        // headers should be sent, in the correct order.
-        // We'll validate that here.
-        $pattern = '/OAuth oauth_consumer_key=".*?", oauth_nonce="[a-zA-Z0-9]+", oauth_signature_method="HMAC-SHA1", oauth_timestamp="\d{10}", oauth_version="1.0", oauth_token="mock_identifier", oauth_signature=".*?"/';
-
-        // With a GET request
-        $headers = $server->getHeaders($tokenCredentials, 'GET', 'http://example.com/');
-        $this->assertTrue(isset($headers['Authorization']));
-
-        $matches = preg_match($pattern, $headers['Authorization']);
-        $this->assertEquals(1, $matches, 'Asserting that the authorization header contains the correct expression.');
-
-        // With a POST request
-        $headers = $server->getHeaders($tokenCredentials, 'POST', 'http://example.com/', array('body' => 'params'));
-        $this->assertTrue(isset($headers['Authorization']));
-
-        $matches = preg_match($pattern, $headers['Authorization']);
-        $this->assertEquals(1, $matches, 'Asserting that the authorization header contains the correct expression.');
+        return $tokenCredentials;
     }
 
     protected function getMockClientCredentials()
@@ -249,7 +118,505 @@ class AbstractServerTest extends PHPUnit_Framework_TestCase
         return array(
             'identifier' => 'myidentifier',
             'secret' => 'mysecret',
-            'callback_uri' => 'http://app.dev/',
+            'callbackUri' => 'http://app.dev/',
         );
+    }
+
+    protected function getGenericServerCredentials($domain = null)
+    {
+        $domain = $domain ?: 'http://your.service';
+
+        return array_merge($this->getMockClientCredentials(), [
+            'temporaryCredentialsUri' => $domain.'/temporary-credentials',
+            'authorizationUri'        => $domain.'/authorize',
+            'tokenCredentialsUri'     => $domain.'/token-credentials',
+            'resourceOwnerDetailsUri' => $domain.'/me',
+        ]);
+    }
+
+    protected function isTempAuthenticatedRequest($pattern, $headers, $userAgent = null)
+    {
+        $this->assertTrue(isset($headers['Authorization']));
+        $matches = preg_match($pattern, $headers['Authorization']);
+        $this->assertEquals(1, $matches, 'Asserting that the authorization header contains the correct expression.');
+
+        return true;
+    }
+
+    protected function isTokenAuthenticatedRequest($pattern, $headers, $userAgent = null)
+    {
+        $this->assertTrue(isset($headers['Authorization']));
+
+        if ($userAgent) {
+            $this->assertTrue(isset($headers['User-Agent']));
+            $this->assertEquals($userAgent, $headers['User-Agent']);
+        } else {
+            $this->assertFalse(isset($headers['User-Agent']));
+        }
+
+        $matches = preg_match($pattern, $headers['Authorization']);
+        $this->assertEquals(1, $matches, 'Asserting that the authorization header contains the correct expression.');
+
+        return true;
+    }
+
+    protected function getProtectedProperty($object, $property)
+    {
+        $ref = new \ReflectionClass($object);
+        $prop = $ref->getProperty($property);
+        $prop->setAccessible(true);
+
+        return $prop->getValue($object);
+    }
+
+    public function testCreatingWithArray()
+    {
+        $server = new GenericServer($this->getGenericServerCredentials());
+
+        $credentials = $server->getClientCredentials();
+        $this->assertInstanceOf(ClientCredentials::class, $credentials);
+        $this->assertEquals('myidentifier', $credentials->getIdentifier());
+        $this->assertEquals('mysecret', $credentials->getSecret());
+        $this->assertEquals('http://app.dev/', $credentials->getCallbackUri());
+    }
+
+    /**
+     * @expectedException League\OAuth1\Client\Exceptions\ConfigurationException
+     */
+    public function testCreatingWithEmptyArrayThrowsException()
+    {
+        $server = new Fake([]);
+    }
+
+    public function testGettingSignature()
+    {
+        $server = new GenericServer($this->getGenericServerCredentials());
+
+        $signature = $server->getSignature();
+        $this->assertInstanceOf(SignatureInterface::class, $signature);
+    }
+
+    public function testGettingCustomAttributes()
+    {
+        $name = 'foo';
+        $options = array_merge($this->getMockClientCredentials(), ['name' => $name]);
+        $server = new Fake($options);
+
+        $actualName = $server->getName();
+        $this->assertEquals($name, $actualName);
+    }
+
+    public function testGettingAuthorizationUrl()
+    {
+        $domain = 'http://www.example.com';
+        $server = new GenericServer($this->getGenericServerCredentials($domain));
+
+        $expected = $domain.'/authorize?oauth_token=foo';
+
+        $this->assertEquals($expected, $server->getAuthorizationUrl('foo'));
+
+        $credentials = m::mock(TemporaryCredentials::class);
+        $credentials->shouldReceive('getIdentifier')->andReturn('foo');
+        $this->assertEquals($expected, $server->getAuthorizationUrl($credentials));
+    }
+
+    public function testRedirectingUsers()
+    {
+        global $mockerHeaderRedirect;
+        $server = $this->getServerMock();
+        $tempId = 'foo';
+        $url = $server->getAuthorizationUrl($tempId);
+        $mockerHeaderRedirect = 'Location: '.$url;
+
+        $redirect = $server->authorize($tempId);
+    }
+
+    /**
+     * @expectedException League\OAuth1\Client\Exceptions\ConfigurationException
+     */
+    public function testGettingTokenCredentialsFailsWithManInTheMiddle()
+    {
+        $server = new Fake($this->getMockClientCredentials());
+
+        $credentials = m::mock(TemporaryCredentials::class)->makePartial();
+        $credentials->shouldReceive('getIdentifier')->andReturn('foo');
+
+        $server->getTokenCredentials($credentials, 'bar', 'verifier');
+    }
+
+    public function testGettingTemporaryCredentials()
+    {
+        $headerPattern = '/OAuth oauth_consumer_key=".*?", oauth_nonce="[a-zA-Z0-9]+", oauth_signature_method="HMAC-SHA1", oauth_timestamp="\d{10}", oauth_version="1.0", oauth_callback="'.preg_quote('http%3A%2F%2Fapp.dev%2F', '/').'", oauth_signature=".*?"/';
+        $payload = 'oauth_token=temporarycredentialsidentifier&oauth_token_secret=temporarycredentialssecret&oauth_callback_confirmed=true';
+        $request = $this->getRequestMock();
+
+        $requestFactory = m::mock(RequestFactoryInterface::class);
+        $requestFactory->shouldReceive('getRequest')->with('GET', 'http://your.service/temporary-credentials', m::on(function ($headers) use ($headerPattern) {
+            return $this->isTempAuthenticatedRequest($headerPattern, $headers);
+        }))->once()->andReturn($request);
+
+        $httpClient = $this->getHttpClientMock($request, $payload);
+
+        $collaborators = ['httpClient' => $httpClient, 'requestFactory' => $requestFactory];
+
+        $server = $this->getServerMock($collaborators);
+
+        $credentials = $server->getTemporaryCredentials();
+        $this->assertInstanceOf(TemporaryCredentials::class, $credentials);
+        $this->assertEquals('temporarycredentialsidentifier', $credentials->getIdentifier());
+        $this->assertEquals('temporarycredentialssecret', $credentials->getSecret());
+    }
+
+    /**
+     * @expectedException League\OAuth1\Client\Exceptions\Exception
+     */
+    public function testGettingTemporaryCredentialsThrowsExceptionOnHttpError()
+    {
+        $request = $this->getRequestMock();
+
+        $requestFactory = m::mock(RequestFactoryInterface::class);
+        $requestFactory->shouldReceive('getRequest')->with('GET', 'http://your.service/temporary-credentials', m::on(function ($headers) {
+            return is_array($headers);
+        }))->once()->andReturn($request);
+
+        $httpClient = $this->getHttpClientMock($request, null, 400);
+
+        $collaborators = ['httpClient' => $httpClient, 'requestFactory' => $requestFactory];
+
+        $server = $this->getServerMock($collaborators);
+
+        $credentials = $server->getTemporaryCredentials();
+    }
+
+    /**
+     * @expectedException League\OAuth1\Client\Exceptions\CredentialsException
+     */
+    public function testGettingTemporaryCredentialsThrowsExceptionOnInvalidResponse()
+    {
+        $headerPattern = '/OAuth oauth_consumer_key=".*?", oauth_nonce="[a-zA-Z0-9]+", oauth_signature_method="HMAC-SHA1", oauth_timestamp="\d{10}", oauth_version="1.0", oauth_callback="'.preg_quote('http%3A%2F%2Fapp.dev%2F', '/').'", oauth_signature=".*?"/';
+        $payload = '';
+        $request = $this->getRequestMock();
+
+        $requestFactory = m::mock(RequestFactoryInterface::class);
+        $requestFactory->shouldReceive('getRequest')->with('GET', 'http://your.service/temporary-credentials', m::on(function ($headers) use ($headerPattern) {
+            return $this->isTempAuthenticatedRequest($headerPattern, $headers);
+        }))->once()->andReturn($request);
+
+        $httpClient = $this->getHttpClientMock($request, $payload);
+
+        $collaborators = ['httpClient' => $httpClient, 'requestFactory' => $requestFactory];
+
+        $server = $this->getServerMock($collaborators);
+
+        $credentials = $server->getTemporaryCredentials();
+    }
+
+    /**
+     * @expectedException League\OAuth1\Client\Exceptions\CredentialsException
+     */
+    public function testGettingTemporaryCredentialsThrowsExceptionOnMissingOauthKeys()
+    {
+        $headerPattern = '/OAuth oauth_consumer_key=".*?", oauth_nonce="[a-zA-Z0-9]+", oauth_signature_method="HMAC-SHA1", oauth_timestamp="\d{10}", oauth_version="1.0", oauth_callback="'.preg_quote('http%3A%2F%2Fapp.dev%2F', '/').'", oauth_signature=".*?"/';
+        $payload = 'foo=bar';
+        $request = $this->getRequestMock();
+
+        $requestFactory = m::mock(RequestFactoryInterface::class);
+        $requestFactory->shouldReceive('getRequest')->with('GET', 'http://your.service/temporary-credentials', m::on(function ($headers) use ($headerPattern) {
+            return $this->isTempAuthenticatedRequest($headerPattern, $headers);
+        }))->once()->andReturn($request);
+
+        $httpClient = $this->getHttpClientMock($request, $payload);
+
+        $collaborators = ['httpClient' => $httpClient, 'requestFactory' => $requestFactory];
+
+        $server = $this->getServerMock($collaborators);
+
+        $credentials = $server->getTemporaryCredentials();
+    }
+
+    public function testGettingTokenCredentials()
+    {
+        $headerPattern = '/OAuth oauth_consumer_key=".*?", oauth_nonce="[a-zA-Z0-9]+", oauth_signature_method="HMAC-SHA1", oauth_timestamp="\d{10}", oauth_version="1.0", oauth_token="temporarycredentialsidentifier", oauth_signature=".*?"/';
+        $payload = 'oauth_token=tokencredentialsidentifier&oauth_token_secret=tokencredentialssecret';
+        $request = $this->getRequestMock();
+
+        $requestFactory = m::mock(RequestFactoryInterface::class);
+        $requestFactory->shouldReceive('getRequest')->with('POST', 'http://your.service/token-credentials', m::on(function ($headers) use ($headerPattern) {
+            return $this->isTokenAuthenticatedRequest($headerPattern, $headers);
+        }), array('oauth_verifier' => 'myverifiercode'))->once()->andReturn($request);
+
+        $httpClient = $this->getHttpClientMock($request, $payload);
+
+        $temporaryCredentials = $this->getTemporaryCredentialsMock();
+
+        $collaborators = ['httpClient' => $httpClient, 'requestFactory' => $requestFactory];
+
+        $server = $this->getServerMock($collaborators);
+
+        $credentials = $server->getTokenCredentials($temporaryCredentials, 'temporarycredentialsidentifier', 'myverifiercode');
+
+        $this->assertInstanceOf(TokenCredentials::class, $credentials);
+        $this->assertEquals('tokencredentialsidentifier', $credentials->getIdentifier());
+        $this->assertEquals('tokencredentialssecret', $credentials->getSecret());
+    }
+
+    /**
+     * @expectedException League\OAuth1\Client\Exceptions\Exception
+     */
+    public function testGettingTokenCredentialsThrowsExceptionOnHttpError()
+    {
+        $request = $this->getRequestMock();
+
+        $requestFactory = m::mock(RequestFactoryInterface::class);
+        $requestFactory->shouldReceive('getRequest')->with('POST', 'http://your.service/token-credentials', m::on(function ($headers) {
+            return is_array($headers);
+        }), array('oauth_verifier' => 'myverifiercode'))->once()->andReturn($request);
+
+        $httpClient = $this->getHttpClientMock($request, null, 400);
+
+        $temporaryCredentials = $this->getTemporaryCredentialsMock();
+
+        $collaborators = ['httpClient' => $httpClient, 'requestFactory' => $requestFactory];
+
+        $server = $this->getServerMock($collaborators);
+
+        $credentials = $server->getTokenCredentials($temporaryCredentials, 'temporarycredentialsidentifier', 'myverifiercode');
+    }
+
+    /**
+     * @expectedException League\OAuth1\Client\Exceptions\CredentialsException
+     */
+    public function testGettingTokenCredentialsThorwsExceptionOnInvalidResponse()
+    {
+        $headerPattern = '/OAuth oauth_consumer_key=".*?", oauth_nonce="[a-zA-Z0-9]+", oauth_signature_method="HMAC-SHA1", oauth_timestamp="\d{10}", oauth_version="1.0", oauth_token="temporarycredentialsidentifier", oauth_signature=".*?"/';
+        $payload = '';
+        $request = $this->getRequestMock();
+
+        $requestFactory = m::mock(RequestFactoryInterface::class);
+        $requestFactory->shouldReceive('getRequest')->with('POST', 'http://your.service/token-credentials', m::on(function ($headers) use ($headerPattern) {
+            return $this->isTokenAuthenticatedRequest($headerPattern, $headers);
+        }), array('oauth_verifier' => 'myverifiercode'))->once()->andReturn($request);
+
+        $httpClient = $this->getHttpClientMock($request, $payload);
+
+        $temporaryCredentials = $this->getTemporaryCredentialsMock();
+
+        $collaborators = ['httpClient' => $httpClient, 'requestFactory' => $requestFactory];
+
+        $server = $this->getServerMock($collaborators);
+
+        $credentials = $server->getTokenCredentials($temporaryCredentials, 'temporarycredentialsidentifier', 'myverifiercode');
+    }
+
+    /**
+     * @expectedException League\OAuth1\Client\Exceptions\CredentialsException
+     */
+    public function testGettingTokenCredentialsThorwsExceptionOnErrorInResponse()
+    {
+        $headerPattern = '/OAuth oauth_consumer_key=".*?", oauth_nonce="[a-zA-Z0-9]+", oauth_signature_method="HMAC-SHA1", oauth_timestamp="\d{10}", oauth_version="1.0", oauth_token="temporarycredentialsidentifier", oauth_signature=".*?"/';
+        $payload = 'error=foo';
+        $request = $this->getRequestMock();
+
+        $requestFactory = m::mock(RequestFactoryInterface::class);
+        $requestFactory->shouldReceive('getRequest')->with('POST', 'http://your.service/token-credentials', m::on(function ($headers) use ($headerPattern) {
+            return $this->isTokenAuthenticatedRequest($headerPattern, $headers);
+        }), array('oauth_verifier' => 'myverifiercode'))->once()->andReturn($request);
+
+        $httpClient = $this->getHttpClientMock($request, $payload);
+
+        $temporaryCredentials = $this->getTemporaryCredentialsMock();
+
+        $collaborators = ['httpClient' => $httpClient, 'requestFactory' => $requestFactory];
+
+        $server = $this->getServerMock($collaborators);
+
+        $credentials = $server->getTokenCredentials($temporaryCredentials, 'temporarycredentialsidentifier', 'myverifiercode');
+    }
+
+    public function testGettingTokenCredentialsWithUserAgent()
+    {
+        $headerPattern = '/OAuth oauth_consumer_key=".*?", oauth_nonce="[a-zA-Z0-9]+", oauth_signature_method="HMAC-SHA1", oauth_timestamp="\d{10}", oauth_version="1.0", oauth_token="temporarycredentialsidentifier", oauth_signature=".*?"/';
+        $userAgent = 'FooBar';
+        $payload = 'oauth_token=tokencredentialsidentifier&oauth_token_secret=tokencredentialssecret';
+        $request = $this->getRequestMock();
+
+        $requestFactory = m::mock(RequestFactoryInterface::class);
+        $requestFactory->shouldReceive('getRequest')->with('POST', 'http://your.service/token-credentials', m::on(function ($headers) use ($userAgent, $headerPattern) {
+            return $this->isTokenAuthenticatedRequest($headerPattern, $headers, $userAgent);
+        }), array('oauth_verifier' => 'myverifiercode'))->once()->andReturn($request);
+
+        $httpClient = $this->getHttpClientMock($request, $payload);
+
+        $temporaryCredentials = $this->getTemporaryCredentialsMock();
+
+        $collaborators = ['httpClient' => $httpClient, 'requestFactory' => $requestFactory];
+
+        $server = $this->getServerMock($collaborators);
+
+        $credentials = $server->setUserAgent($userAgent)->getTokenCredentials($temporaryCredentials, 'temporarycredentialsidentifier', 'myverifiercode');
+
+        $this->assertInstanceOf(TokenCredentials::class, $credentials);
+        $this->assertEquals('tokencredentialsidentifier', $credentials->getIdentifier());
+        $this->assertEquals('tokencredentialssecret', $credentials->getSecret());
+    }
+
+    public function testGettingUserDetails()
+    {
+        $headerPattern = '/OAuth oauth_consumer_key=".*?", oauth_nonce="[a-zA-Z0-9]+", oauth_signature_method="HMAC-SHA1", oauth_timestamp="\d{10}", oauth_version="1.0", oauth_token="tokencredentialsidentifier", oauth_signature=".*?"/';
+        $userData = ['foo' => 'bar', 'id' => 123, 'contact_email' => 'baz@qux.com', 'username' => 'fred'];
+        $payload = json_encode($userData);
+        $request = $this->getRequestMock();
+
+        $requestFactory = m::mock(RequestFactoryInterface::class);
+        $requestFactory->shouldReceive('getRequest')->with('GET', 'http://your.service/me', m::on(function ($headers) use ($headerPattern) {
+            return $this->isTokenAuthenticatedRequest($headerPattern, $headers);
+        }))->once()->andReturn($request);
+
+        $httpClient = $this->getHttpClientMock($request, $payload);
+
+        $tokenCredentials = $this->getTokenCredentialsMock();
+
+        $collaborators = ['httpClient' => $httpClient, 'requestFactory' => $requestFactory];
+
+        $server = $this->getServerMock($collaborators);
+
+        $user = $server->getResourceOwner($tokenCredentials);
+
+        $this->assertInstanceOf(GenericResourceOwner::class, $user);
+        $this->assertEquals(123, $user->getId());
+        $this->assertEquals($userData, $user->getIterator());
+    }
+
+    /**
+     * @expectedException League\OAuth1\Client\Exceptions\Exception
+     */
+    public function testGettingUserDetailsThrowsException()
+    {
+        $request = $this->getRequestMock();
+
+        $requestFactory = m::mock(RequestFactoryInterface::class);
+        $requestFactory->shouldReceive('getRequest')->with('GET', 'http://your.service/me', m::on(function ($headers) {
+            return is_array($headers);
+        }))->once()->andReturn($request);
+
+        $httpClient = $this->getHttpClientMock($request, null, 400);
+
+        $tokenCredentials = $this->getTokenCredentialsMock();
+
+        $collaborators = ['httpClient' => $httpClient, 'requestFactory' => $requestFactory];
+
+        $server = $this->getServerMock($collaborators);
+
+        $user = $server->getResourceOwner($tokenCredentials);
+    }
+
+    public function testGettingHeaders()
+    {
+        // OAuth protocol specifies a strict number of
+        // headers should be sent, in the correct order.
+        // We'll validate that here.
+        $pattern = '/OAuth oauth_consumer_key=".*?", oauth_nonce="[a-zA-Z0-9]+", oauth_signature_method="HMAC-SHA1", oauth_timestamp="\d{10}", oauth_version="1.0", oauth_token="tokencredentialsidentifier", oauth_signature=".*?"/';
+
+        $tokenCredentials = $this->getTokenCredentialsMock();
+
+        $server = new Fake($this->getMockClientCredentials());
+
+        // With a GET request
+        $headers = $server->getHeaders($tokenCredentials, 'GET', 'http://example.com/');
+        $this->assertTrue(isset($headers['Authorization']));
+        $matches = preg_match($pattern, $headers['Authorization']);
+        $this->assertEquals(1, $matches, 'Asserting that the authorization header contains the correct expression.');
+
+        // With a POST request
+        $headers = $server->getHeaders($tokenCredentials, 'POST', 'http://example.com/', array('body' => 'params'));
+        $this->assertTrue(isset($headers['Authorization']));
+        $matches = preg_match($pattern, $headers['Authorization']);
+        $this->assertEquals(1, $matches, 'Asserting that the authorization header contains the correct expression.');
+    }
+
+    public function testGettingAuthenticatedRequest()
+    {
+        $headerPattern = '/OAuth oauth_consumer_key=".*?", oauth_nonce="[a-zA-Z0-9]+", oauth_signature_method="HMAC-SHA1", oauth_timestamp="\d{10}", oauth_version="1.0", oauth_token="tokencredentialsidentifier", oauth_signature=".*?"/';
+        $url = 'foo';
+        $method = 'bar';
+
+        $request = $this->getRequestMock();
+
+        $requestFactory = m::mock(RequestFactoryInterface::class);
+        $requestFactory->shouldReceive('getRequest')->with($method, $url, m::on(function ($headers) use ($headerPattern) {
+            return $this->isTokenAuthenticatedRequest($headerPattern, $headers);
+        }))->once()->andReturn($request);
+
+        $collaborators = ['requestFactory' => $requestFactory];
+
+        $server = $this->getServerMock($collaborators);
+
+        $tokenCredentials = $this->getTokenCredentialsMock();
+
+        $authenticatedRequest = $server-> getAuthenticatedRequest($method, $url, $tokenCredentials);
+
+        $this->assertEquals($request, $authenticatedRequest);
+    }
+
+    public function testParsingResourceOwnerDetailsJson()
+    {
+        $payload = ['foo' => 'bar'];
+        $json = json_encode($payload);
+        $response = $this->getResponseMock();
+        $response->shouldReceive('getBody')->andReturn($json);
+
+        $server = new Fake($this->getMockClientCredentials());
+
+        $server->parseResourceOwnersDetailsResponse($response);
+
+        $resourceOwner = $this->getProtectedProperty($server, 'cachedUserDetailsResponse');
+
+        $this->assertEquals($payload, $resourceOwner);
+    }
+
+    public function testParsingResourceOwnerDetailsXml()
+    {
+        $payload = ['foo' => 'bar'];
+        $xml = new \SimpleXMLElement('<root/>');
+        $flipped = array_flip($payload);
+        array_walk_recursive($flipped, array ($xml, 'addChild'));
+        $response = $this->getResponseMock();
+        $response->shouldReceive('getBody')->andReturn($xml->asXML());
+
+        $server = new Fake($this->getMockClientCredentials());
+
+        $server->setResponseType('xml')->parseResourceOwnersDetailsResponse($response);
+
+        $resourceOwner = json_decode(json_encode($this->getProtectedProperty($server, 'cachedUserDetailsResponse')), true);
+
+        $this->assertEquals($payload, $resourceOwner);
+    }
+
+    public function testParsingResourceOwnerDetailsString()
+    {
+        $payload = ['foo' => 'bar'];
+        $string = http_build_query($payload);
+        $response = $this->getResponseMock();
+        $response->shouldReceive('getBody')->andReturn($string);
+
+        $server = new Fake($this->getMockClientCredentials());
+
+        $server->setResponseType('string')->parseResourceOwnersDetailsResponse($response);
+
+        $resourceOwner = $this->getProtectedProperty($server, 'cachedUserDetailsResponse');
+
+        $this->assertEquals($payload, $resourceOwner);
+    }
+
+    /**
+     * @expectedException League\OAuth1\Client\Exceptions\ConfigurationException
+     */
+    public function testParsingResourceOwnerDetailsInvalid()
+    {
+        $response = $this->getResponseMock();
+
+        $server = new Fake($this->getMockClientCredentials());
+
+        $server->setResponseType(uniqid())->parseResourceOwnersDetailsResponse($response);
     }
 }

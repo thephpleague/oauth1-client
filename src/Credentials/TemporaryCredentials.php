@@ -15,6 +15,55 @@
  */
 namespace League\OAuth1\Client\Credentials;
 
+use League\OAuth1\Client\Exceptions\ConfigurationException;
+use League\OAuth1\Client\Exceptions\CredentialsException;
+use Psr\Http\Message\ResponseInterface;
+
 class TemporaryCredentials extends Credentials
 {
+    /**
+     * Compares a given identifier with the internal identifier. Throws exception
+     * if not equal in comparison.
+     *
+     * @param  string  $identifier
+     *
+     * @return void
+     * @throws League\OAuth1\Client\Exceptions\ConfigurationException
+     */
+    public function checkIdentifier($identifier)
+    {
+        if ($identifier !== $this->getIdentifier()) {
+            ConfigurationException::handleTemporaryIdentifierMismatch();
+        } // @codeCoverageIgnore
+    }
+
+    /**
+     * Creates temporary credentials from the body response.
+     *
+     * @param Psr\Http\Message\ResponseInterface $response
+     *
+     * @return TemporaryCredentials
+     * @throws League\OAuth1\Client\Exceptions\CredentialsException
+     */
+    public static function createFromResponse(ResponseInterface $response)
+    {
+        parse_str($response->getBody(), $data);
+
+        if (!$data || !is_array($data)) {
+            CredentialsException::handleResponseParseError('temporary');
+        } // @codeCoverageIgnore
+
+        if (!isset($data['oauth_callback_confirmed']) || $data['oauth_callback_confirmed'] != 'true') {
+            $defaultError = 'OAuth keys missing from successful temporary credentials payload.';
+
+            CredentialsException::handleTemporaryCredentialsRetrievalError(
+                (isset($data['error']) ? $data['error'] : $defaultError)
+            );
+        } // @codeCoverageIgnore
+
+        return new static(
+            $data['oauth_token'],
+            $data['oauth_token_secret']
+        );
+    }
 }

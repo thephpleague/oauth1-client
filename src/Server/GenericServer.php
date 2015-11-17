@@ -15,6 +15,86 @@
  */
 namespace League\OAuth1\Client\Server;
 
+use League\OAuth1\Client\Credentials\TokenCredentials;
+use Psr\Http\Message\ResponseInterface;
+
 class GenericServer extends AbstractServer
 {
+    /**
+     * Temporary credentials uri.
+     *
+     * @var string
+     */
+    protected $temporaryCredentialsUri;
+
+    /**
+     * Authorization uri.
+     *
+     * @var string
+     */
+    protected $authorizationUri;
+
+    /**
+     * Token credentials uri.
+     *
+     * @var string
+     */
+    protected $tokenCredentialsUri;
+
+    /**
+     * Resource owner details uri.
+     *
+     * @var string
+     */
+    protected $resourceOwnerDetailsUri;
+
+    /**
+     * {@inheritdoc}
+     */
+    protected function getBaseTemporaryCredentialsUrl()
+    {
+        return $this->temporaryCredentialsUri;
+    }
+
+    /**
+     * {@inheritdoc}
+     */
+    protected function getBaseAuthorizationUrl()
+    {
+        return $this->authorizationUri;
+    }
+
+    /**
+     * {@inheritdoc}
+     */
+    protected function getBaseTokenCredentialsUrl()
+    {
+        return $this->tokenCredentialsUri;
+    }
+
+    /**
+     * {@inheritdoc}
+     */
+    protected function getResourceOwnerDetailsUrl()
+    {
+        return $this->resourceOwnerDetailsUri;
+    }
+
+    /**
+     * {@inheritdoc}
+     */
+    protected function checkResponse(ResponseInterface $response, $data)
+    {
+        //
+    }
+
+    /**
+     * {@inheritdoc}
+     */
+    protected function createResourceOwner(array $response, TokenCredentials $tokenCredentials)
+    {
+        $user = new GenericResourceOwner($response);
+
+        return $user;
+    }
 }

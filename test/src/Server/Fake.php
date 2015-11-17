@@ -16,14 +16,34 @@ namespace League\OAuth1\Client\Test\Server;
 
 use League\OAuth1\Client\Credentials\TokenCredentials;
 use League\OAuth1\Client\Server\AbstractServer;
-use League\OAuth1\Client\Server\User;
+use League\OAuth1\Client\Server\GenericResourceOwner;
+use Psr\Http\Message\ResponseInterface;
 
 class Fake extends AbstractServer
 {
+    protected $name;
+
+    public function getName()
+    {
+        return $this->name;
+    }
+
+    public function setResponseType($responseType)
+    {
+        $this->responseType = $responseType;
+
+        return $this;
+    }
+
+    public function parseResourceOwnersDetailsResponse(ResponseInterface $response)
+    {
+        parent::parseResourceOwnersDetailsResponse($response);
+    }
+
     /**
      * {@inheritdoc}
      */
-    public function urlTemporaryCredentials()
+    protected function getBaseTemporaryCredentialsUrl()
     {
         return 'http://www.example.com/temporary';
     }
@@ -31,7 +51,7 @@ class Fake extends AbstractServer
     /**
      * {@inheritdoc}
      */
-    public function urlAuthorization()
+    protected function getBaseAuthorizationUrl()
     {
         return 'http://www.example.com/authorize';
     }
@@ -39,7 +59,7 @@ class Fake extends AbstractServer
     /**
      * {@inheritdoc}
      */
-    public function urlTokenCredentials()
+    protected function getBaseTokenCredentialsUrl()
     {
         return 'http://www.example.com/token';
     }
@@ -47,7 +67,7 @@ class Fake extends AbstractServer
     /**
      * {@inheritdoc}
      */
-    public function urlUserDetails()
+    protected function getResourceOwnerDetailsUrl()
     {
         return 'http://www.example.com/user';
     }
@@ -55,35 +75,18 @@ class Fake extends AbstractServer
     /**
      * {@inheritdoc}
      */
-    public function userDetails($data, TokenCredentials $tokenCredentials)
+    protected function checkResponse(ResponseInterface $response, $data)
     {
-        $user = new User();
-        $user->firstName = $data['foo'];
+        //
+    }
+
+    /**
+     * {@inheritdoc}
+     */
+    protected function createResourceOwner(array $response, TokenCredentials $tokenCredentials)
+    {
+        $user = new GenericResourceOwner($response);
 
         return $user;
-    }
-
-    /**
-     * {@inheritdoc}
-     */
-    public function userUid($data, TokenCredentials $tokenCredentials)
-    {
-        return isset($data['id']) ? $data['id'] : null;
-    }
-
-    /**
-     * {@inheritdoc}
-     */
-    public function userEmail($data, TokenCredentials $tokenCredentials)
-    {
-        return isset($data['contact_email']) ? $data['contact_email'] : null;
-    }
-
-    /**
-     * {@inheritdoc}
-     */
-    public function userScreenName($data, TokenCredentials $tokenCredentials)
-    {
-        return isset($data['username']) ? $data['username'] : null;
     }
 }
