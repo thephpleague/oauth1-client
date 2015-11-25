@@ -73,7 +73,7 @@ class HmacSha1Signature extends Signature implements SignatureInterface
         }
 
         // compare the keys, then compare the values if the keys are identical
-        usort($data, function($a, $b) {
+        usort($data, function ($a, $b) {
             return strcmp($a[0], $b[0]) ?: strcmp($a[1], $b[1]);
         });
 
