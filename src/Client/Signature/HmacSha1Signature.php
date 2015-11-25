@@ -61,20 +61,30 @@ class HmacSha1Signature extends Signature implements SignatureInterface
         $baseString .= rawurlencode($schemeHostPath).'&';
 
         $data = array();
-        parse_str($url->getQuery(), $query);
+        $query = $this->parseQuery($url->getQuery());
         foreach (array_merge($query, $parameters) as $key => $value) {
-            $data[rawurlencode($key)] = rawurlencode($value);
+            if (is_array($value)) {
+                foreach ($value as $subValue) {
+                    $data[] = array(rawurlencode($key), rawurlencode($subValue));
+                }
+            } else {
+                $data[] = array(rawurlencode($key), rawurlencode($value));
+            }
         }
 
-        ksort($data);
-        array_walk($data, function (&$value, $key) {
-            $value = $key.'='.$value;
+        // compare the keys, then compare the values if the keys are identical
+        usort($data, function($a, $b) {
+            return strcmp($a[0], $b[0]) ?: strcmp($a[1], $b[1]);
         });
+
+        foreach ($data as $key => $pair) {
+            $data[$key] = sprintf('%s=%s', $pair[0], $pair[1]);
+        }
+
         $baseString .= rawurlencode(implode('&', $data));
 
         return $baseString;
     }
-
 
     /**
      * Parses a query string into components including properly parsing queries that have array in them like a[]=1

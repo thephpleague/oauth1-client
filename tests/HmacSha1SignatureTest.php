@@ -22,6 +22,21 @@ use League\OAuth1\Client\Signature\HmacSha1Signature;
 use Mockery as m;
 use PHPUnit_Framework_TestCase;
 
+/**
+ * Class HmacSha1SignatureTest
+ *
+ * This class validates assertions about the HMAC SHA1 signatures. Note that wherever you see some base64 encoded
+ * signature that is used as an assertion, you can calculate the actual signature by using this method:
+ *
+ * base64_encode(hash_hmac('sha1', $base, 'clientsecret&', true));
+ *
+ * The 'clientsecret&' above is embedded in the mock object in this class.
+ *
+ * Note that for convenience, the expected pre-signed string is included in each test so that you can see what the
+ * expectation is prior to signing if you are making modifications to this test or the HMAC-SHA1 implementation.
+ *
+ * @package League\OAuth1\Client\Tests
+ */
 class HmacSha1SignatureTest extends PHPUnit_Framework_TestCase
 {
     /**
@@ -89,7 +104,6 @@ class HmacSha1SignatureTest extends PHPUnit_Framework_TestCase
         );
     }
 
-
     public function testAssociativeArraysAreParsed()
     {
         $query = 'a[hello]=1&a[hello]=2&b[hi][wut]=c&b[hi][yay]=d';
@@ -108,7 +122,21 @@ class HmacSha1SignatureTest extends PHPUnit_Framework_TestCase
         $uri = 'http://www.example.com/?qux=corge';
         $parameters = array('foo' => 'bar', 'baz' => null);
 
+        // Base string: POST&http%3A%2F%2Fwww.example.com%2F&baz%3D%26foo%3Dbar%26qux%3Dcorge
+
         $this->assertEquals('A3Y7C1SUHXR1EBYIUlT3d6QT1cQ=', $signature->sign($uri, $parameters));
+    }
+
+    public function testSigningRequestWithArrayParams()
+    {
+        $signature = new HmacSha1Signature($this->getMockClientCredentials());
+
+        $uri = 'http://www.example.com/?qux[][f]=corge&qux[][f]=egroc';
+        $parameters = array('foo' => 'bar', 'baz' => null);
+
+        // Base string: POST&http%3A%2F%2Fwww.example.com%2F&baz%3D%26foo%3Dbar%26qux%255B%255D%255Bf%255D%3Dcorge%26qux%255B%255D%255Bf%255D%3Degroc
+
+        $this->assertEquals('JXp+kndmPKBtHoLiXBt7CCJAplw=', $signature->sign($uri, $parameters));
     }
 
     protected function invokeParseQuery(array $args)
