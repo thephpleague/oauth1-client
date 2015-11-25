@@ -75,6 +75,51 @@ class HmacSha1Signature extends Signature implements SignatureInterface
         return $baseString;
     }
 
+
+    /**
+     * Parses a query string into components including properly parsing queries that have array in them like a[]=1
+     * or a[hello]=1.
+     *
+     * @param string $query The query string to parse into an associative array.
+     *
+     * @return array The parsed query into a single-level associative array.
+     */
+    protected function parseQuery($query)
+    {
+        $parsed = array();
+        $parts = explode('&', $query);
+
+        foreach ($parts as $part) {
+            $equalsPos = strpos($part, '=');
+
+            if ($equalsPos === false) {
+                $key   = urldecode($part);
+                $value = '';
+            } else {
+                $key   = urldecode(substr($part, 0, $equalsPos));
+                $value = urldecode(substr($part, $equalsPos + 1));
+            }
+
+            //Example where the key for 'c' is '': a=b&=c
+            if ($key == '') {
+                continue;
+            }
+
+            if (!isset($parsed[$key])) {
+                $parsed[$key] = $value;
+            } else {
+                //ensure this is an array since we need to store multiple values
+                if (!is_array($parsed[$key])) {
+                    $parsed[$key] = array($parsed[$key]);
+                }
+
+                $parsed[$key][] = $value;
+            }
+        }
+
+        return $parsed;
+    }
+
     /**
      * Hashes a string with the signature's key.
      *

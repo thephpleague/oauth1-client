@@ -34,6 +34,73 @@ class HmacSha1SignatureTest extends PHPUnit_Framework_TestCase
         m::close();
     }
 
+    public function testASingleQueryIsParsed()
+    {
+        $query = 'a=b';
+        $res = $this->invokeParseQuery(array($query));
+
+        $this->assertSame(
+            array('a' => 'b'),
+            $res
+        );
+    }
+
+    public function testWhenAQueryKeyHasNoValue()
+    {
+        $query = 'a&c=d';
+        $res = $this->invokeParseQuery(array($query));
+
+        $this->assertSame(
+            array('a' => '', 'c' => 'd'),
+            $res
+        );
+    }
+
+    public function testWhenAQueryValueHasNoKey()
+    {
+        $query = '=a&c=d';
+        $res = $this->invokeParseQuery(array($query));
+
+        $this->assertSame(
+            array('c' => 'd'),
+            $res
+        );
+    }
+
+    public function testMultipleQueryParamsParsed()
+    {
+        $query = 'a[]=1&a[]=2&b=c';
+        $res = $this->invokeParseQuery(array($query));
+
+        $this->assertSame(
+            array('a[]' => array('1', '2'), 'b' => 'c'),
+            $res
+        );
+    }
+
+    public function testMultipleQueryParamsParsedWhenThereAreManyArrays()
+    {
+        $query = 'a[]=1&a[]=2&b[]=c&b[]=d';
+        $res = $this->invokeParseQuery(array($query));
+
+        $this->assertSame(
+            array('a[]' => array('1', '2'), 'b[]' => array('c', 'd')),
+            $res
+        );
+    }
+
+
+    public function testAssociativeArraysAreParsed()
+    {
+        $query = 'a[hello]=1&a[hello]=2&b[hi][wut]=c&b[hi][yay]=d';
+        $res = $this->invokeParseQuery(array($query));
+
+        $this->assertSame(
+            array('a[hello]' => array('1', '2'), 'b[hi][wut]' => 'c', 'b[hi][yay]' => 'd'),
+            $res
+        );
+    }
+
     public function testSigningRequest()
     {
         $signature = new HmacSha1Signature($this->getMockClientCredentials());
@@ -42,6 +109,15 @@ class HmacSha1SignatureTest extends PHPUnit_Framework_TestCase
         $parameters = array('foo' => 'bar', 'baz' => null);
 
         $this->assertEquals('A3Y7C1SUHXR1EBYIUlT3d6QT1cQ=', $signature->sign($uri, $parameters));
+    }
+
+    protected function invokeParseQuery(array $args)
+    {
+        $signature = new HmacSha1Signature(m::mock('League\OAuth1\Client\Credentials\ClientCredentialsInterface'));
+        $refl = new \ReflectionObject($signature);
+        $method = $refl->getMethod('parseQuery');
+        $method->setAccessible(true);
+        return $method->invokeArgs($signature, $args);
     }
 
     protected function getMockClientCredentials()
