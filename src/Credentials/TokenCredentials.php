@@ -15,6 +15,34 @@
  */
 namespace League\OAuth1\Client\Credentials;
 
+use League\OAuth1\Client\Exceptions\CredentialsException;
+use Psr\Http\Message\ResponseInterface;
+
 class TokenCredentials extends Credentials
 {
+    /**
+     * Creates token credentials from a given response.
+     *
+     * @param Psr\Http\Message\ResponseInterface $response
+     *
+     * @return TokenCredentials
+     * @throws League\OAuth1\Client\Exceptions\CredentialsException
+     */
+    public static function createFromResponse(ResponseInterface $response)
+    {
+        parse_str($response->getBody(), $data);
+
+        if (!$data || !is_array($data)) {
+            CredentialsException::handleResponseParseError('token');
+        } // @codeCoverageIgnore
+
+        if (isset($data['error'])) {
+            CredentialsException::handleTokenCredentialsRetrievalError($data['error']);
+        } // @codeCoverageIgnore
+
+        return new static(
+            $data['oauth_token'],
+            $data['oauth_token_secret']
+        );
+    }
 }

@@ -13,10 +13,26 @@
  * @link https://packagist.org/packages/league/oauth1-client Packagist
  * @link https://github.com/thephpleague/oauth1-client GitHub
  */
-namespace League\OAuth1\Client\Credentials;
+namespace League\OAuth1\Client\Tool;
 
-use Exception;
-
-class CredentialsException extends Exception
+/**
+ * Used to perform cryptographic operations.
+ */
+class Crypto
 {
+    /**
+     * Generate a random string.
+     *
+     * @param int $length Optional, defaults to 32
+     *
+     * @return string
+     *
+     * @see    OAuth 1.0 RFC 5849 Section 3.3
+     */
+    public static function nonce($length = 32)
+    {
+        $pool = '0123456789abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ';
+
+        return substr(str_shuffle(str_repeat($pool, 5)), 0, $length);
+    }
 }

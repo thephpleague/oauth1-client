@@ -9,15 +9,7 @@
 
 OAuth 1 Client is an OAuth [RFC 5849 standards-compliant](http://tools.ietf.org/html/rfc5849) library for authenticating against OAuth 1 servers.
 
-It has built in support for:
-
-- Bitbucket
-- Trello
-- Tumblr
-- Twitter
-- Xing
-
-Adding support for other providers is trivial. The library requires PHP 5.3+ and is PSR-2 compatible.
+Adding support for other providers is trivial. The library requires PHP 5.5+ and is PSR-2 compatible.
 
 ### Third-Party Providers
 
@@ -83,115 +75,136 @@ so please help them out with a pull request if you notice this.
 
 Via Composer
 
-```json
-{
-    "require": {
-        "league/oauth1-client": "~1.0"
-    }
-}
+```bash
+composer require league/oauth1-client
 ```
 
 
 ## Usage
 
-### Bitbucket
+### Authenticating with OAuth 1.0
 
 ```php
-$server = new League\OAuth1\Client\Server\Bitbucket(array(
-    'identifier' => 'your-identifier',
-    'secret' => 'your-secret',
-    'callback_uri' => "http://your-callback-uri/",
-));
+// Create a server instance.
+$server = new \League\OAuth1\Client\Server\GenericServer([
+    'identifier'              => 'your-identifier',
+    'secret'                  => 'your-secret',
+    'callbackUri'             => 'http://your-callback-uri/',
+    // The following are only required for use with GenericServer
+    'responseType'            => 'json', // Optional, defaults to 'json'
+    'temporaryCredentialsUri' => 'http://your.service/oauth/temporary-credentials',
+    'authorizationUri'        => 'http://your.service/oauth/authorize',
+    'tokenCredentialsUri'     => 'http://your.service/oauth/token-credentials',
+    'resourceOwnerDetailsUri' => 'http://your.service/me',
+]);
+
+// Obtain Temporary Credentials and User Authorization
+if (!isset($_GET['oauth_token'], $_GET['oauth_verifier'])) {
+
+    // First part of OAuth 1.0 authentication is to
+    // obtain Temporary Credentials.
+    $temporaryCredentials = $server->getTemporaryCredentials();
+
+    // Store credentials in the session, we'll need them later
+    $_SESSION['temporary_credentials'] = serialize($temporaryCredentials);
+    session_write_close();
+
+    // Second part of OAuth 1.0 authentication is to obtain User Authorization
+    // by redirecting the resource owner to the login screen on the server.
+    // Create an authorization url.
+    $authorizationUrl = $server->getAuthorizationUrl($temporaryCredentials);
+
+    // Redirect the user to the authorization URL. The user will be redirected
+    // to the familiar login screen on the server, where they will login to
+    // their account and authorize your app to access their data.
+    header('Location: ' . $authorizationUrl);
+    exit;
+
+// Obtain Token Credentials
+} else {
+
+    try {
+
+        // Retrieve the temporary credentials we saved before.
+        $temporaryCredentials = unserialize($_SESSION['temporary_credentials']);
+
+        // We will now obtain Token Credentials from the server.
+        $tokenCredentials = $server->getTokenCredentials(
+            $temporaryCredentials,
+            $_GET['oauth_token'],
+            $_GET['oauth_verifier']
+        );
+
+        // We have token credentials, which we may use in authenticated
+        // requests against the service provider's API.
+        echo $tokenCredentials->getIdentifier() . "\n";
+        echo $tokenCredentials->getSecret() . "\n";
+
+        // Using the access token, we may look up details about the
+        // resource owner.
+        $resourceOwner = $server->getResourceOwner($tokenCredentials);
+
+        var_export($resourceOwner->toArray());
+
+        // The server provides a way to get an authenticated API request for
+        // the service, using the access token; it returns an object conforming
+        // to Psr\Http\Message\RequestInterface.
+        $request = $server->getAuthenticatedRequest(
+            'GET',
+            'http://your.service/endpoint',
+            $tokenCredentials
+        );
+
+    } catch (\League\OAuth1\Client\Exceptions\Exception $e) {
+
+        // Failed to get the token credentials or user details.
+        exit($e->getMessage());
+
+    }
+
+}
 ```
 
-### Trello
+### Obtaining Temporary Credentials
+
+The first step to authenticating with OAuth 1 is to obtain temporary credentials. These have been referred to as **request tokens** in earlier versions of OAuth 1.
+
+To do this, we'll obtain and store temporary credentials in the session, and redirect the user to the server:
 
 ```php
-$server =  new League\OAuth1\Client\Server\Trello(array(
-    'identifier' => 'your-identifier',
-    'secret' => 'your-secret',
-    'callback_uri' => 'http://your-callback-uri/',
-    'name' => 'your-application-name', // optional, defaults to null
-    'expiration' => 'your-application-expiration', // optional ('never', '1day', '2days'), defaults to '1day'
-    'scope' => 'your-application-scope' // optional ('read', 'read,write'), defaults to 'read'
-));
-```
-
-### Tumblr
-
-```php
-$server = new League\OAuth1\Client\Server\Tumblr(array(
-    'identifier' => 'your-identifier',
-    'secret' => 'your-secret',
-    'callback_uri' => "http://your-callback-uri/",
-));
-```
-
-### Twitter
-
-```php
-$server = new League\OAuth1\Client\Server\Twitter(array(
-    'identifier' => 'your-identifier',
-    'secret' => 'your-secret',
-    'callback_uri' => "http://your-callback-uri/",
-));
-```
-
-### Xing
-
-```php
-$server = new League\OAuth1\Client\Server\Xing(array(
-    'identifier' => 'your-consumer-key',
-    'secret' => 'your-consumer-secret',
-    'callback_uri' => "http://your-callback-uri/",
-));
-```
-
-### Showing a Login Button
-
-To begin, it's advisable that you include a login button on your website. Most servers (Twitter, Tumblr etc) have resources available for making buttons that are familiar to users. Some servers actually require you use their buttons as part of their terms.
-
-```html
-<a href="authenticate.php">Login With Twitter</a>
-```
-
-### Retrieving Temporary Credentials
-
-The first step to authenticating with OAuth 1 is to retrieve temporary credentials. These have been referred to as **request tokens** in earlier versions of OAuth 1.
-
-To do this, we'll retrieve and store temporary credentials in the session, and redirect the user to the server:
-
-```php
-// Retrieve temporary credentials
+// Obtain temporary credentials
 $temporaryCredentials = $server->getTemporaryCredentials();
 
 // Store credentials in the session, we'll need them later
 $_SESSION['temporary_credentials'] = serialize($temporaryCredentials);
 session_write_close();
 
-// Second part of OAuth 1.0 authentication is to redirect the
-// resource owner to the login screen on the server.
-$server->authorize($temporaryCredentials);
+// Create an authorization url.
+$authorizationUrl = $server->getAuthorizationUrl($temporaryCredentials);
+
+// Redirect the user to the authorization URL.
+header('Location: ' . $authorizationUrl);
+exit;
 ```
 
 The user will be redirected to the familiar login screen on the server, where they will login to their account and authorise your app to access their data.
 
-### Retrieving Token Credentials
+### Obtaining Token Credentials
 
-Once the user has authenticated (or denied) your application, they will be redirected to the `callback_uri` which you specified when creating the server.
+Once the user has authenticated (or denied) your application, they will be redirected to the `callbackUri` which you specified when creating the server.
 
 > Note, some servers (such as Twitter) require that the callback URI you specify when authenticating matches what you registered with their app. This is to stop a potential third party impersonating you. This is actually part of the protocol however some servers choose to ignore this.
 >
-> Because of this, we actually require you specify a callback URI for all servers, regardless of whether the server requires it or not. This is good practice.
+> Because of this, we actually require you specify a redirect URI for all servers, regardless of whether the server requires it or not. This is good practice.
 
-You'll need to handle when the user is redirected back. This will involve retrieving token credentials, which you may then use to make calls to the server on behalf of the user. These have been referred to as **access tokens** in earlier versions of OAuth 1.
+You'll need to handle when the user is redirected back. This will involve obtaining token credentials, which you may then use to make calls to the server on behalf of the user. These have been referred to as **access tokens** in earlier versions of OAuth 1.
 
 ```php
 if (isset($_GET['oauth_token']) && isset($_GET['oauth_verifier'])) {
     // Retrieve the temporary credentials we saved before
     $temporaryCredentials = unserialize($_SESSION['temporary_credentials']);
 
-    // We will now retrieve token credentials from the server
+    // We will now obtain token credentials from the server
     $tokenCredentials = $server->getTokenCredentials($temporaryCredentials, $_GET['oauth_token'], $_GET['oauth_verifier']);
 }
 ```
@@ -215,34 +228,36 @@ Now you have token credentials stored somewhere, you may use them to make calls 
 
 While this package is not intended to be a wrapper for every server's API, it does include basic methods that you may use to retrieve limited information. An example of where this may be useful is if you are using social logins, you only need limited information to confirm who the user is.
 
-The four exposed methods are:
-
 ```php
-// User is an instance of League\OAuth1\Client\Server\User
-$user = $server->getUserDetails($tokenCredentials);
+// Using the access token, we may look up details about the
+// resource owner, returning a \League\OAuth1\Client\Server\ResourceOwnerInterface instance.
+$resourceOwner = $server->getResourceOwner($tokenCredentials);
 
-// UID is a string / integer unique representation of the user
-$uid = $server->getUserUid($tokenCredentials);
+var_export($resourceOwner->toArray());
 
-// Email is either a string or null (as some providers do not supply this data)
-$email = $server->getUserEmail($tokenCredentials);
-
-// Screen name is also known as a username (Twitter handle etc)
-$screenName = $server->getUserScreenName($tokenCredentials);
+// The server provides a way to get an authenticated API request for
+// the service, using the access token; it returns an object conforming
+// to Psr\Http\Message\RequestInterface.
+$request = $server->getAuthenticatedRequest(
+    'GET',
+    'http://your.service/endpoint',
+    $tokenCredentials
+);
 ```
-
-> `League\OAuth1\Client\Server\User` exposes a number of default public properties and also stores any additional data in an extra array - `$user->extra`. You may also iterate over a user's properties as if it was an array, `foreach ($user as $key => $value)`.
-
-## Examples
-
-Examples may be found under the [resources/examples](https://github.com/thephpleague/oauth1-client/tree/master/resources/examples) directory, which take the usage instructions here and go into a bit more depth. They are working examples that would only you substitute in your client credentials to have working.
 
 ## Testing
 
+### Running automated tests
+
 ``` bash
-$ phpunit
+$ ./vendor/bin/phpunit
 ```
 
+### Running code standard linter
+
+``` bash
+$ ./vendor/bin/phpcs src --standard=psr2 -sp
+```
 
 ## Contributing
 

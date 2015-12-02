@@ -16,6 +16,7 @@ namespace LeagueTest\OAuth1\Client;
 
 error_reporting(E_ALL | E_STRICT);
 chdir(__DIR__);
+require_once 'src/helpers.php';
 
 /**
  * Test bootstrap, for setting up autoloading.
