@@ -58,4 +58,14 @@ abstract class Credentials
     {
         return $this->secret;
     }
+
+    /**
+     * Returns identifier as string representation of credentials.
+     *
+     * @return string
+     */
+    public function __toString()
+    {
+        return $this->getIdentifier();
+    }
 }
