@@ -167,7 +167,7 @@ abstract class AbstractServer
     protected function fetchResourceOwnerDetails(TokenCredentials $tokenCredentials, $force = true)
     {
         if (!$this->cachedUserDetailsResponse || $force) {
-            $uri = $this->getResourceOwnerDetailsUrl();
+            $uri = $this->getResourceOwnerDetailsUrl($tokenCredentials);
             $headers = $this->getHeaders($tokenCredentials, 'GET', $uri);
 
             try {
@@ -427,9 +427,11 @@ abstract class AbstractServer
     /**
      * Gets the URL for retrieving user details.
      *
+     * @param  TokenCredentials $tokenCredentials
+     *
      * @return string
      */
-    abstract protected function getResourceOwnerDetailsUrl();
+    abstract protected function getResourceOwnerDetailsUrl(TokenCredentials $tokenCredentials);
 
     /**
      * Retrieves the signature associated with the server.
