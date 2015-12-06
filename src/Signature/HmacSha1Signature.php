@@ -15,8 +15,6 @@
  */
 namespace League\OAuth1\Client\Signature;
 
-use Guzzle\Http\Url;
-
 class HmacSha1Signature extends Signature implements SignatureInterface
 {
     /**
@@ -32,49 +30,33 @@ class HmacSha1Signature extends Signature implements SignatureInterface
      */
     public function sign($uri, array $parameters = array(), $method = 'POST')
     {
-        $url = $this->createUrl($uri);
-
-        $baseString = $this->baseString($url, $method, $parameters);
+        $baseString = $this->baseString($uri, $method, $parameters);
 
         return base64_encode($this->hash($baseString));
-    }
-
-    /**
-     * Create a Guzzle url for the given URI.
-     *
-     * @param string $uri
-     *
-     * @return Url
-     */
-    protected function createUrl($uri)
-    {
-        return Url::factory($uri);
     }
 
     /**
      * Generate a base string for a HMAC-SHA1 signature
      * based on the given a url, method, and any parameters.
      *
-     * @param Url    $url
+     * @param string $url
      * @param string $method
      * @param array  $parameters
      *
      * @return string
      */
-    protected function baseString(Url $url, $method = 'POST', array $parameters = array())
+    protected function baseString($url, $method = 'POST', array $parameters = array())
     {
         $baseString = rawurlencode($method).'&';
 
-        $schemeHostPath = Url::buildUrl(array(
-           'scheme' => $url->getScheme(),
-           'host' => $url->getHost(),
-           'path' => $url->getPath(),
-        ));
+        $urlParts = $this->getUrlParts($url);
+
+        $schemeHostPath = $urlParts['scheme'] .'://' . $urlParts['host'] . $urlParts['path'];
 
         $baseString .= rawurlencode($schemeHostPath).'&';
 
         $data = array();
-        parse_str($url->getQuery(), $query);
+        parse_str($urlParts['query'], $query);
         foreach (array_merge($query, $parameters) as $key => $value) {
             $data[rawurlencode($key)] = rawurlencode($value);
         }
@@ -86,6 +68,29 @@ class HmacSha1Signature extends Signature implements SignatureInterface
         $baseString .= rawurlencode(implode('&', $data));
 
         return $baseString;
+    }
+
+    /**
+     * Parses a given url into parts, ensuring specific keys are set in the
+     * resulting array.
+     *
+     * @param  string $url
+     *
+     * @return array
+     */
+    protected function getUrlParts($url)
+    {
+        $requiredParts = ['scheme', 'host', 'path', 'query'];
+
+        $urlParts = parse_url($url);
+
+        array_map(function ($part) use (&$urlParts) {
+            if (!isset($urlParts[$part])) {
+                $urlParts[$part] = '';
+            }
+        }, $requiredParts);
+
+        return $urlParts;
     }
 
     /**
