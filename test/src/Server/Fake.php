@@ -67,7 +67,7 @@ class Fake extends AbstractServer
     /**
      * {@inheritdoc}
      */
-    protected function getResourceOwnerDetailsUrl()
+    protected function getResourceOwnerDetailsUrl(TokenCredentials $tokenCredentials)
     {
         return 'http://www.example.com/user';
     }

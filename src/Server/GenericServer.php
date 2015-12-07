@@ -75,7 +75,7 @@ class GenericServer extends AbstractServer
     /**
      * {@inheritdoc}
      */
-    protected function getResourceOwnerDetailsUrl()
+    protected function getResourceOwnerDetailsUrl(TokenCredentials $tokenCredentials)
     {
         return $this->resourceOwnerDetailsUri;
     }
