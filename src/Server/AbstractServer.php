@@ -220,10 +220,11 @@ abstract class AbstractServer
      * identifier or an object instance.
      *
      * @param TemporaryCredentials|string $temporaryIdentifier
+     * @param array                       $options
      *
      * @return string
      */
-    public function getAuthorizationUrl($temporaryIdentifier)
+    public function getAuthorizationUrl($temporaryIdentifier, array $options = array())
     {
         // Somebody can pass through an instance of temporary
         // credentials and we'll extract the identifier from there.
@@ -233,7 +234,7 @@ abstract class AbstractServer
 
         $parameters = array('oauth_token' => $temporaryIdentifier);
 
-        $url = $this->getBaseAuthorizationUrl();
+        $url = $this->getBaseAuthorizationUrl($options);
         $queryString = http_build_query($parameters);
 
         return $this->buildUrl($url, $queryString);
