@@ -504,9 +504,10 @@ abstract class AbstractServer
         $uri = $this->getBaseTokenCredentialsUrl();
         $bodyParameters = array('oauth_verifier' => $verifier);
         $headers = $this->getHeaders($temporaryCredentials, 'POST', $uri, $bodyParameters);
+        $body = json_encode($bodyParameters);
 
         try {
-            $request = $this->getRequestFactory()->getRequest('POST', $uri, $headers, $bodyParameters);
+            $request = $this->getRequestFactory()->getRequest('POST', $uri, $headers, $body);
             $response = $this->getHttpClient()->send($request);
         } catch (BadResponseException $e) {
             CredentialsException::handleTokenCredentialsBadResponse($e);
