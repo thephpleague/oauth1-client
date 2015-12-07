@@ -16,6 +16,7 @@
 namespace League\OAuth1\Client\Server;
 
 use GuzzleHttp\Client as HttpClient;
+use GuzzleHttp\ClientInterface as HttpClientInterface;
 use GuzzleHttp\Exception\BadResponseException;
 use GuzzleHttp\Exception\RequestException;
 use League\OAuth1\Client\Credentials\ClientCredentials;
@@ -601,11 +602,11 @@ abstract class AbstractServer
     /**
      * Updates currently configured http client.
      *
-     * @param HttpClient  $httpClient
+     * @param HttpClientInterface  $httpClient
      *
      * @return  AbstractServer
      */
-    public function setHttpClient(HttpClient $httpClient)
+    public function setHttpClient(HttpClientInterface $httpClient)
     {
         $this->httpClient = $httpClient;
 
