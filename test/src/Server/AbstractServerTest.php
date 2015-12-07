@@ -343,7 +343,7 @@ class AbstractServerTest extends PHPUnit_Framework_TestCase
         $requestFactory = m::mock(RequestFactoryInterface::class);
         $requestFactory->shouldReceive('getRequest')->with('POST', 'http://your.service/token-credentials', m::on(function ($headers) use ($headerPattern) {
             return $this->isTokenAuthenticatedRequest($headerPattern, $headers);
-        }), array('oauth_verifier' => 'myverifiercode'))->once()->andReturn($request);
+        }), json_encode(array('oauth_verifier' => 'myverifiercode')))->once()->andReturn($request);
 
         $httpClient = $this->getHttpClientMock($request, $payload);
 
@@ -370,7 +370,7 @@ class AbstractServerTest extends PHPUnit_Framework_TestCase
         $requestFactory = m::mock(RequestFactoryInterface::class);
         $requestFactory->shouldReceive('getRequest')->with('POST', 'http://your.service/token-credentials', m::on(function ($headers) {
             return is_array($headers);
-        }), array('oauth_verifier' => 'myverifiercode'))->once()->andReturn($request);
+        }), json_encode(array('oauth_verifier' => 'myverifiercode')))->once()->andReturn($request);
 
         $httpClient = $this->getHttpClientMock($request, null, 400);
 
@@ -395,7 +395,7 @@ class AbstractServerTest extends PHPUnit_Framework_TestCase
         $requestFactory = m::mock(RequestFactoryInterface::class);
         $requestFactory->shouldReceive('getRequest')->with('POST', 'http://your.service/token-credentials', m::on(function ($headers) use ($headerPattern) {
             return $this->isTokenAuthenticatedRequest($headerPattern, $headers);
-        }), array('oauth_verifier' => 'myverifiercode'))->once()->andReturn($request);
+        }), json_encode(array('oauth_verifier' => 'myverifiercode')))->once()->andReturn($request);
 
         $httpClient = $this->getHttpClientMock($request, $payload);
 
@@ -420,7 +420,7 @@ class AbstractServerTest extends PHPUnit_Framework_TestCase
         $requestFactory = m::mock(RequestFactoryInterface::class);
         $requestFactory->shouldReceive('getRequest')->with('POST', 'http://your.service/token-credentials', m::on(function ($headers) use ($headerPattern) {
             return $this->isTokenAuthenticatedRequest($headerPattern, $headers);
-        }), array('oauth_verifier' => 'myverifiercode'))->once()->andReturn($request);
+        }), json_encode(array('oauth_verifier' => 'myverifiercode')))->once()->andReturn($request);
 
         $httpClient = $this->getHttpClientMock($request, $payload);
 
@@ -443,7 +443,7 @@ class AbstractServerTest extends PHPUnit_Framework_TestCase
         $requestFactory = m::mock(RequestFactoryInterface::class);
         $requestFactory->shouldReceive('getRequest')->with('POST', 'http://your.service/token-credentials', m::on(function ($headers) use ($userAgent, $headerPattern) {
             return $this->isTokenAuthenticatedRequest($headerPattern, $headers, $userAgent);
-        }), array('oauth_verifier' => 'myverifiercode'))->once()->andReturn($request);
+        }), json_encode(array('oauth_verifier' => 'myverifiercode')))->once()->andReturn($request);
 
         $httpClient = $this->getHttpClientMock($request, $payload);
 
