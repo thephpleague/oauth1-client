@@ -32,6 +32,7 @@ class ClientCredentialsTest extends PHPUnit_Framework_TestCase
     {
         $credentials = new ClientCredentials('foo', 'bar');
         $this->assertEquals('foo', $credentials->getIdentifier());
+        $this->assertEquals('foo', (string) $credentials);
         $this->assertEquals('bar', $credentials->getSecret());
     }
 }
