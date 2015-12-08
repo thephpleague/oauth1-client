@@ -339,7 +339,7 @@ class AbstractServerTest extends PHPUnit_Framework_TestCase
 
     public function testGettingTokenCredentials()
     {
-        $headerPattern = '/OAuth oauth_consumer_key=".*?", oauth_nonce="[a-zA-Z0-9]+", oauth_signature=".*?", oauth_signature_method="HMAC-SHA1", oauth_timestamp="\d{10}", oauth_token="temporarycredentialsidentifier", oauth_version="1.0"/';
+        $headerPattern = '/OAuth oauth_consumer_key=".*?", oauth_nonce="[a-zA-Z0-9]+", oauth_signature=".*?", oauth_signature_method="HMAC-SHA1", oauth_timestamp="\d{10}", oauth_token="temporarycredentialsidentifier", oauth_verifier="myverifiercode", oauth_version="1.0"/';
         $payload = 'oauth_token=tokencredentialsidentifier&oauth_token_secret=tokencredentialssecret';
         $request = $this->getRequestMock();
 
@@ -391,7 +391,7 @@ class AbstractServerTest extends PHPUnit_Framework_TestCase
      */
     public function testGettingTokenCredentialsThorwsExceptionOnInvalidResponse()
     {
-        $headerPattern = '/OAuth oauth_consumer_key=".*?", oauth_nonce="[a-zA-Z0-9]+", oauth_signature=".*?", oauth_signature_method="HMAC-SHA1", oauth_timestamp="\d{10}", oauth_token="temporarycredentialsidentifier", oauth_version="1.0"/';
+        $headerPattern = '/OAuth oauth_consumer_key=".*?", oauth_nonce="[a-zA-Z0-9]+", oauth_signature=".*?", oauth_signature_method="HMAC-SHA1", oauth_timestamp="\d{10}", oauth_token="temporarycredentialsidentifier", oauth_verifier="myverifiercode", oauth_version="1.0"/';
         $payload = '';
         $request = $this->getRequestMock();
 
@@ -416,7 +416,7 @@ class AbstractServerTest extends PHPUnit_Framework_TestCase
      */
     public function testGettingTokenCredentialsThorwsExceptionOnErrorInResponse()
     {
-        $headerPattern = '/OAuth oauth_consumer_key=".*?", oauth_nonce="[a-zA-Z0-9]+", oauth_signature=".*?", oauth_signature_method="HMAC-SHA1", oauth_timestamp="\d{10}", oauth_token="temporarycredentialsidentifier", oauth_version="1.0"/';
+        $headerPattern = '/OAuth oauth_consumer_key=".*?", oauth_nonce="[a-zA-Z0-9]+", oauth_signature=".*?", oauth_signature_method="HMAC-SHA1", oauth_timestamp="\d{10}", oauth_token="temporarycredentialsidentifier", oauth_verifier="myverifiercode", oauth_version="1.0"/';
         $payload = 'error=foo';
         $request = $this->getRequestMock();
 
@@ -438,7 +438,7 @@ class AbstractServerTest extends PHPUnit_Framework_TestCase
 
     public function testGettingTokenCredentialsWithUserAgent()
     {
-        $headerPattern = '/OAuth oauth_consumer_key=".*?", oauth_nonce="[a-zA-Z0-9]+", oauth_signature=".*?", oauth_signature_method="HMAC-SHA1", oauth_timestamp="\d{10}", oauth_token="temporarycredentialsidentifier", oauth_version="1.0"/';
+        $headerPattern = '/OAuth oauth_consumer_key=".*?", oauth_nonce="[a-zA-Z0-9]+", oauth_signature=".*?", oauth_signature_method="HMAC-SHA1", oauth_timestamp="\d{10}", oauth_token="temporarycredentialsidentifier", oauth_verifier="myverifiercode", oauth_version="1.0"/';
         $userAgent = 'FooBar';
         $payload = 'oauth_token=tokencredentialsidentifier&oauth_token_secret=tokencredentialssecret';
         $request = $this->getRequestMock();

@@ -28,6 +28,7 @@ use League\OAuth1\Client\Exceptions\ConfigurationException;
 use League\OAuth1\Client\Exceptions\CredentialsException;
 use League\OAuth1\Client\Signature\HmacSha1Signature;
 use League\OAuth1\Client\Signature\SignatureInterface;
+use League\OAuth1\Client\Tool\ArrayAccessorTrait;
 use League\OAuth1\Client\Tool\Crypto;
 use League\OAuth1\Client\Tool\RequestFactory;
 use League\OAuth1\Client\Tool\RequestFactoryInterface;
@@ -35,6 +36,8 @@ use Psr\Http\Message\ResponseInterface;
 
 abstract class AbstractServer
 {
+    use ArrayAccessorTrait;
+
     /**
      * Client credentials.
      *
@@ -388,6 +391,7 @@ abstract class AbstractServer
             $this->getAdditionalProtocolParameters(),
             array(
                 'oauth_token' => $credentials->getIdentifier(),
+                'oauth_verifier' => static::getValueByKey($bodyParameters, 'oauth_verifier'),
             )
         );
 
@@ -526,6 +530,10 @@ abstract class AbstractServer
      */
     protected function normalizeProtocolParameters(array $parameters)
     {
+        $parameters = array_filter($parameters, function ($value) {
+            return !empty($value);
+        });
+
         array_walk($parameters, function (&$value, $key) {
             $value = rawurlencode($key).'="'.rawurlencode($value).'"';
         });
