@@ -259,7 +259,7 @@ abstract class AbstractServer
     protected function getBaseProtocolParameters()
     {
         return array(
-            'oauth_consumer_key' => $this->clientCredentials->getIdentifier(),
+            'oauth_consumer_key' => (string) $this->clientCredentials,
             'oauth_nonce' => Crypto::nonce(),
             'oauth_signature_method' => $this->signature->method(),
             'oauth_timestamp' => (new \DateTime())->format('U'),
@@ -462,6 +462,9 @@ abstract class AbstractServer
             $request = $this->getRequestFactory()->getRequest('GET', $uri, $headers);
             $response = $this->getHttpClient()->send($request);
         } catch (BadResponseException $e) {
+            echo "<pre>";
+            print_r($headers);
+            print_r((string) $e->getResponse()->getBody());
             CredentialsException::handleTemporaryCredentialsBadResponse($e);
         }
 
@@ -529,6 +532,8 @@ abstract class AbstractServer
         array_walk($parameters, function (&$value, $key) {
             $value = rawurlencode($key).'="'.rawurlencode($value).'"';
         });
+
+        ksort($parameters);
 
         return 'OAuth '.implode(', ', $parameters);
     }
