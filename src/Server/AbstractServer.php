@@ -259,7 +259,7 @@ abstract class AbstractServer
     protected function getBaseProtocolParameters()
     {
         return array(
-            'oauth_consumer_key' => (string) $this->clientCredentials,
+            'oauth_consumer_key' => $this->clientCredentials->getIdentifier(),
             'oauth_nonce' => Crypto::nonce(),
             'oauth_signature_method' => $this->signature->method(),
             'oauth_timestamp' => (new \DateTime())->format('U'),
@@ -459,12 +459,9 @@ abstract class AbstractServer
         $headers = $this->buildHttpClientHeaders($authorizationHeader);
 
         try {
-            $request = $this->getRequestFactory()->getRequest('GET', $uri, $headers);
+            $request = $this->getRequestFactory()->getRequest('POST', $uri, $headers);
             $response = $this->getHttpClient()->send($request);
         } catch (BadResponseException $e) {
-            echo "<pre>";
-            print_r($headers);
-            print_r((string) $e->getResponse()->getBody());
             CredentialsException::handleTemporaryCredentialsBadResponse($e);
         }
 
