@@ -28,6 +28,7 @@ These providers allow integration with other providers not supported by `oauth1-
 so please help them out with a pull request if you notice this.
 
 - [Intuit](https://packagist.org/packages/wheniwork/oauth1-intuit)
+- [500px](https://packagist.org/packages/mechant/oauth1-500px)
 
 #### Terminology (as per the RFC 5849 specification):
 
