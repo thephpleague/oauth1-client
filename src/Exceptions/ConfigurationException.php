@@ -26,7 +26,7 @@ class ConfigurationException extends Exception
      */
     public static function handleInvalidResponseType($responseType)
     {
-        throw new static("Invalid response type [{$responseType}].");
+        return new static("Invalid response type [{$responseType}].");
     }
 
     /**
@@ -38,7 +38,7 @@ class ConfigurationException extends Exception
      */
     public static function handleMissingRequiredOption($requiredOption)
     {
-        throw new static("Expected {$requiredOption} option to create client credentials.");
+        return new static("Expected {$requiredOption} option to create client credentials.");
     }
 
     /**
@@ -48,7 +48,7 @@ class ConfigurationException extends Exception
      */
     public static function handleTemporaryIdentifierMismatch()
     {
-        throw new static('Temporary identifier passed back by server does not match
+        return new static('Temporary identifier passed back by server does not match
             that of stored temporary credentials. Potential man-in-the-middle.');
     }
 }

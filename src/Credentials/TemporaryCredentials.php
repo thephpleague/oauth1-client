@@ -33,8 +33,8 @@ class TemporaryCredentials extends Credentials
     public function checkIdentifier($identifier)
     {
         if ($identifier !== $this->getIdentifier()) {
-            ConfigurationException::handleTemporaryIdentifierMismatch();
-        } // @codeCoverageIgnore
+            throw ConfigurationException::handleTemporaryIdentifierMismatch();
+        }
     }
 
     /**
@@ -50,16 +50,16 @@ class TemporaryCredentials extends Credentials
         parse_str($response->getBody(), $data);
 
         if (!$data || !is_array($data)) {
-            CredentialsException::handleResponseParseError('temporary');
-        } // @codeCoverageIgnore
+            throw CredentialsException::handleResponseParseError('temporary');
+        }
 
         if (!isset($data['oauth_callback_confirmed']) || $data['oauth_callback_confirmed'] != 'true') {
             $defaultError = 'OAuth keys missing from successful temporary credentials payload.';
 
-            CredentialsException::handleTemporaryCredentialsRetrievalError(
+            throw CredentialsException::handleTemporaryCredentialsRetrievalError(
                 (isset($data['error']) ? $data['error'] : $defaultError)
             );
-        } // @codeCoverageIgnore
+        }
 
         return new static(
             $data['oauth_token'],
