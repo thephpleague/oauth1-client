@@ -179,7 +179,7 @@ abstract class AbstractServer
                 );
                 $response = $this->getHttpClient()->send($request);
             } catch (BadResponseException $e) {
-                Exception::handleUserDetailsRetrievalException($e);
+                throw Exception::handleUserDetailsRetrievalException($e);
             }
 
             $this->parseResourceOwnersDetailsResponse($response);
@@ -462,7 +462,7 @@ abstract class AbstractServer
             $request = $this->getRequestFactory()->getRequest('GET', $uri, $headers);
             $response = $this->getHttpClient()->send($request);
         } catch (BadResponseException $e) {
-            CredentialsException::handleTemporaryCredentialsBadResponse($e);
+            throw CredentialsException::handleTemporaryCredentialsBadResponse($e);
         }
 
         return TemporaryCredentials::createFromResponse($response);
@@ -510,7 +510,7 @@ abstract class AbstractServer
             $request = $this->getRequestFactory()->getRequest('POST', $uri, $headers, $body);
             $response = $this->getHttpClient()->send($request);
         } catch (BadResponseException $e) {
-            CredentialsException::handleTokenCredentialsBadResponse($e);
+            throw CredentialsException::handleTokenCredentialsBadResponse($e);
         }
 
         return TokenCredentials::createFromResponse($response);
@@ -555,7 +555,7 @@ abstract class AbstractServer
                 parse_str($response->getBody(), $this->cachedUserDetailsResponse);
                 break;
             default:
-                ConfigurationException::handleInvalidResponseType($this->responseType);
+                throw ConfigurationException::handleInvalidResponseType($this->responseType);
         }
     }
 

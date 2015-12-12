@@ -34,7 +34,7 @@ class Exception extends BaseException
         $body = $response->getBody();
         $statusCode = $response->getStatusCode();
 
-        throw new static(
+        return new static(
             "Received error [$body] with status code [$statusCode] when retrieving token credentials."
         );
     }

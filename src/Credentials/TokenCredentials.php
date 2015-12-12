@@ -33,12 +33,12 @@ class TokenCredentials extends Credentials
         parse_str($response->getBody(), $data);
 
         if (!$data || !is_array($data)) {
-            CredentialsException::handleResponseParseError('token');
-        } // @codeCoverageIgnore
+            throw CredentialsException::handleResponseParseError('token');
+        }
 
         if (isset($data['error'])) {
-            CredentialsException::handleTokenCredentialsRetrievalError($data['error']);
-        } // @codeCoverageIgnore
+            throw CredentialsException::handleTokenCredentialsRetrievalError($data['error']);
+        }
 
         return new static(
             $data['oauth_token'],

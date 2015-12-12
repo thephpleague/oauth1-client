@@ -28,7 +28,7 @@ class CredentialsException extends Exception
      */
     public static function handleResponseParseError($type)
     {
-        throw new static("Unable to parse $type credentials response.");
+        return new static("Unable to parse $type credentials response.");
     }
 
     /**
@@ -44,7 +44,7 @@ class CredentialsException extends Exception
         $body = $response->getBody();
         $statusCode = $response->getStatusCode();
 
-        throw new static(
+        return new static(
             "Received HTTP status code [$statusCode] with message \"$body\" when getting temporary credentials."
         );
     }
@@ -56,7 +56,7 @@ class CredentialsException extends Exception
      */
     public static function handleTemporaryCredentialsRetrievalError()
     {
-        throw new static('Error in retrieving temporary credentials.');
+        return new static('Error in retrieving temporary credentials.');
     }
 
     /**
@@ -72,7 +72,7 @@ class CredentialsException extends Exception
         $body = $response->getBody();
         $statusCode = $response->getStatusCode();
 
-        throw new static(
+        return new static(
             "Received HTTP status code [$statusCode] with message \"$body\" when getting token credentials."
         );
     }
@@ -86,6 +86,6 @@ class CredentialsException extends Exception
      */
     public static function handleTokenCredentialsRetrievalError($error)
     {
-        throw new static("Error [{$error}] in retrieving token credentials.");
+        return new static("Error [{$error}] in retrieving token credentials.");
     }
 }
