@@ -53,8 +53,8 @@ class ClientCredentials extends Credentials
     {
         array_map(function ($required) use ($options) {
             if (!array_key_exists($required, $options)) {
-                ConfigurationException::handleMissingRequiredOption($required);
-            } // @codeCoverageIgnore
+                throw ConfigurationException::missingRequiredOption($required);
+            }
         }, ['identifier', 'secret', 'callbackUri']);
 
         return new static(

@@ -20,35 +20,43 @@ class ConfigurationException extends Exception
     /**
      * Handles an invalid response type.
      *
-     * @param  string  $responseType
+     * @param string $responseType
      *
-     * @throws ConfigurationException
+     * @return static
      */
-    public static function handleInvalidResponseType($responseType)
+    public static function invalidResponseType($responseType)
     {
-        throw new static("Invalid response type [{$responseType}].");
+        return new static(sprintf(
+            'Invalid response type `%s`.',
+            $responseType
+        ));
     }
 
     /**
      * Handles a missing required option.
      *
-     * @param  string  $requiredOption
+     * @param string $requiredOption
      *
-     * @throws ConfigurationException
+     * @return static
      */
-    public static function handleMissingRequiredOption($requiredOption)
+    public static function missingRequiredOption($requiredOption)
     {
-        throw new static("Expected {$requiredOption} option to create client credentials.");
+        return new static(sprintf(
+            'Expected `%s` option to create client credentials.',
+            $requiredOption
+        ));
     }
 
     /**
      * Handles a temporary identifier mismatch.
      *
-     * @throws ConfigurationException
+     * @return ConfigurationException
      */
-    public static function handleTemporaryIdentifierMismatch()
+    public static function temporaryIdentifierMismatch()
     {
-        throw new static('Temporary identifier passed back by server does not match
-            that of stored temporary credentials. Potential man-in-the-middle.');
+        return new static(
+            'Temporary identifier passed back by server does not match that of ' .
+            'stored temporary credentials. Potential man-in-the-middle.'
+        );
     }
 }

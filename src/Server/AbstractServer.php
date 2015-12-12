@@ -450,6 +450,8 @@ abstract class AbstractServer
      * the server.
      *
      * @return TemporaryCredentials
+     *
+     * @throws CredentialsException If the request failed
      */
     public function getTemporaryCredentials()
     {
@@ -462,7 +464,7 @@ abstract class AbstractServer
             $request = $this->getRequestFactory()->getRequest('GET', $uri, $headers);
             $response = $this->getHttpClient()->send($request);
         } catch (BadResponseException $e) {
-            CredentialsException::handleTemporaryCredentialsBadResponse($e);
+            throw CredentialsException::temporaryCredentialsBadResponse($e);
         }
 
         return TemporaryCredentials::createFromResponse($response);
@@ -497,6 +499,8 @@ abstract class AbstractServer
      * @param string               $verifier
      *
      * @return TokenCredentials
+     *
+     * @throws CredentialsException If the request failed
      */
     public function getTokenCredentials(TemporaryCredentials $temporaryCredentials, $temporaryIdentifier, $verifier)
     {
@@ -510,7 +514,7 @@ abstract class AbstractServer
             $request = $this->getRequestFactory()->getRequest('POST', $uri, $headers, $body);
             $response = $this->getHttpClient()->send($request);
         } catch (BadResponseException $e) {
-            CredentialsException::handleTokenCredentialsBadResponse($e);
+            throw CredentialsException::tokenCredentialsBadResponse($e);
         }
 
         return TokenCredentials::createFromResponse($response);
@@ -555,7 +559,7 @@ abstract class AbstractServer
                 parse_str($response->getBody(), $this->cachedUserDetailsResponse);
                 break;
             default:
-                ConfigurationException::handleInvalidResponseType($this->responseType);
+                throw ConfigurationException::invalidResponseType($this->responseType);
         }
     }
 
