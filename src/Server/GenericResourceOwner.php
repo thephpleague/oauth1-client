@@ -37,7 +37,7 @@ class GenericResourceOwner implements IteratorAggregate, ResourceOwnerInterface
     }
 
     /**
-     * {@inheritdoc}
+     * @inheritdoc
      */
     public function getIterator()
     {

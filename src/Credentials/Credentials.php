@@ -44,7 +44,7 @@ abstract class Credentials
     }
 
     /**
-     * {@inheritdoc}
+     * @inheritdoc
      */
     public function getIdentifier()
     {
@@ -52,7 +52,7 @@ abstract class Credentials
     }
 
     /**
-     * {@inheritdoc}
+     * @inheritdoc
      */
     public function getSecret()
     {
