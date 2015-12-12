@@ -15,6 +15,8 @@
  */
 namespace League\OAuth1\Client\Tool;
 
+use RandomLib\Factory;
+
 /**
  * Used to perform cryptographic operations.
  */
@@ -33,6 +35,9 @@ class Crypto
     {
         $pool = '0123456789abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ';
 
-        return substr(str_shuffle(str_repeat($pool, 5)), 0, $length);
+        $factory = new Factory();
+        $generator = $factory->getMediumStrengthGenerator();
+
+        return $generator->generateString($length, $pool);
     }
 }
