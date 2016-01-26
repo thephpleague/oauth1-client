@@ -141,6 +141,9 @@ class Magento extends Server
     public function userEmail($data, TokenCredentials $tokenCredentials)
     {
         $data = current($data);
+        if (!isset($data['email'])) {
+            return;
+        }
         return $data['email'];
     }
 
