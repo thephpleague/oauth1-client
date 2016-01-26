@@ -113,7 +113,7 @@ class Magento extends Server
         $user->firstName = $data['firstname'];
         $user->lastName = $data['lastname'];
 
-        $used = ['email', 'firstname', 'lastname'];
+        $used = array('email', 'firstname', 'lastname');
         $user->extra = array_diff_key($data, array_flip($used));
 
         return $user;
