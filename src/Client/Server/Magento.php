@@ -109,12 +109,20 @@ class Magento extends Server
 
         $user = new User();
         $user->uid = $id;
-        $user->email = $data['email'];
-        $user->firstName = $data['firstname'];
-        $user->lastName = $data['lastname'];
 
-        $used = array('email', 'firstname', 'lastname');
-        $user->extra = array_diff_key($data, array_flip($used));
+        $mapping = array(
+            'email' => 'email',
+            'firstName' => 'firstname',
+            'lastName'  => 'lastname',
+        );
+        foreach ($mapping as $userKey => $dataKey) {
+            if (!isset($data[$dataKey])) {
+                continue;
+            }
+            $user->{$userKey} = $data[$dataKey];
+        }
+
+        $user->extra = array_diff_key($data, array_flip($mapping));
 
         return $user;
     }
