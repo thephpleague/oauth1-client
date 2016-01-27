@@ -97,10 +97,7 @@ class Magento extends Server
      */
     public function userDetails($data, TokenCredentials $tokenCredentials)
     {
-        // Check if Magento returns authenticated user only.
-        // It's done in case if '/api/rest/customers' returned all users in older
-        // Magento versions.
-        if (count($data) !== 1) {
+        if (!is_array($data) || !count($data)) {
             throw new \Exception('Not possible to get user info');
         }
 
