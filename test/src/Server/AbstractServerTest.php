@@ -63,9 +63,9 @@ class AbstractServerTest extends PHPUnit_Framework_TestCase
         );
     }
 
-    protected function getRequestMock()
+    protected function getRequestMock($method = 'GET')
     {
-        $request = RequestFactory::getRequest('GET', 'http://foo.bar');
+        $request = RequestFactory::getRequest($method, 'http://foo.bar');
 
         return $request;
     }
@@ -137,6 +137,9 @@ class AbstractServerTest extends PHPUnit_Framework_TestCase
     protected function isTempAuthenticatedRequest($pattern, $headers, $userAgent = null)
     {
         $this->assertTrue(isset($headers['Authorization']));
+        if (is_array($headers['Authorization'])) {
+            $headers['Authorization'] = $headers['Authorization'][0];
+        }
         $matches = preg_match($pattern, $headers['Authorization']);
         $this->assertEquals(1, $matches, 'Asserting that the authorization header contains the correct expression.');
 
@@ -246,18 +249,18 @@ class AbstractServerTest extends PHPUnit_Framework_TestCase
 
     public function testGettingTemporaryCredentials()
     {
-        $headerPattern = '/OAuth oauth_consumer_key=".*?", oauth_nonce="[a-zA-Z0-9]+", oauth_signature_method="HMAC-SHA1", oauth_timestamp="\d{10}", oauth_version="1.0", oauth_callback="'.preg_quote('http%3A%2F%2Fapp.dev%2F', '/').'", oauth_signature=".*?"/';
+        $headerPattern = '/OAuth oauth_callback="'.preg_quote('http%3A%2F%2Fapp.dev%2F', '/').'", oauth_consumer_key=".*?", oauth_nonce="[a-zA-Z0-9]+", oauth_signature=".*?", oauth_signature_method="HMAC-SHA1", oauth_timestamp="\d{10}", oauth_version="1.0"/';
         $payload = 'oauth_token=temporarycredentialsidentifier&oauth_token_secret=temporarycredentialssecret&oauth_callback_confirmed=true';
-        $request = $this->getRequestMock();
+        $request = $this->getRequestMock('POST');
 
-        $requestFactory = m::mock(RequestFactoryInterface::class);
-        $requestFactory->shouldReceive('getRequest')->with('GET', 'http://your.service/temporary-credentials', m::on(function ($headers) use ($headerPattern) {
-            return $this->isTempAuthenticatedRequest($headerPattern, $headers);
-        }))->once()->andReturn($request);
+        $httpClient = $this->getHttpClientMock(m::on(function ($request) use ($headerPattern) {
+            $this->assertEquals('POST', $request->getMethod());
+            $this->assertArrayHasKey('Authorization', $request->getHeaders());
 
-        $httpClient = $this->getHttpClientMock($request, $payload);
+            return $this->isTempAuthenticatedRequest($headerPattern, $request->getHeaders());
+        }), $payload);
 
-        $collaborators = ['httpClient' => $httpClient, 'requestFactory' => $requestFactory];
+        $collaborators = ['httpClient' => $httpClient];
 
         $server = $this->getServerMock($collaborators);
 
@@ -275,7 +278,7 @@ class AbstractServerTest extends PHPUnit_Framework_TestCase
         $request = $this->getRequestMock();
 
         $requestFactory = m::mock(RequestFactoryInterface::class);
-        $requestFactory->shouldReceive('getRequest')->with('GET', 'http://your.service/temporary-credentials', m::on(function ($headers) {
+        $requestFactory->shouldReceive('getRequest')->with('POST', 'http://your.service/temporary-credentials', m::on(function ($headers) {
             return is_array($headers);
         }))->once()->andReturn($request);
 
@@ -293,12 +296,12 @@ class AbstractServerTest extends PHPUnit_Framework_TestCase
      */
     public function testGettingTemporaryCredentialsThrowsExceptionOnInvalidResponse()
     {
-        $headerPattern = '/OAuth oauth_consumer_key=".*?", oauth_nonce="[a-zA-Z0-9]+", oauth_signature_method="HMAC-SHA1", oauth_timestamp="\d{10}", oauth_version="1.0", oauth_callback="'.preg_quote('http%3A%2F%2Fapp.dev%2F', '/').'", oauth_signature=".*?"/';
+        $headerPattern = '/OAuth oauth_callback="'.preg_quote('http%3A%2F%2Fapp.dev%2F', '/').'", oauth_consumer_key=".*?", oauth_nonce="[a-zA-Z0-9]+", oauth_signature=".*?", oauth_signature_method="HMAC-SHA1", oauth_timestamp="\d{10}", oauth_version="1.0"/';
         $payload = '';
         $request = $this->getRequestMock();
 
         $requestFactory = m::mock(RequestFactoryInterface::class);
-        $requestFactory->shouldReceive('getRequest')->with('GET', 'http://your.service/temporary-credentials', m::on(function ($headers) use ($headerPattern) {
+        $requestFactory->shouldReceive('getRequest')->with('POST', 'http://your.service/temporary-credentials', m::on(function ($headers) use ($headerPattern) {
             return $this->isTempAuthenticatedRequest($headerPattern, $headers);
         }))->once()->andReturn($request);
 
@@ -316,12 +319,12 @@ class AbstractServerTest extends PHPUnit_Framework_TestCase
      */
     public function testGettingTemporaryCredentialsThrowsExceptionOnMissingOauthKeys()
     {
-        $headerPattern = '/OAuth oauth_consumer_key=".*?", oauth_nonce="[a-zA-Z0-9]+", oauth_signature_method="HMAC-SHA1", oauth_timestamp="\d{10}", oauth_version="1.0", oauth_callback="'.preg_quote('http%3A%2F%2Fapp.dev%2F', '/').'", oauth_signature=".*?"/';
+        $headerPattern = '/OAuth oauth_callback="'.preg_quote('http%3A%2F%2Fapp.dev%2F', '/').'", oauth_consumer_key=".*?", oauth_nonce="[a-zA-Z0-9]+", oauth_signature=".*?", oauth_signature_method="HMAC-SHA1", oauth_timestamp="\d{10}", oauth_version="1.0"/';
         $payload = 'foo=bar';
         $request = $this->getRequestMock();
 
         $requestFactory = m::mock(RequestFactoryInterface::class);
-        $requestFactory->shouldReceive('getRequest')->with('GET', 'http://your.service/temporary-credentials', m::on(function ($headers) use ($headerPattern) {
+        $requestFactory->shouldReceive('getRequest')->with('POST', 'http://your.service/temporary-credentials', m::on(function ($headers) use ($headerPattern) {
             return $this->isTempAuthenticatedRequest($headerPattern, $headers);
         }))->once()->andReturn($request);
 
@@ -336,7 +339,7 @@ class AbstractServerTest extends PHPUnit_Framework_TestCase
 
     public function testGettingTokenCredentials()
     {
-        $headerPattern = '/OAuth oauth_consumer_key=".*?", oauth_nonce="[a-zA-Z0-9]+", oauth_signature_method="HMAC-SHA1", oauth_timestamp="\d{10}", oauth_version="1.0", oauth_token="temporarycredentialsidentifier", oauth_signature=".*?"/';
+        $headerPattern = '/OAuth oauth_consumer_key=".*?", oauth_nonce="[a-zA-Z0-9]+", oauth_signature=".*?", oauth_signature_method="HMAC-SHA1", oauth_timestamp="\d{10}", oauth_token="temporarycredentialsidentifier", oauth_verifier="myverifiercode", oauth_version="1.0"/';
         $payload = 'oauth_token=tokencredentialsidentifier&oauth_token_secret=tokencredentialssecret';
         $request = $this->getRequestMock();
 
@@ -388,7 +391,7 @@ class AbstractServerTest extends PHPUnit_Framework_TestCase
      */
     public function testGettingTokenCredentialsThorwsExceptionOnInvalidResponse()
     {
-        $headerPattern = '/OAuth oauth_consumer_key=".*?", oauth_nonce="[a-zA-Z0-9]+", oauth_signature_method="HMAC-SHA1", oauth_timestamp="\d{10}", oauth_version="1.0", oauth_token="temporarycredentialsidentifier", oauth_signature=".*?"/';
+        $headerPattern = '/OAuth oauth_consumer_key=".*?", oauth_nonce="[a-zA-Z0-9]+", oauth_signature=".*?", oauth_signature_method="HMAC-SHA1", oauth_timestamp="\d{10}", oauth_token="temporarycredentialsidentifier", oauth_verifier="myverifiercode", oauth_version="1.0"/';
         $payload = '';
         $request = $this->getRequestMock();
 
@@ -413,7 +416,7 @@ class AbstractServerTest extends PHPUnit_Framework_TestCase
      */
     public function testGettingTokenCredentialsThorwsExceptionOnErrorInResponse()
     {
-        $headerPattern = '/OAuth oauth_consumer_key=".*?", oauth_nonce="[a-zA-Z0-9]+", oauth_signature_method="HMAC-SHA1", oauth_timestamp="\d{10}", oauth_version="1.0", oauth_token="temporarycredentialsidentifier", oauth_signature=".*?"/';
+        $headerPattern = '/OAuth oauth_consumer_key=".*?", oauth_nonce="[a-zA-Z0-9]+", oauth_signature=".*?", oauth_signature_method="HMAC-SHA1", oauth_timestamp="\d{10}", oauth_token="temporarycredentialsidentifier", oauth_verifier="myverifiercode", oauth_version="1.0"/';
         $payload = 'error=foo';
         $request = $this->getRequestMock();
 
@@ -435,7 +438,7 @@ class AbstractServerTest extends PHPUnit_Framework_TestCase
 
     public function testGettingTokenCredentialsWithUserAgent()
     {
-        $headerPattern = '/OAuth oauth_consumer_key=".*?", oauth_nonce="[a-zA-Z0-9]+", oauth_signature_method="HMAC-SHA1", oauth_timestamp="\d{10}", oauth_version="1.0", oauth_token="temporarycredentialsidentifier", oauth_signature=".*?"/';
+        $headerPattern = '/OAuth oauth_consumer_key=".*?", oauth_nonce="[a-zA-Z0-9]+", oauth_signature=".*?", oauth_signature_method="HMAC-SHA1", oauth_timestamp="\d{10}", oauth_token="temporarycredentialsidentifier", oauth_verifier="myverifiercode", oauth_version="1.0"/';
         $userAgent = 'FooBar';
         $payload = 'oauth_token=tokencredentialsidentifier&oauth_token_secret=tokencredentialssecret';
         $request = $this->getRequestMock();
@@ -462,7 +465,7 @@ class AbstractServerTest extends PHPUnit_Framework_TestCase
 
     public function testGettingUserDetails()
     {
-        $headerPattern = '/OAuth oauth_consumer_key=".*?", oauth_nonce="[a-zA-Z0-9]+", oauth_signature_method="HMAC-SHA1", oauth_timestamp="\d{10}", oauth_version="1.0", oauth_token="tokencredentialsidentifier", oauth_signature=".*?"/';
+        $headerPattern = '/OAuth oauth_consumer_key=".*?", oauth_nonce="[a-zA-Z0-9]+", oauth_signature=".*?", oauth_signature_method="HMAC-SHA1", oauth_timestamp="\d{10}", oauth_token="tokencredentialsidentifier", oauth_version="1.0"/';
         $userData = ['foo' => 'bar', 'id' => 123, 'contact_email' => 'baz@qux.com', 'username' => 'fred'];
         $payload = json_encode($userData);
         $request = $this->getRequestMock();
@@ -515,7 +518,7 @@ class AbstractServerTest extends PHPUnit_Framework_TestCase
         // OAuth protocol specifies a strict number of
         // headers should be sent, in the correct order.
         // We'll validate that here.
-        $pattern = '/OAuth oauth_consumer_key=".*?", oauth_nonce="[a-zA-Z0-9]+", oauth_signature_method="HMAC-SHA1", oauth_timestamp="\d{10}", oauth_version="1.0", oauth_token="tokencredentialsidentifier", oauth_signature=".*?"/';
+        $pattern = '/OAuth oauth_consumer_key=".*?", oauth_nonce="[a-zA-Z0-9]+", oauth_signature=".*?", oauth_signature_method="HMAC-SHA1", oauth_timestamp="\d{10}", oauth_token="tokencredentialsidentifier", oauth_version="1.0"/';
 
         $tokenCredentials = $this->getTokenCredentialsMock();
 
@@ -536,7 +539,7 @@ class AbstractServerTest extends PHPUnit_Framework_TestCase
 
     public function testGettingAuthenticatedRequest()
     {
-        $headerPattern = '/OAuth oauth_consumer_key=".*?", oauth_nonce="[a-zA-Z0-9]+", oauth_signature_method="HMAC-SHA1", oauth_timestamp="\d{10}", oauth_version="1.0", oauth_token="tokencredentialsidentifier", oauth_signature=".*?"/';
+        $headerPattern = '/OAuth oauth_consumer_key=".*?", oauth_nonce="[a-zA-Z0-9]+", oauth_signature=".*?", oauth_signature_method="HMAC-SHA1", oauth_timestamp="\d{10}", oauth_token="tokencredentialsidentifier", oauth_version="1.0"/';
         $url = 'foo';
         $method = 'bar';
 
