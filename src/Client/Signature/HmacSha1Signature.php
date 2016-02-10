@@ -77,14 +77,14 @@ class HmacSha1Signature extends Signature implements SignatureInterface
     }
 
     /**
-     * Creates an array of urlencoded strings out of each array key/value pair
+     * Creates an array of rawurlencoded strings out of each array key/value pair
      * Handles multi-demensional arrays recursively.
      *
      * @param  array  $data        Array of parameters to convert.
      * @param  array  $queryParams Array to extend. False by default.
      * @param  string $prevKey     Optional Array key to append
      *
-     * @return string              urlencoded string version of data
+     * @return string              rawurlencoded string version of data
      */
     protected function queryStringFromData($data, $queryParams = false, $prevKey = '')
     {
@@ -99,7 +99,7 @@ class HmacSha1Signature extends Signature implements SignatureInterface
             if (is_array($value)) {
                 $queryParams = $this->queryStringFromData($value, $queryParams, $key);
             } else {
-                $queryParams[] = urlencode($key.'='.$value); // join with equals sign
+                $queryParams[] = rawurlencode($key.'='.$value); // join with equals sign
             }
         }
 
