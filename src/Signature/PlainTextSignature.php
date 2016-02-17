@@ -18,7 +18,7 @@ namespace League\OAuth1\Client\Signature;
 class PlainTextSignature extends Signature implements SignatureInterface
 {
     /**
-     * {@inheritdoc}
+     * @inheritdoc
      */
     public function method()
     {
@@ -26,7 +26,7 @@ class PlainTextSignature extends Signature implements SignatureInterface
     }
 
     /**
-     * {@inheritdoc}
+     * @inheritdoc
      */
     public function sign($uri, array $parameters = array(), $method = 'POST')
     {

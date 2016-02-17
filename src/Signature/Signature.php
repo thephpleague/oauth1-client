@@ -35,7 +35,9 @@ abstract class Signature implements SignatureInterface
     protected $credentials;
 
     /**
-     * {@inheritdoc}
+     * Creates signature instance.
+     *
+     * @param ClientCredentials  $clientCredentials
      */
     public function __construct(ClientCredentials $clientCredentials)
     {
@@ -43,7 +45,7 @@ abstract class Signature implements SignatureInterface
     }
 
     /**
-     * {@inheritdoc}
+     * @inheritdoc
      */
     public function setCredentials(Credentials $credentials)
     {
