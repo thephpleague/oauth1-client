@@ -22,70 +22,80 @@ class CredentialsException extends Exception
     /**
      * Handles an error in parsing credentials from a given response.
      *
-     * @param  string  $type Type of credentials
+     * @param string $type Type of credentials
      *
-     * @throws CredentialsException
+     * @return static
      */
-    public static function handleResponseParseError($type)
+    public static function responseParseError($type)
     {
-        throw new static("Unable to parse $type credentials response.");
+        return new static(sprintf(
+            'Unable to parse `%s` credentials response.',
+            $type
+        ));
     }
 
     /**
      * Handles a bad response coming back when getting temporary credentials.
      *
-     * @param GuzzleHttp\Exception\BadResponseException $e
+     * @param BadResponseException $e
      *
-     * @throws CredentialsException
+     * @return static
      */
-    public static function handleTemporaryCredentialsBadResponse(BadResponseException $e)
+    public static function temporaryCredentialsBadResponse(BadResponseException $e)
     {
         $response = $e->getResponse();
         $body = $response->getBody();
         $statusCode = $response->getStatusCode();
 
-        throw new static(
-            "Received HTTP status code [$statusCode] with message \"$body\" when getting temporary credentials."
-        );
+        return new static(sprintf(
+            'Received HTTP status code [%d] with message "%s" when getting temporary credentials.',
+            $statusCode,
+            $body
+        ));
     }
 
     /**
      * Handles an error in retrieving credentials from a resource.
      *
-     * @throws CredentialsException
+     * @return static
      */
-    public static function handleTemporaryCredentialsRetrievalError()
+    public static function temporaryCredentialsRetrievalError()
     {
-        throw new static('Error in retrieving temporary credentials.');
+        return new static('Error in retrieving temporary credentials.');
     }
 
     /**
      * Handles a bad response coming back when getting token credentials.
      *
-     * @param GuzzleHttp\Exception\BadResponseException $e
+     * @param BadResponseException $e
      *
-     * @throws CredentialsException
+     * @return static
      */
-    public static function handleTokenCredentialsBadResponse(BadResponseException $e)
+    public static function tokenCredentialsBadResponse(BadResponseException $e)
     {
         $response = $e->getResponse();
         $body = $response->getBody();
         $statusCode = $response->getStatusCode();
 
-        throw new static(
-            "Received HTTP status code [$statusCode] with message \"$body\" when getting token credentials."
-        );
+        return new static(sprintf(
+            'Received HTTP status code [%d] with message "%s" when getting token credentials.',
+            $statusCode,
+            $body
+        ));
     }
 
     /**
      * Handles an error in retrieving credentials from a resource.
      *
-     * @param  string  $error Error message from resource
+     * @param string $error Error message from resource
      *
-     * @throws CredentialsException
+     * @return static
      */
-    public static function handleTokenCredentialsRetrievalError($error)
+    public static function tokenCredentialsRetrievalError($error)
     {
-        throw new static("Error [{$error}] in retrieving token credentials.");
+        return new static(sprintf(
+            'Error "%s" in retrieving token credentials.',
+            $error
+        ));
     }
 }

@@ -52,42 +52,34 @@ class ExceptionsTest extends PHPUnit_Framework_TestCase
     {
         $responseType = 'foo';
 
-        try {
-            ConfigurationException::handleInvalidResponseType($responseType);
-        } catch (ConfigurationException $e) {
-            $this->assertContains($responseType, $e->getMessage());
-        }
+        $exception = ConfigurationException::invalidResponseType($responseType);
+
+        $this->assertContains($responseType, $exception->getMessage());
     }
 
     public function testConfigurationExceptionHandlesMissingRequiredOption()
     {
         $requiredOption = 'foo';
 
-        try {
-            ConfigurationException::handleMissingRequiredOption($requiredOption);
-        } catch (ConfigurationException $e) {
-            $this->assertContains($requiredOption, $e->getMessage());
-        }
+        $exception = ConfigurationException::missingRequiredOption($requiredOption);
+
+        $this->assertContains($requiredOption, $exception->getMessage());
     }
 
     public function testConfigurationExceptionHandlesTemporaryIdentifierMismatch()
     {
-        try {
-            ConfigurationException::handleTemporaryIdentifierMismatch();
-        } catch (ConfigurationException $e) {
-            $this->assertContains('man-in-the-middle', $e->getMessage());
-        }
+        $exception = ConfigurationException::temporaryIdentifierMismatch();
+
+        $this->assertContains('man-in-the-middle', $exception->getMessage());
     }
 
     public function testCredentialsExceptionHandlesResponseParseError()
     {
         $type = 'foo';
 
-        try {
-            CredentialsException::handleResponseParseError($type);
-        } catch (CredentialsException $e) {
-            $this->assertContains($type, $e->getMessage());
-        }
+        $exception = CredentialsException::responseParseError($type);
+
+        $this->assertContains($type, $exception->getMessage());
     }
 
     public function testCredentialsExceptionHandlesTemporaryCredentialsBadResponse()
@@ -96,21 +88,17 @@ class ExceptionsTest extends PHPUnit_Framework_TestCase
         $statusCode = '400';
         $exception = $this->getBadResponseException($body, $statusCode);
 
-        try {
-            CredentialsException::handleTemporaryCredentialsBadResponse($exception);
-        } catch (CredentialsException $e) {
-            $this->assertContains($body, $e->getMessage());
-            $this->assertContains($statusCode, $e->getMessage());
-        }
+        $exception = CredentialsException::temporaryCredentialsBadResponse($exception);
+
+        $this->assertContains($body, $exception->getMessage());
+        $this->assertContains($statusCode, $exception->getMessage());
     }
 
     public function testCredentialsExceptionHandlesTemporaryCredentialsRetrievalError()
     {
-        try {
-            CredentialsException::handleTemporaryCredentialsRetrievalError();
-        } catch (CredentialsException $e) {
-            $this->assertContains('Error in retrieving temporary credentials.', $e->getMessage());
-        }
+        $exception = CredentialsException::temporaryCredentialsRetrievalError();
+
+        $this->assertContains('Error in retrieving temporary credentials.', $exception->getMessage());
     }
 
     public function testCredentialsExceptionHandlesTokenCredentialsBadResponse()
@@ -119,22 +107,17 @@ class ExceptionsTest extends PHPUnit_Framework_TestCase
         $statusCode = '400';
         $exception = $this->getBadResponseException($body, $statusCode);
 
-        try {
-            CredentialsException::handleTokenCredentialsBadResponse($exception);
-        } catch (CredentialsException $e) {
-            $this->assertContains($body, $e->getMessage());
-            $this->assertContains($statusCode, $e->getMessage());
-        }
+        $exception = CredentialsException::tokenCredentialsBadResponse($exception);
+
+        $this->assertContains($body, $exception->getMessage());
+        $this->assertContains($statusCode, $exception->getMessage());
     }
 
     public function testCredentialsExceptionHandlesTokenCredentialsRetrievalError()
     {
         $error = 'foo';
 
-        try {
-            CredentialsException::handleTokenCredentialsRetrievalError($error);
-        } catch (CredentialsException $e) {
-            $this->assertContains($error, $e->getMessage());
-        }
+        $exception = CredentialsException::tokenCredentialsRetrievalError($error);
+        $this->assertContains($error, $exception->getMessage());
     }
 }

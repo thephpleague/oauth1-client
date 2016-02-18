@@ -23,22 +23,23 @@ class TokenCredentials extends Credentials
     /**
      * Creates token credentials from a given response.
      *
-     * @param Psr\Http\Message\ResponseInterface $response
+     * @param ResponseInterface $response
      *
      * @return TokenCredentials
-     * @throws League\OAuth1\Client\Exceptions\CredentialsException
+     *
+     * @throws CredentialsException
      */
     public static function createFromResponse(ResponseInterface $response)
     {
         parse_str($response->getBody(), $data);
 
         if (!$data || !is_array($data)) {
-            CredentialsException::handleResponseParseError('token');
-        } // @codeCoverageIgnore
+            throw CredentialsException::responseParseError('token');
+        }
 
         if (isset($data['error'])) {
-            CredentialsException::handleTokenCredentialsRetrievalError($data['error']);
-        } // @codeCoverageIgnore
+            throw CredentialsException::tokenCredentialsRetrievalError($data['error']);
+        }
 
         return new static(
             $data['oauth_token'],
