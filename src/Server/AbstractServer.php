@@ -18,7 +18,6 @@ namespace League\OAuth1\Client\Server;
 use GuzzleHttp\Client as HttpClient;
 use GuzzleHttp\ClientInterface as HttpClientInterface;
 use GuzzleHttp\Exception\BadResponseException;
-use GuzzleHttp\Exception\RequestException;
 use League\OAuth1\Client\Credentials\ClientCredentials;
 use League\OAuth1\Client\Credentials\Credentials;
 use League\OAuth1\Client\Credentials\TemporaryCredentials;
@@ -141,10 +140,9 @@ abstract class AbstractServer
     /**
      * Checks a provider response for errors.
      *
-     * @param  ResponseInterface $response
-     * @param  array|string $data Parsed response data
+     * @param ResponseInterface $response
+     * @param array|string      $data     Parsed response data
      *
-     * @return void
      * @throws IdentityProviderException
      */
     abstract protected function checkResponse(ResponseInterface $response, $data);
@@ -153,8 +151,8 @@ abstract class AbstractServer
      * Generates a resource owner object from a successful resource owner
      * details request.
      *
-     * @param  array $response
-     * @param  TokenCredentials $token
+     * @param array            $response
+     * @param TokenCredentials $token
      *
      * @return ResourceOwnerInterface
      */
@@ -206,9 +204,9 @@ abstract class AbstractServer
     /**
      * Creates a new authenticated request.
      *
-     * @param  string            $method
-     * @param  string            $url
-     * @param  TokenCredentials  $tokenCredentials
+     * @param string           $method
+     * @param string           $url
+     * @param TokenCredentials $tokenCredentials
      *
      * @return Psr\Http\Message\RequestInterface
      */
@@ -419,7 +417,7 @@ abstract class AbstractServer
     /**
      * Requests and returns the resource owner of given access token.
      *
-     * @param  TokenCredentials $tokenCredentials
+     * @param TokenCredentials $tokenCredentials
      *
      * @return ResourceOwnerInterface
      */
@@ -433,7 +431,7 @@ abstract class AbstractServer
     /**
      * Gets the URL for retrieving user details.
      *
-     * @param  TokenCredentials $tokenCredentials
+     * @param TokenCredentials $tokenCredentials
      *
      * @return string
      */
@@ -551,9 +549,8 @@ abstract class AbstractServer
      * Parses user details http response, attempts to assign to cached user
      * detail response property.
      *
-     * @param  ResponseInterface  $response
+     * @param ResponseInterface $response
      *
-     * @return void
      * @throws ConfigurationException
      */
     protected function parseResourceOwnersDetailsResponse(ResponseInterface $response)
@@ -576,9 +573,9 @@ abstract class AbstractServer
     /**
      * Updates currently configured client credentials.
      *
-     * @param ClientCredentials  $clientCredentials
+     * @param ClientCredentials $clientCredentials
      *
-     * @return  AbstractServer
+     * @return AbstractServer
      */
     public function setClientCredentials(ClientCredentials $clientCredentials)
     {
@@ -590,8 +587,8 @@ abstract class AbstractServer
     /**
      * Attempts to configure and set collaborators.
      *
-     * @param  array   $collaborators
-     * @param  array   $options
+     * @param array $collaborators
+     * @param array $options
      *
      * @return AbstractServer
      */
@@ -617,9 +614,9 @@ abstract class AbstractServer
     /**
      * Updates currently configured http client.
      *
-     * @param HttpClientInterface  $httpClient
+     * @param HttpClientInterface $httpClient
      *
-     * @return  AbstractServer
+     * @return AbstractServer
      */
     public function setHttpClient(HttpClientInterface $httpClient)
     {
@@ -631,7 +628,7 @@ abstract class AbstractServer
     /**
      * Attempts to set the given options as properties on server, if defined.
      *
-     * @param  array   $options
+     * @param array $options
      *
      * @return AbstractServer
      */
@@ -649,9 +646,9 @@ abstract class AbstractServer
     /**
      * Updates currently configured request factory.
      *
-     * @param RequestFactoryInterface  $requestFactory
+     * @param RequestFactoryInterface $requestFactory
      *
-     * @return  AbstractServer
+     * @return AbstractServer
      */
     public function setRequestFactory(RequestFactoryInterface $requestFactory)
     {
@@ -663,9 +660,9 @@ abstract class AbstractServer
     /**
      * Updates currently configured signature.
      *
-     * @param SignatureInterface  $signature
+     * @param SignatureInterface $signature
      *
-     * @return  AbstractServer
+     * @return AbstractServer
      */
     public function setSignature(SignatureInterface $signature)
     {

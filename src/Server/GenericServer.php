@@ -85,7 +85,6 @@ class GenericServer extends AbstractServer
      */
     protected function checkResponse(ResponseInterface $response, $data)
     {
-
     }
 
     /**

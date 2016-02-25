@@ -20,7 +20,7 @@ use IteratorAggregate;
 class GenericResourceOwner implements IteratorAggregate, ResourceOwnerInterface
 {
     /**
-     * Resource owner response data
+     * Resource owner response data.
      *
      * @var array
      */

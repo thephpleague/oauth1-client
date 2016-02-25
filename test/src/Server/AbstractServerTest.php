@@ -1,21 +1,20 @@
 <?php
 /**
- * This file is part of the league/oauth1-client library
+ * This file is part of the league/oauth1-client library.
  *
  * For the full copyright and license information, please view the LICENSE
  * file that was distributed with this source code.
  *
  * @copyright Copyright (c) Ben Corlett <hello@webcomm.io>
  * @license http://opensource.org/licenses/MIT MIT
+ *
  * @link http://thephpleague.com/oauth1-client/ Documentation
  * @link https://packagist.org/packages/league/oauth1-client Packagist
  * @link https://github.com/thephpleague/oauth1-client GitHub
  */
-
 namespace League\OAuth1\Client\Test\Server;
 
 use GuzzleHttp\Client as HttpClient;
-use GuzzleHttp\Exception\ClientException;
 use GuzzleHttp\Handler\MockHandler;
 use GuzzleHttp\HandlerStack;
 use GuzzleHttp\Psr7\Response;
@@ -23,22 +22,14 @@ use League\OAuth1\Client\Credentials\ClientCredentials;
 use League\OAuth1\Client\Credentials\Credentials;
 use League\OAuth1\Client\Credentials\TemporaryCredentials;
 use League\OAuth1\Client\Credentials\TokenCredentials;
-use League\OAuth1\Client\Exceptions\Exception;
-use League\OAuth1\Client\Exceptions\ConfigurationException;
-use League\OAuth1\Client\Exceptions\CredentialsException;
 use League\OAuth1\Client\Server\GenericResourceOwner;
 use League\OAuth1\Client\Server\GenericServer;
-use League\OAuth1\Client\Signature\HmacSha1Signature;
 use League\OAuth1\Client\Signature\SignatureInterface;
-use League\OAuth1\Client\Tool\Crypto;
 use League\OAuth1\Client\Tool\RequestFactory;
 use League\OAuth1\Client\Tool\RequestFactoryInterface;
-use League\OAuth1\Client\Test\Server\Fake;
 use Mockery as m;
 use PHPUnit_Framework_TestCase;
 use Psr\Http\Message\ResponseInterface;
-use Psr\Http\Message\RequestInterface;
-use Psr\Http\Message\UriInterface;
 
 class AbstractServerTest extends PHPUnit_Framework_TestCase
 {
@@ -74,7 +65,6 @@ class AbstractServerTest extends PHPUnit_Framework_TestCase
     {
         return m::mock(ResponseInterface::class);
     }
-
 
     protected function getHttpClientMock($request, $payload = '', $status = 200)
     {
@@ -128,8 +118,8 @@ class AbstractServerTest extends PHPUnit_Framework_TestCase
 
         return array_merge($this->getMockClientCredentials(), [
             'temporaryCredentialsUri' => $domain.'/temporary-credentials',
-            'authorizationUri'        => $domain.'/authorize',
-            'tokenCredentialsUri'     => $domain.'/token-credentials',
+            'authorizationUri' => $domain.'/authorize',
+            'tokenCredentialsUri' => $domain.'/token-credentials',
             'resourceOwnerDetailsUri' => $domain.'/me',
         ]);
     }
@@ -556,7 +546,7 @@ class AbstractServerTest extends PHPUnit_Framework_TestCase
 
         $tokenCredentials = $this->getTokenCredentialsMock();
 
-        $authenticatedRequest = $server-> getAuthenticatedRequest($method, $url, $tokenCredentials);
+        $authenticatedRequest = $server->getAuthenticatedRequest($method, $url, $tokenCredentials);
 
         $this->assertEquals($request, $authenticatedRequest);
     }
@@ -582,7 +572,7 @@ class AbstractServerTest extends PHPUnit_Framework_TestCase
         $payload = ['foo' => 'bar'];
         $xml = new \SimpleXMLElement('<root/>');
         $flipped = array_flip($payload);
-        array_walk_recursive($flipped, array ($xml, 'addChild'));
+        array_walk_recursive($flipped, array($xml, 'addChild'));
         $response = $this->getResponseMock();
         $response->shouldReceive('getBody')->andReturn($xml->asXML());
 

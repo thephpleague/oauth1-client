@@ -37,7 +37,7 @@ abstract class Signature implements SignatureInterface
     /**
      * Creates signature instance.
      *
-     * @param ClientCredentials  $clientCredentials
+     * @param ClientCredentials $clientCredentials
      */
     public function __construct(ClientCredentials $clientCredentials)
     {

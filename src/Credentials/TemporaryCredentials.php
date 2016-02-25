@@ -25,9 +25,8 @@ class TemporaryCredentials extends Credentials
      * Compares a given identifier with the internal identifier. Throws exception
      * if not equal in comparison.
      *
-     * @param  string  $identifier
+     * @param string $identifier
      *
-     * @return void
      * @throws League\OAuth1\Client\Exceptions\ConfigurationException
      */
     public function checkIdentifier($identifier)
@@ -43,6 +42,7 @@ class TemporaryCredentials extends Credentials
      * @param Psr\Http\Message\ResponseInterface $response
      *
      * @return TemporaryCredentials
+     *
      * @throws League\OAuth1\Client\Exceptions\CredentialsException
      */
     public static function createFromResponse(ResponseInterface $response)

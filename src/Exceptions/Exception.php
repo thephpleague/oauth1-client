@@ -24,7 +24,7 @@ class Exception extends BaseException
      * Handles http response exception encountered when attempting to retrieve
      * user details.
      *
-     * @param  GuzzleHttp\Exception\BadResponseException  $e
+     * @param GuzzleHttp\Exception\BadResponseException $e
      *
      * @throws Exception
      */

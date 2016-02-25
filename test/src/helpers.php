@@ -5,7 +5,8 @@ namespace {
 }
 
 namespace League\OAuth1\Client\Server {
-    function header($location) {
+    function header($location)
+    {
         global $mockerHeaderRedirect;
 
         if (isset($mockerHeaderRedirect)) {

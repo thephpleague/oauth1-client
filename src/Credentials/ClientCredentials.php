@@ -44,9 +44,10 @@ class ClientCredentials extends Credentials
     /**
      * Attempts to create client credentials from given options.
      *
-     * @param  array   $options
+     * @param array $options
      *
      * @return ClientCredentials
+     *
      * @throws League\OAuth1\Client\Exceptions\ConfigurationException
      */
     public static function createFromOptions(array $options)

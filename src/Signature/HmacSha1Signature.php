@@ -51,7 +51,7 @@ class HmacSha1Signature extends Signature implements SignatureInterface
 
         $urlParts = $this->getUrlParts($url);
 
-        $schemeHostPath = $urlParts['scheme'] .'://' . $urlParts['host'] . $urlParts['path'];
+        $schemeHostPath = $urlParts['scheme'].'://'.$urlParts['host'].$urlParts['path'];
 
         $baseString .= rawurlencode($schemeHostPath).'&';
 
@@ -74,7 +74,7 @@ class HmacSha1Signature extends Signature implements SignatureInterface
      * Parses a given url into parts, ensuring specific keys are set in the
      * resulting array.
      *
-     * @param  string $url
+     * @param string $url
      *
      * @return array
      */
