@@ -29,6 +29,7 @@ so please help them out with a pull request if you notice this.
 
 - [Intuit](https://packagist.org/packages/wheniwork/oauth1-intuit)
 - [500px](https://packagist.org/packages/mechant/oauth1-500px)
+- [Etsy](https://packagist.org/packages/y0lk/oauth1-etsy)
 
 #### Terminology (as per the RFC 5849 specification):
 
