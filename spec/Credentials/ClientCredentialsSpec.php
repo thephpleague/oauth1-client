@@ -5,7 +5,6 @@ namespace spec\League\OAuth1\Client\Credentials;
 use League\OAuth1\Client\Credentials\ClientCredentials;
 use League\OAuth1\Client\Exceptions\ConfigurationException;
 use PhpSpec\ObjectBehavior;
-use Prophecy\Argument;
 
 class ClientCredentialsSpec extends ObjectBehavior
 {
@@ -35,7 +34,7 @@ class ClientCredentialsSpec extends ObjectBehavior
     {
         $this->beConstructedThrough('createFromOptions', [
             [
-                'invalid_configuration'
+                'invalid_configuration',
             ],
         ]);
 

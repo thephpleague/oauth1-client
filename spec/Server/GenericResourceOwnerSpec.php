@@ -4,7 +4,6 @@ namespace spec\League\OAuth1\Client\Server;
 
 use League\OAuth1\Client\Server\GenericResourceOwner;
 use PhpSpec\ObjectBehavior;
-use Prophecy\Argument;
 
 class GenericResourceOwnerSpec extends ObjectBehavior
 {

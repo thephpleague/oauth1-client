@@ -32,7 +32,7 @@ class GenericResourceOwner implements ResourceOwner, IteratorAggregate
      *
      * @param array
      */
-    public function __construct(array $response = array())
+    public function __construct(array $response = [])
     {
         $this->response = $response;
     }

@@ -6,7 +6,6 @@ use League\OAuth1\Client\Credentials\TemporaryCredentials;
 use League\OAuth1\Client\Exceptions\ConfigurationException;
 use League\OAuth1\Client\Exceptions\CredentialsException;
 use PhpSpec\ObjectBehavior;
-use Prophecy\Argument;
 use Psr\Http\Message\ResponseInterface;
 
 class TemporaryCredentialsSpec extends ObjectBehavior

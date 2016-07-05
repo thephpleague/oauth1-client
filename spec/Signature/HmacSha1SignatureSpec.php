@@ -6,7 +6,6 @@ use League\OAuth1\Client\Credentials\ClientCredentials;
 use League\OAuth1\Client\Credentials\TemporaryCredentials;
 use League\OAuth1\Client\Signature\HmacSha1Signature;
 use PhpSpec\ObjectBehavior;
-use Prophecy\Argument;
 
 class HmacSha1SignatureSpec extends ObjectBehavior
 {

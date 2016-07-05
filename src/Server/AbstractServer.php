@@ -16,6 +16,7 @@
 
 namespace League\OAuth1\Client\Server;
 
+use DateTime;
 use GuzzleHttp\Client as HttpClient;
 use GuzzleHttp\ClientInterface as HttpClientInterface;
 use GuzzleHttp\Exception\BadResponseException;
@@ -89,7 +90,7 @@ abstract class AbstractServer
      * @param array $options
      * @param array $collaborators
      */
-    public function __construct(array $options, array $collaborators = array())
+    public function __construct(array $options, array $collaborators = [])
     {
         $clientCredentials = ClientCredentials::createFromOptions($options);
 
@@ -99,25 +100,55 @@ abstract class AbstractServer
     }
 
     /**
-     * Redirects the client to the authorization URL.
+     * Gets the URL for retrieving user details.
      *
-     * @param TemporaryCredentials|string $temporaryIdentifier
+     * @param TokenCredentials $tokenCredentials
+     *
+     * @return string
      */
-    public function authorize($temporaryIdentifier)
-    {
-        $url = $this->getAuthorizationUrl($temporaryIdentifier);
+    abstract public function getResourceOwnerDetailsUrl(TokenCredentials $tokenCredentials);
 
-        header('Location: '.$url);
+    /**
+     * Gets the URL for retrieving temporary credentials.
+     *
+     * @return string
+     */
+    abstract public function getBaseTemporaryCredentialsUrl();
 
-        return;
-    }
+    /**
+     * Gets the URL retrieving token credentials.
+     *
+     * @return string
+     */
+    abstract public function getBaseTokenCredentialsUrl();
+
+    /**
+     * Checks a provider response for errors.
+     *
+     * @param ResponseInterface $response
+     * @param array|string      $data     Parsed response data
+     *
+     * @throws IdentityProviderException
+     */
+    abstract public function checkResourceOwnerDetailsResponse(ResponseInterface $response, $data);
+
+    /**
+     * Generates a resource owner object from a successful resource owner
+     * details request.
+     *
+     * @param array            $response
+     * @param TokenCredentials $token
+     *
+     * @return ResourceOwnerInterface
+     */
+    abstract public function createResourceOwner(array $response, TokenCredentials $tokenCredentials);
 
     /**
      * Builds Guzzle HTTP client headers.
      *
      * @return array
      */
-    protected function buildHttpClientHeaders($headers = array())
+    protected function buildHttpClientHeaders($headers = [])
     {
         $defaultHeaders = $this->getHttpClientDefaultHeaders();
 
@@ -137,27 +168,6 @@ abstract class AbstractServer
     {
         return $host.(strpos($host, '?') !== false ? '&' : '?').$queryString;
     }
-
-    /**
-     * Checks a provider response for errors.
-     *
-     * @param ResponseInterface $response
-     * @param array|string      $data     Parsed response data
-     *
-     * @throws IdentityProviderException
-     */
-    abstract protected function checkResponse(ResponseInterface $response, $data);
-
-    /**
-     * Generates a resource owner object from a successful resource owner
-     * details request.
-     *
-     * @param array            $response
-     * @param TokenCredentials $token
-     *
-     * @return ResourceOwnerInterface
-     */
-    abstract protected function createResourceOwner(array $response, TokenCredentials $tokenCredentials);
 
     /**
      * Fetches user details from the remote service.
@@ -185,7 +195,7 @@ abstract class AbstractServer
             }
 
             $this->parseResourceOwnersDetailsResponse($response);
-            $this->checkResponse($response, $this->cachedUserDetailsResponse);
+            $this->checkResourceOwnerDetailsResponse($response, $this->cachedUserDetailsResponse);
         }
 
         return $this->cachedUserDetailsResponse;
@@ -199,7 +209,7 @@ abstract class AbstractServer
      */
     protected function getAdditionalProtocolParameters()
     {
-        return array();
+        return [];
     }
 
     /**
@@ -227,7 +237,7 @@ abstract class AbstractServer
      *
      * @return string
      */
-    public function getAuthorizationUrl($temporaryIdentifier, array $options = array())
+    public function getAuthorizationUrl($temporaryIdentifier, array $options = [])
     {
         // Somebody can pass through an instance of temporary
         // credentials and we'll extract the identifier from there.
@@ -235,7 +245,7 @@ abstract class AbstractServer
             $temporaryIdentifier = $temporaryIdentifier->getIdentifier();
         }
 
-        $parameters = array('oauth_token' => $temporaryIdentifier);
+        $parameters = ['oauth_token' => $temporaryIdentifier];
 
         $url = $this->getBaseAuthorizationUrl($options);
         $queryString = http_build_query($parameters);
@@ -248,7 +258,7 @@ abstract class AbstractServer
      *
      * @return string
      */
-    abstract protected function getBaseAuthorizationUrl();
+    abstract public function getBaseAuthorizationUrl();
 
     /**
      * Gets the base protocol parameters for an OAuth request.
@@ -260,28 +270,14 @@ abstract class AbstractServer
      */
     protected function getBaseProtocolParameters()
     {
-        return array(
+        return [
             'oauth_consumer_key' => $this->clientCredentials->getIdentifier(),
             'oauth_nonce' => Crypto::nonce(),
             'oauth_signature_method' => $this->signature->getMethod(),
-            'oauth_timestamp' => (new \DateTime())->format('U'),
+            'oauth_timestamp' => (new DateTime())->format('U'),
             'oauth_version' => '1.0',
-        );
+        ];
     }
-
-    /**
-     * Gets the URL for retrieving temporary credentials.
-     *
-     * @return string
-     */
-    abstract protected function getBaseTemporaryCredentialsUrl();
-
-    /**
-     * Gets the URL retrieving token credentials.
-     *
-     * @return string
-     */
-    abstract protected function getBaseTokenCredentialsUrl();
 
     /**
      * Gets the client credentials associated with the server.
@@ -298,7 +294,7 @@ abstract class AbstractServer
      *
      * @return HttpClient
      */
-    protected function getDefaultHttpClient(array $options = array())
+    protected function getDefaultHttpClient(array $options = [])
     {
         $clientOptions = ['timeout'];
 
@@ -337,10 +333,10 @@ abstract class AbstractServer
      *
      * @return array
      */
-    public function getHeaders(Credentials $credentials, $method, $url, array $bodyParameters = array())
+    public function getHeaders(Credentials $credentials, $method, $url, array $bodyParameters = [])
     {
         $header = $this->getProtocolHeader(strtoupper($method), $url, $credentials, $bodyParameters);
-        $authorizationHeader = array('Authorization' => $header);
+        $authorizationHeader = ['Authorization' => $header];
         $headers = $this->buildHttpClientHeaders($authorizationHeader);
 
         return $headers;
@@ -363,7 +359,7 @@ abstract class AbstractServer
      */
     protected function getHttpClientDefaultHeaders()
     {
-        $defaultHeaders = array();
+        $defaultHeaders = [];
         if (!empty($this->userAgent)) {
             $defaultHeaders['User-Agent'] = $this->userAgent;
         }
@@ -383,15 +379,15 @@ abstract class AbstractServer
      *
      * @return string
      */
-    protected function getProtocolHeader($method, $url, Credentials $credentials, array $bodyParameters = array())
+    protected function getProtocolHeader($method, $url, Credentials $credentials, array $bodyParameters = [])
     {
         $parameters = array_merge(
             $this->getBaseProtocolParameters(),
             $this->getAdditionalProtocolParameters(),
-            array(
+            [
                 'oauth_token' => $credentials->getIdentifier(),
                 'oauth_verifier' => static::getValueByKey($bodyParameters, 'oauth_verifier'),
-            )
+            ]
         );
 
         $this->signature->setCredentials($credentials);
@@ -430,15 +426,6 @@ abstract class AbstractServer
     }
 
     /**
-     * Gets the URL for retrieving user details.
-     *
-     * @param TokenCredentials $tokenCredentials
-     *
-     * @return string
-     */
-    abstract protected function getResourceOwnerDetailsUrl(TokenCredentials $tokenCredentials);
-
-    /**
      * Retrieves the signature associated with the server.
      *
      * @return Signature
@@ -460,7 +447,7 @@ abstract class AbstractServer
     {
         $url = $this->getBaseTemporaryCredentialsUrl();
         $header = $this->getTemporaryCredentialsProtocolHeader($url);
-        $authorizationHeader = array('Authorization' => $header);
+        $authorizationHeader = ['Authorization' => $header];
         $headers = $this->buildHttpClientHeaders($authorizationHeader);
 
         try {
@@ -483,9 +470,9 @@ abstract class AbstractServer
      */
     protected function getTemporaryCredentialsProtocolHeader($url)
     {
-        $parameters = array_merge($this->getBaseProtocolParameters(), array(
+        $parameters = array_merge($this->getBaseProtocolParameters(), [
             'oauth_callback' => $this->clientCredentials->getCallbackUrl(),
-        ));
+        ]);
 
         $parameters['oauth_signature'] = $this->signature->sign($url, $parameters, 'POST');
 
@@ -509,7 +496,7 @@ abstract class AbstractServer
     {
         $temporaryCredentials->checkIdentifier($temporaryIdentifier);
         $url = $this->getBaseTokenCredentialsUrl();
-        $bodyParameters = array('oauth_verifier' => $verifier);
+        $bodyParameters = ['oauth_verifier' => $verifier];
         $headers = $this->getHeaders($temporaryCredentials, 'POST', $url, $bodyParameters);
         $body = json_encode($bodyParameters);
 
@@ -593,7 +580,7 @@ abstract class AbstractServer
      *
      * @return AbstractServer
      */
-    protected function setCollaborators(array $collaborators, array $options = array())
+    protected function setCollaborators(array $collaborators, array $options = [])
     {
         $defaults = [
             'httpClient' => 'getDefaultHttpClient',

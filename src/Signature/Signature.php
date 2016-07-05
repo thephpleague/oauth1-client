@@ -54,5 +54,5 @@ interface Signature
      *
      * @return string
      */
-    public function sign($url, array $parameters = array(), $method = 'POST');
+    public function sign($url, array $parameters = [], $method = 'POST');
 }

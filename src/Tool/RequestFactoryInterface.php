@@ -37,7 +37,7 @@ interface RequestFactoryInterface
     public static function getRequest(
         $method,
         $url,
-        array $headers = array(),
+        array $headers = [],
         $body = null,
         $version = '1.1'
     );

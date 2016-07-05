@@ -3,10 +3,8 @@
 namespace spec\League\OAuth1\Client\Credentials;
 
 use League\OAuth1\Client\Credentials\TokenCredentials;
-use League\OAuth1\Client\Exceptions\ConfigurationException;
 use League\OAuth1\Client\Exceptions\CredentialsException;
 use PhpSpec\ObjectBehavior;
-use Prophecy\Argument;
 use Psr\Http\Message\ResponseInterface;
 
 class TokenCredentialsSpec extends ObjectBehavior

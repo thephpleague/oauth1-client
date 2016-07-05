@@ -29,7 +29,7 @@ class HmacSha1Signature extends AbstractSignature implements Signature
     /**
      * {@inheritdoc}
      */
-    public function sign($url, array $parameters = array(), $method = 'POST')
+    public function sign($url, array $parameters = [], $method = 'POST')
     {
         $baseString = $this->baseString($url, $method, $parameters);
 
@@ -46,7 +46,7 @@ class HmacSha1Signature extends AbstractSignature implements Signature
      *
      * @return string
      */
-    private function baseString($url, $method = 'POST', array $parameters = array())
+    private function baseString($url, $method = 'POST', array $parameters = [])
     {
         $baseString = rawurlencode($method).'&';
 
@@ -56,7 +56,7 @@ class HmacSha1Signature extends AbstractSignature implements Signature
 
         $baseString .= rawurlencode($schemeHostPath).'&';
 
-        $data = array();
+        $data = [];
         parse_str($urlParts['query'], $query);
         foreach (array_merge($query, $parameters) as $key => $value) {
             $data[rawurlencode($key)] = rawurlencode($value);

@@ -52,7 +52,7 @@ class GenericServer extends AbstractServer
     /**
      * {@inheritdoc}
      */
-    protected function getBaseTemporaryCredentialsUrl()
+    public function getBaseTemporaryCredentialsUrl()
     {
         return $this->temporaryCredentialsUrl;
     }
@@ -60,7 +60,7 @@ class GenericServer extends AbstractServer
     /**
      * {@inheritdoc}
      */
-    protected function getBaseAuthorizationUrl()
+    public function getBaseAuthorizationUrl()
     {
         return $this->authorizationUrl;
     }
@@ -68,7 +68,7 @@ class GenericServer extends AbstractServer
     /**
      * {@inheritdoc}
      */
-    protected function getBaseTokenCredentialsUrl()
+    public function getBaseTokenCredentialsUrl()
     {
         return $this->tokenCredentialsUrl;
     }
@@ -76,7 +76,7 @@ class GenericServer extends AbstractServer
     /**
      * {@inheritdoc}
      */
-    protected function getResourceOwnerDetailsUrl(TokenCredentials $tokenCredentials)
+    public function getResourceOwnerDetailsUrl(TokenCredentials $tokenCredentials)
     {
         return $this->resourceOwnerDetailsUrl;
     }
@@ -84,14 +84,15 @@ class GenericServer extends AbstractServer
     /**
      * {@inheritdoc}
      */
-    protected function checkResponse(ResponseInterface $response, $data)
+    public function checkResourceOwnerDetailsResponse(ResponseInterface $response, $data)
     {
+        //
     }
 
     /**
      * {@inheritdoc}
      */
-    protected function createResourceOwner(array $response, TokenCredentials $tokenCredentials)
+    public function createResourceOwner(array $response, TokenCredentials $tokenCredentials)
     {
         return new GenericResourceOwner($response);
     }
