@@ -22,39 +22,39 @@ use Psr\Http\Message\ResponseInterface;
 class GenericServer extends AbstractServer
 {
     /**
-     * Temporary credentials uri.
+     * Temporary credentials url.
      *
      * @var string
      */
-    protected $temporaryCredentialsUri;
+    protected $temporaryCredentialsUrl;
 
     /**
-     * Authorization uri.
+     * Authorization url.
      *
      * @var string
      */
-    protected $authorizationUri;
+    protected $authorizationUrl;
 
     /**
-     * Token credentials uri.
+     * Token credentials url.
      *
      * @var string
      */
-    protected $tokenCredentialsUri;
+    protected $tokenCredentialsUrl;
 
     /**
-     * Resource owner details uri.
+     * Resource owner details url.
      *
      * @var string
      */
-    protected $resourceOwnerDetailsUri;
+    protected $resourceOwnerDetailsUrl;
 
     /**
      * {@inheritdoc}
      */
     protected function getBaseTemporaryCredentialsUrl()
     {
-        return $this->temporaryCredentialsUri;
+        return $this->temporaryCredentialsUrl;
     }
 
     /**
@@ -62,7 +62,7 @@ class GenericServer extends AbstractServer
      */
     protected function getBaseAuthorizationUrl()
     {
-        return $this->authorizationUri;
+        return $this->authorizationUrl;
     }
 
     /**
@@ -70,7 +70,7 @@ class GenericServer extends AbstractServer
      */
     protected function getBaseTokenCredentialsUrl()
     {
-        return $this->tokenCredentialsUri;
+        return $this->tokenCredentialsUrl;
     }
 
     /**
@@ -78,7 +78,7 @@ class GenericServer extends AbstractServer
      */
     protected function getResourceOwnerDetailsUrl(TokenCredentials $tokenCredentials)
     {
-        return $this->resourceOwnerDetailsUri;
+        return $this->resourceOwnerDetailsUrl;
     }
 
     /**
@@ -93,8 +93,6 @@ class GenericServer extends AbstractServer
      */
     protected function createResourceOwner(array $response, TokenCredentials $tokenCredentials)
     {
-        $user = new GenericResourceOwner($response);
-
-        return $user;
+        return new GenericResourceOwner($response);
     }
 }

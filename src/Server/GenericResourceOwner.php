@@ -18,7 +18,7 @@ namespace League\OAuth1\Client\Server;
 
 use IteratorAggregate;
 
-class GenericResourceOwner implements IteratorAggregate, ResourceOwnerInterface
+class GenericResourceOwner implements ResourceOwner, IteratorAggregate
 {
     /**
      * Resource owner response data.
@@ -38,30 +38,30 @@ class GenericResourceOwner implements IteratorAggregate, ResourceOwnerInterface
     }
 
     /**
-     * {@inheritdoc}
-     */
-    public function getIterator()
-    {
-        return $this->toArray();
-    }
-
-    /**
      * Returns the identifier of the authorised resource owner.
      *
      * @return mixed|null
      */
     public function getId()
     {
-        return $this->response['id'] ?: null;
+        if (isset($this->response['id'])) {
+            return $this->response['id'];
+        }
     }
 
     /**
-     * Returns all of the owner details available as an array.
-     *
-     * @return array
+     * {@inheritdoc}
      */
     public function toArray()
     {
         return $this->response;
+    }
+
+    /**
+     * {@inheritdoc}
+     */
+    public function getIterator()
+    {
+        return $this->toArray();
     }
 }

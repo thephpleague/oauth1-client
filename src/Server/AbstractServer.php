@@ -27,7 +27,7 @@ use League\OAuth1\Client\Exceptions\Exception;
 use League\OAuth1\Client\Exceptions\ConfigurationException;
 use League\OAuth1\Client\Exceptions\CredentialsException;
 use League\OAuth1\Client\Signature\HmacSha1Signature;
-use League\OAuth1\Client\Signature\SignatureInterface;
+use League\OAuth1\Client\Signature\Signature;
 use League\OAuth1\Client\Tool\ArrayAccessorTrait;
 use League\OAuth1\Client\Tool\Crypto;
 use League\OAuth1\Client\Tool\RequestFactory;
@@ -48,7 +48,7 @@ abstract class AbstractServer
     /**
      * Signature.
      *
-     * @var SignatureInterface
+     * @var Signature
      */
     protected $signature;
 
@@ -170,13 +170,13 @@ abstract class AbstractServer
     protected function fetchResourceOwnerDetails(TokenCredentials $tokenCredentials, $force = true)
     {
         if (!$this->cachedUserDetailsResponse || $force) {
-            $uri = $this->getResourceOwnerDetailsUrl($tokenCredentials);
-            $headers = $this->getHeaders($tokenCredentials, 'GET', $uri);
+            $url = $this->getResourceOwnerDetailsUrl($tokenCredentials);
+            $headers = $this->getHeaders($tokenCredentials, 'GET', $url);
 
             try {
                 $request = $this->getRequestFactory()->getRequest(
                     'GET',
-                    $uri,
+                    $url,
                     $headers
                 );
                 $response = $this->getHttpClient()->send($request);
@@ -320,7 +320,7 @@ abstract class AbstractServer
     /**
      * Retrieves default signature.
      *
-     * @return SignatureInterface
+     * @return Signature
      */
     protected function getDefaultSignature()
     {
@@ -377,13 +377,13 @@ abstract class AbstractServer
      * string.
      *
      * @param string      $method
-     * @param string      $uri
+     * @param string      $url
      * @param Credentials $credentials
      * @param array       $bodyParameters
      *
      * @return string
      */
-    protected function getProtocolHeader($method, $uri, Credentials $credentials, array $bodyParameters = array())
+    protected function getProtocolHeader($method, $url, Credentials $credentials, array $bodyParameters = array())
     {
         $parameters = array_merge(
             $this->getBaseProtocolParameters(),
@@ -397,7 +397,7 @@ abstract class AbstractServer
         $this->signature->setCredentials($credentials);
 
         $parameters['oauth_signature'] = $this->signature->sign(
-            $uri,
+            $url,
             array_merge($parameters, $bodyParameters),
             $method
         );
@@ -441,7 +441,7 @@ abstract class AbstractServer
     /**
      * Retrieves the signature associated with the server.
      *
-     * @return SignatureInterface
+     * @return Signature
      */
     public function getSignature()
     {
@@ -458,13 +458,13 @@ abstract class AbstractServer
      */
     public function getTemporaryCredentials()
     {
-        $uri = $this->getBaseTemporaryCredentialsUrl();
-        $header = $this->getTemporaryCredentialsProtocolHeader($uri);
+        $url = $this->getBaseTemporaryCredentialsUrl();
+        $header = $this->getTemporaryCredentialsProtocolHeader($url);
         $authorizationHeader = array('Authorization' => $header);
         $headers = $this->buildHttpClientHeaders($authorizationHeader);
 
         try {
-            $request = $this->getRequestFactory()->getRequest('POST', $uri, $headers);
+            $request = $this->getRequestFactory()->getRequest('POST', $url, $headers);
             $response = $this->getHttpClient()->send($request);
         } catch (BadResponseException $e) {
             throw CredentialsException::temporaryCredentialsBadResponse($e);
@@ -477,17 +477,17 @@ abstract class AbstractServer
      * Generates the OAuth protocol header for a temporary credentials
      * request, based on the URI.
      *
-     * @param string $uri
+     * @param string $url
      *
      * @return string
      */
-    protected function getTemporaryCredentialsProtocolHeader($uri)
+    protected function getTemporaryCredentialsProtocolHeader($url)
     {
         $parameters = array_merge($this->getBaseProtocolParameters(), array(
-            'oauth_callback' => $this->clientCredentials->getCallbackUri(),
+            'oauth_callback' => $this->clientCredentials->getCallbackUrl(),
         ));
 
-        $parameters['oauth_signature'] = $this->signature->sign($uri, $parameters, 'POST');
+        $parameters['oauth_signature'] = $this->signature->sign($url, $parameters, 'POST');
 
         return $this->normalizeProtocolParameters($parameters);
     }
@@ -508,13 +508,13 @@ abstract class AbstractServer
     public function getTokenCredentials(TemporaryCredentials $temporaryCredentials, $temporaryIdentifier, $verifier)
     {
         $temporaryCredentials->checkIdentifier($temporaryIdentifier);
-        $uri = $this->getBaseTokenCredentialsUrl();
+        $url = $this->getBaseTokenCredentialsUrl();
         $bodyParameters = array('oauth_verifier' => $verifier);
-        $headers = $this->getHeaders($temporaryCredentials, 'POST', $uri, $bodyParameters);
+        $headers = $this->getHeaders($temporaryCredentials, 'POST', $url, $bodyParameters);
         $body = json_encode($bodyParameters);
 
         try {
-            $request = $this->getRequestFactory()->getRequest('POST', $uri, $headers, $body);
+            $request = $this->getRequestFactory()->getRequest('POST', $url, $headers, $body);
             $response = $this->getHttpClient()->send($request);
         } catch (BadResponseException $e) {
             throw CredentialsException::tokenCredentialsBadResponse($e);
@@ -661,11 +661,11 @@ abstract class AbstractServer
     /**
      * Updates currently configured signature.
      *
-     * @param SignatureInterface $signature
+     * @param Signature $signature
      *
      * @return AbstractServer
      */
-    public function setSignature(SignatureInterface $signature)
+    public function setSignature(Signature $signature)
     {
         $this->signature = $signature;
 

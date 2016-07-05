@@ -29,9 +29,9 @@ class HmacSha1Signature extends AbstractSignature implements Signature
     /**
      * {@inheritdoc}
      */
-    public function sign($uri, array $parameters = array(), $method = 'POST')
+    public function sign($url, array $parameters = array(), $method = 'POST')
     {
-        $baseString = $this->baseString($uri, $method, $parameters);
+        $baseString = $this->baseString($url, $method, $parameters);
 
         return base64_encode($this->hash($baseString));
     }
@@ -72,7 +72,7 @@ class HmacSha1Signature extends AbstractSignature implements Signature
     }
 
     /**
-     * Parses a given url into parts, ensuring specific keys are set in the
+     * Parses a given url into parts, ensurlng specific keys are set in the
      * resulting array.
      *
      * @param string $url

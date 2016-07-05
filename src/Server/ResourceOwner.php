@@ -20,7 +20,7 @@ namespace League\OAuth1\Client\Server;
  * Classes implementing `ResourceOwnerInterface` may be used to represent
  * the resource owner authenticated with a server.
  */
-interface ResourceOwnerInterface
+interface ResourceOwner
 {
     /**
      * Returns the identifier of the authorised resource owner.

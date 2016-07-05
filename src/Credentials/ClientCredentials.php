@@ -28,7 +28,7 @@ class ClientCredentials extends Credentials
      *
      * @var string
      */
-    protected $callbackUri;
+    protected $callbackUrl;
 
     /**
      * Attempts to create client credentials from given options.
@@ -50,7 +50,7 @@ class ClientCredentials extends Credentials
         return new static(
             $options['identifier'],
             $options['secret'],
-            isset($options['callback_uri']) ? $options['callback_uri'] : null
+            isset($options['callbackUrl']) ? $options['callbackUrl'] : null
         );
     }
 
@@ -59,24 +59,24 @@ class ClientCredentials extends Credentials
      *
      * @param string $identifier
      * @param string $secret
-     * @param string $callbackUri
+     * @param string $callbackUrl
      */
-    public function __construct($identifier, $secret, $callbackUri = null)
+    public function __construct($identifier, $secret, $callbackUrl = null)
     {
         parent::__construct($identifier, $secret);
 
-        if ($callbackUri !== null) {
-            $this->callbackUri = (string) $callbackUri;
+        if ($callbackUrl !== null) {
+            $this->callbackUrl = (string) $callbackUrl;
         }
     }
 
     /**
-     * Gets currently configured callback uri.
+     * Gets currently configured callback url.
      *
      * @return string
      */
-    public function getCallbackUri()
+    public function getCallbackUrl()
     {
-        return $this->callbackUri;
+        return $this->callbackUrl;
     }
 }

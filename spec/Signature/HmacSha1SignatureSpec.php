@@ -10,7 +10,7 @@ use Prophecy\Argument;
 
 class HmacSha1SignatureSpec extends ObjectBehavior
 {
-    private $uri = 'http://client.com/uri';
+    private $url = 'http://client.com/url';
 
     public function let(ClientCredentials $clientCredentials)
     {
@@ -33,7 +33,7 @@ class HmacSha1SignatureSpec extends ObjectBehavior
     {
         $parameters = ['various' => 'parameters'];
 
-        $this->sign($this->uri, $parameters)->shouldBe('Wr7hY5ETbfForZoOgTLVGqPD+sU=');
+        $this->sign($this->url, $parameters)->shouldBe('dZByEX2zf8gH2n9BdPQCa2DsgjI=');
     }
 
     public function it_signs_the_request_when_additional_credentials_have_been_associated(TemporaryCredentials $temporaryCredentials)
@@ -43,6 +43,6 @@ class HmacSha1SignatureSpec extends ObjectBehavior
 
         $parameters = ['various' => 'parameters'];
 
-        $this->sign($this->uri, $parameters)->shouldBe('7PeCReShibI6HEeQPtqfH6GxiMI=');
+        $this->sign($this->url, $parameters)->shouldBe('wO16c/4081trlCdWmqo2ouDRCJI=');
     }
 }
