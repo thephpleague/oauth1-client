@@ -17,6 +17,9 @@ namespace League\OAuth1\Client\Credentials;
 
 use League\OAuth1\Client\Exceptions\ConfigurationException;
 
+/**
+ * Client Credentials
+ */
 class ClientCredentials extends Credentials
 {
     /**
@@ -25,21 +28,6 @@ class ClientCredentials extends Credentials
      * @var string
      */
     protected $callbackUri;
-
-    /**
-     * Create a new client credentials instance.
-     *
-     * @param string $identifier
-     * @param string $secret
-     */
-    public function __construct($identifier, $secret, $callbackUri = null)
-    {
-        parent::__construct($identifier, $secret);
-
-        if ($callbackUri !== null) {
-            $this->callbackUri = (string) $callbackUri;
-        }
-    }
 
     /**
      * Attempts to create client credentials from given options.
@@ -56,13 +44,29 @@ class ClientCredentials extends Credentials
             if (!array_key_exists($required, $options)) {
                 throw ConfigurationException::missingRequiredOption($required);
             }
-        }, ['identifier', 'secret', 'callbackUri']);
+        }, ['identifier', 'secret']);
 
         return new static(
             $options['identifier'],
             $options['secret'],
-            $options['callbackUri']
+            isset($options['callback_uri']) ? $options['callback_uri'] : null
         );
+    }
+
+    /**
+     * Create a new client credentials instance.
+     *
+     * @param string $identifier
+     * @param string $secret
+     * @param string $callbackUri
+     */
+    public function __construct($identifier, $secret, $callbackUri = null)
+    {
+        parent::__construct($identifier, $secret);
+
+        if ($callbackUri !== null) {
+            $this->callbackUri = (string) $callbackUri;
+        }
     }
 
     /**

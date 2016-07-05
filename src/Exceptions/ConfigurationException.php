@@ -27,7 +27,7 @@ class ConfigurationException extends Exception
     public static function invalidResponseType($responseType)
     {
         return new static(sprintf(
-            'Invalid response type `%s`.',
+            'Invalid response type "%s".',
             $responseType
         ));
     }
@@ -42,7 +42,7 @@ class ConfigurationException extends Exception
     public static function missingRequiredOption($requiredOption)
     {
         return new static(sprintf(
-            'Expected `%s` option to create client credentials.',
+            'Expected "%s" option to create client credentials.',
             $requiredOption
         ));
     }

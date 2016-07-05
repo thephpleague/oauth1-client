@@ -1,55 +1,63 @@
 {
-    "name": "league/oauth1-client",
-    "description": "OAuth 1.0 Client Library",
-    "license": "MIT",
-    "require": {
-        "php": ">=5.5.0",
-        "guzzlehttp/guzzle": "^6.0",
-        "ircmaxell/random-lib": "^1.1"
-    },
-    "require-dev": {
-        "mockery/mockery": "^0.9",
-        "phpspec/phpspec": "^2.2",
-        "phpunit/phpunit": "^4.0",
-        "satooshi/php-coveralls": "^0.6.1",
-        "squizlabs/php_codesniffer": "~2.0"
-    },
-    "keywords": [
-        "oauth",
-        "oauth1",
-        "authorization",
-        "authentication",
-        "idp",
-        "identity",
-        "sso",
-        "single sign on",
-        "bitbucket",
-        "trello",
-        "tumblr",
-        "twitter"
-    ],
-    "authors": [
-        {
-            "name": "Ben Corlett",
-            "email": "bencorlett@me.com",
-            "homepage": "http://webcomm.io",
-            "role": "Developer"
-        }
-    ],
-    "autoload": {
-        "psr-4": {
-            "League\\OAuth1\\Client\\": "src/"
-        }
-    },
-    "autoload-dev": {
-        "psr-4": {
-            "League\\OAuth1\\Client\\Test\\": "test/src/"
-        }
-    },
-    "extra": {
-        "branch-alias": {
-            "dev-master": "1.0.x-dev",
-            "dev-develop": "2.0.x-dev"
-        }
+  "name": "league/oauth1-client",
+  "description": "OAuth 1.0 Client Library",
+  "license": "MIT",
+  "require": {
+    "php": ">=5.5.0",
+    "guzzlehttp/guzzle": "^6.0",
+    "ircmaxell/random-lib": "^1.1"
+  },
+  "require-dev": {
+    "henrikbjorn/phpspec-code-coverage": "^2.0",
+    "phploc/phploc": "^3.0",
+    "phpspec/phpspec": "^2.5",
+    "satooshi/php-coveralls": "^1.0",
+    "sebastian/phpcpd": "^2.0",
+    "squizlabs/php_codesniffer": "^2.6"
+  },
+  "keywords": [
+    "oauth",
+    "oauth2",
+    "authorization",
+    "authentication",
+    "idp",
+    "identity",
+    "sso",
+    "single sign on"
+  ],
+  "authors": [
+    {
+      "name": "Ben Corlett",
+      "email": "bencorlett@me.com",
+      "homepage": "http://webcomm.io",
+      "role": "Developer"
     }
+  ],
+  "autoload": {
+    "psr-4": {
+      "League\\OAuth1\\Client\\": "src/"
+    }
+  },
+  "extra": {
+    "branch-alias": {
+      "dev-master": "1.0.x-dev",
+      "dev-develop": "2.0.x-dev"
+    }
+  },
+  "scripts": {
+    "phpcs": "./vendor/bin/phpcs --standard=psr2 src",
+    "phpcpd": "./vendor/bin/phpcpd src",
+    "phploc-log": "./vendor/bin/phploc --log-csv build/loc.csv --progress --git-repository . src",
+    "phploc": "./vendor/bin/phploc src",
+    "phpspec": "./vendor/bin/phpspec run --no-interaction",
+    "behat": "./vendor/bin/behat --tags '@completed' --no-interaction",
+    "test": [
+      "@composer install",
+      "@phpcs",
+      "@phpcpd",
+      "@phploc",
+      "@phpspec",
+      "@behat"
+    ]
+  }
 }

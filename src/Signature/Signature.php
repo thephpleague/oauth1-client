@@ -18,53 +18,40 @@ namespace League\OAuth1\Client\Signature;
 use League\OAuth1\Client\Credentials\ClientCredentials;
 use League\OAuth1\Client\Credentials\Credentials;
 
-abstract class Signature implements SignatureInterface
+interface Signature
 {
     /**
-     * The client credentials.
-     *
-     * @var ClientCredentials
-     */
-    protected $clientCredentials;
-
-    /**
-     * The (temporary or token) credentials.
-     *
-     * @var Credentials
-     */
-    protected $credentials;
-
-    /**
-     * Creates signature instance.
+     * Create a new signature instance.
      *
      * @param ClientCredentials $clientCredentials
      */
-    public function __construct(ClientCredentials $clientCredentials)
-    {
-        $this->clientCredentials = $clientCredentials;
-    }
+    public function __construct(ClientCredentials $clientCredentials);
 
     /**
-     * @inheritdoc
+     * Set the credentials used in the signature. These can be temporary
+     * credentials when getting token credentials during the OAuth
+     * authentication process, or token credentials when querying
+     * the API.
+     *
+     * @param Credentials $credentials
      */
-    public function setCredentials(Credentials $credentials)
-    {
-        $this->credentials = $credentials;
-    }
+    public function setCredentials(Credentials $credentials);
 
     /**
-     * Generate a signing key.
+     * Get the OAuth signature method.
      *
      * @return string
      */
-    protected function key()
-    {
-        $key = rawurlencode($this->clientCredentials->getSecret()).'&';
+    public function getMethod();
 
-        if ($this->credentials !== null) {
-            $key .= rawurlencode($this->credentials->getSecret());
-        }
-
-        return $key;
-    }
+    /**
+     * Sign the given request for the client.
+     *
+     * @param string $uri
+     * @param array  $parameters
+     * @param string $method
+     *
+     * @return string
+     */
+    public function sign($uri, array $parameters = array(), $method = 'POST');
 }

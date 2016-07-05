@@ -262,7 +262,7 @@ abstract class AbstractServer
         return array(
             'oauth_consumer_key' => $this->clientCredentials->getIdentifier(),
             'oauth_nonce' => Crypto::nonce(),
-            'oauth_signature_method' => $this->signature->method(),
+            'oauth_signature_method' => $this->signature->getMethod(),
             'oauth_timestamp' => (new \DateTime())->format('U'),
             'oauth_version' => '1.0',
         );

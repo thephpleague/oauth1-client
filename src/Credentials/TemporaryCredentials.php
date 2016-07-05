@@ -22,21 +22,6 @@ use Psr\Http\Message\ResponseInterface;
 class TemporaryCredentials extends Credentials
 {
     /**
-     * Compares a given identifier with the internal identifier. Throws exception
-     * if not equal in comparison.
-     *
-     * @param string $identifier
-     *
-     * @throws League\OAuth1\Client\Exceptions\ConfigurationException
-     */
-    public function checkIdentifier($identifier)
-    {
-        if ($identifier !== $this->getIdentifier()) {
-            throw ConfigurationException::temporaryIdentifierMismatch();
-        }
-    }
-
-    /**
      * Creates temporary credentials from the body response.
      *
      * @param Psr\Http\Message\ResponseInterface $response
@@ -54,16 +39,29 @@ class TemporaryCredentials extends Credentials
         }
 
         if (!isset($data['oauth_callback_confirmed']) || $data['oauth_callback_confirmed'] != 'true') {
-            $defaultError = 'OAuth keys missing from successful temporary credentials payload.';
+            $customMessage = isset($data['error']) ? $data['error'] : null;
 
-            throw CredentialsException::temporaryCredentialsRetrievalError(
-                (isset($data['error']) ? $data['error'] : $defaultError)
-            );
+            throw CredentialsException::temporaryCredentialsRetrievalError($customMessage);
         }
 
         return new static(
             $data['oauth_token'],
             $data['oauth_token_secret']
         );
+    }
+
+    /**
+     * Compares a given identifier with the internal identifier. Throws exception
+     * if not equal in comparison.
+     *
+     * @param string $identifier
+     *
+     * @throws League\OAuth1\Client\Exceptions\ConfigurationException
+     */
+    public function checkIdentifier($identifier)
+    {
+        if ($identifier !== $this->getIdentifier()) {
+            throw ConfigurationException::temporaryIdentifierMismatch();
+        }
     }
 }

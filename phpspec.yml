@@ -1,0 +1,10 @@
+suites:
+  default:
+    namespace: League\OAuth1\Client
+    psr4_prefix: League\OAuth1\Client
+
+extensions:
+  - PhpSpec\Extension\CodeCoverageExtension
+
+code_coverage:
+  output: build/coverage

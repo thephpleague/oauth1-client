@@ -15,12 +15,12 @@
  */
 namespace League\OAuth1\Client\Signature;
 
-class HmacSha1Signature extends Signature implements SignatureInterface
+class HmacSha1Signature extends AbstractSignature implements Signature
 {
     /**
      * @inheritdoc
      */
-    public function method()
+    public function getMethod()
     {
         return 'HMAC-SHA1';
     }
@@ -45,7 +45,7 @@ class HmacSha1Signature extends Signature implements SignatureInterface
      *
      * @return string
      */
-    protected function baseString($url, $method = 'POST', array $parameters = array())
+    private function baseString($url, $method = 'POST', array $parameters = array())
     {
         $baseString = rawurlencode($method).'&';
 
@@ -78,7 +78,7 @@ class HmacSha1Signature extends Signature implements SignatureInterface
      *
      * @return array
      */
-    protected function getUrlParts($url)
+    private function getUrlParts($url)
     {
         $requiredParts = ['scheme', 'host', 'path', 'query'];
 
@@ -100,8 +100,8 @@ class HmacSha1Signature extends Signature implements SignatureInterface
      *
      * @return string
      */
-    protected function hash($string)
+    private function hash($string)
     {
-        return hash_hmac('sha1', $string, $this->key(), true);
+        return hash_hmac('sha1', $string, $this->getKey(), true);
     }
 }

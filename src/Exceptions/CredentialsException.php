@@ -29,7 +29,7 @@ class CredentialsException extends Exception
     public static function responseParseError($type)
     {
         return new static(sprintf(
-            'Unable to parse `%s` credentials response.',
+            'Unable to parse "%s" credentials response.',
             $type
         ));
     }
@@ -57,11 +57,19 @@ class CredentialsException extends Exception
     /**
      * Handles an error in retrieving credentials from a resource.
      *
+     * @param  string  $message
+     *
      * @return static
      */
-    public static function temporaryCredentialsRetrievalError()
+    public static function temporaryCredentialsRetrievalError($customMessage = null)
     {
-        return new static('Error in retrieving temporary credentials.');
+        $message = 'OAuth keys missing from valid temporary credentials response payload.';
+
+        if (isset($customMessage)) {
+            $message = sprintf('Error "%s" in retrieving temporary credentials.', $customMessage);
+        }
+
+        return new static($message);
     }
 
     /**
