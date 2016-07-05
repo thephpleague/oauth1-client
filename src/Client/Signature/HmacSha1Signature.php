@@ -62,17 +62,52 @@ class HmacSha1Signature extends Signature implements SignatureInterface
 
         $data = array();
         parse_str($url->getQuery(), $query);
-        foreach (array_merge($query, $parameters) as $key => $value) {
-            $data[rawurlencode($key)] = rawurlencode($value);
-        }
+        $data = array_merge($query, $parameters);
 
-        ksort($data);
-        array_walk($data, function (&$value, $key) {
-            $value = $key.'='.$value;
+        // normalize data key/values
+        array_walk_recursive($data, function (&$key, &$value) {
+            $key   = rawurlencode(rawurldecode($key));
+            $value = rawurlencode(rawurldecode($value));
         });
-        $baseString .= rawurlencode(implode('&', $data));
+        ksort($data);
+
+        $baseString .= $this->queryStringFromData($data);
 
         return $baseString;
+    }
+
+    /**
+     * Creates an array of rawurlencoded strings out of each array key/value pair
+     * Handles multi-demensional arrays recursively.
+     *
+     * @param  array  $data        Array of parameters to convert.
+     * @param  array  $queryParams Array to extend. False by default.
+     * @param  string $prevKey     Optional Array key to append
+     *
+     * @return string              rawurlencoded string version of data
+     */
+    protected function queryStringFromData($data, $queryParams = false, $prevKey = '')
+    {
+        if ($initial = (false === $queryParams)) {
+            $queryParams = array();
+        }
+
+        foreach ($data as $key => $value) {
+            if ($prevKey) {
+                $key = $prevKey.'['.$key.']'; // Handle multi-dimensional array
+            }
+            if (is_array($value)) {
+                $queryParams = $this->queryStringFromData($value, $queryParams, $key);
+            } else {
+                $queryParams[] = rawurlencode($key.'='.$value); // join with equals sign
+            }
+        }
+
+        if ($initial) {
+            return implode('%26', $queryParams); // join with ampersand
+        }
+
+        return $queryParams;
     }
 
     /**
