@@ -13,6 +13,7 @@
  * @link https://packagist.org/packages/league/oauth1-client Packagist
  * @link https://github.com/thephpleague/oauth1-client GitHub
  */
+
 namespace League\OAuth1\Client\Tool;
 
 use GuzzleHttp\Psr7\Request;

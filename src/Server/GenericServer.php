@@ -13,6 +13,7 @@
  * @link https://packagist.org/packages/league/oauth1-client Packagist
  * @link https://github.com/thephpleague/oauth1-client GitHub
  */
+
 namespace League\OAuth1\Client\Server;
 
 use League\OAuth1\Client\Credentials\TokenCredentials;
@@ -49,7 +50,7 @@ class GenericServer extends AbstractServer
     protected $resourceOwnerDetailsUri;
 
     /**
-     * @inheritdoc
+     * {@inheritdoc}
      */
     protected function getBaseTemporaryCredentialsUrl()
     {
@@ -57,7 +58,7 @@ class GenericServer extends AbstractServer
     }
 
     /**
-     * @inheritdoc
+     * {@inheritdoc}
      */
     protected function getBaseAuthorizationUrl()
     {
@@ -65,7 +66,7 @@ class GenericServer extends AbstractServer
     }
 
     /**
-     * @inheritdoc
+     * {@inheritdoc}
      */
     protected function getBaseTokenCredentialsUrl()
     {
@@ -73,7 +74,7 @@ class GenericServer extends AbstractServer
     }
 
     /**
-     * @inheritdoc
+     * {@inheritdoc}
      */
     protected function getResourceOwnerDetailsUrl(TokenCredentials $tokenCredentials)
     {
@@ -81,14 +82,14 @@ class GenericServer extends AbstractServer
     }
 
     /**
-     * @inheritdoc
+     * {@inheritdoc}
      */
     protected function checkResponse(ResponseInterface $response, $data)
     {
     }
 
     /**
-     * @inheritdoc
+     * {@inheritdoc}
      */
     protected function createResourceOwner(array $response, TokenCredentials $tokenCredentials)
     {

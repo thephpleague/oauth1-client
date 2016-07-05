@@ -13,6 +13,7 @@
  * @link https://packagist.org/packages/league/oauth1-client Packagist
  * @link https://github.com/thephpleague/oauth1-client GitHub
  */
+
 namespace League\OAuth1\Client\Credentials;
 
 abstract class Credentials
@@ -44,7 +45,7 @@ abstract class Credentials
     }
 
     /**
-     * @inheritdoc
+     * {@inheritdoc}
      */
     public function getIdentifier()
     {
@@ -52,7 +53,7 @@ abstract class Credentials
     }
 
     /**
-     * @inheritdoc
+     * {@inheritdoc}
      */
     public function getSecret()
     {

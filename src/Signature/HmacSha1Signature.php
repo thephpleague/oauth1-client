@@ -13,12 +13,13 @@
  * @link https://packagist.org/packages/league/oauth1-client Packagist
  * @link https://github.com/thephpleague/oauth1-client GitHub
  */
+
 namespace League\OAuth1\Client\Signature;
 
 class HmacSha1Signature extends AbstractSignature implements Signature
 {
     /**
-     * @inheritdoc
+     * {@inheritdoc}
      */
     public function getMethod()
     {
@@ -26,7 +27,7 @@ class HmacSha1Signature extends AbstractSignature implements Signature
     }
 
     /**
-     * @inheritdoc
+     * {@inheritdoc}
      */
     public function sign($uri, array $parameters = array(), $method = 'POST')
     {

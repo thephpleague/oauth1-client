@@ -13,6 +13,7 @@
  * @link https://packagist.org/packages/league/oauth1-client Packagist
  * @link https://github.com/thephpleague/oauth1-client GitHub
  */
+
 namespace League\OAuth1\Client\Exceptions;
 
 use GuzzleHttp\Exception\BadResponseException;
@@ -57,7 +58,7 @@ class CredentialsException extends Exception
     /**
      * Handles an error in retrieving credentials from a resource.
      *
-     * @param  string  $message
+     * @param string $message
      *
      * @return static
      */

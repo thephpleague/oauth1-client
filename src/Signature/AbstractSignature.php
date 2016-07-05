@@ -13,6 +13,7 @@
  * @link https://packagist.org/packages/league/oauth1-client Packagist
  * @link https://github.com/thephpleague/oauth1-client GitHub
  */
+
 namespace League\OAuth1\Client\Signature;
 
 use League\OAuth1\Client\Credentials\ClientCredentials;
@@ -45,7 +46,7 @@ abstract class AbstractSignature implements Signature
     }
 
     /**
-     * @inheritdoc
+     * {@inheritdoc}
      */
     public function setCredentials(Credentials $credentials)
     {

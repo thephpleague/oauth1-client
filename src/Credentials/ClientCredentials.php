@@ -13,12 +13,13 @@
  * @link https://packagist.org/packages/league/oauth1-client Packagist
  * @link https://github.com/thephpleague/oauth1-client GitHub
  */
+
 namespace League\OAuth1\Client\Credentials;
 
 use League\OAuth1\Client\Exceptions\ConfigurationException;
 
 /**
- * Client Credentials
+ * Client Credentials.
  */
 class ClientCredentials extends Credentials
 {
