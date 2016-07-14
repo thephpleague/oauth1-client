@@ -16,8 +16,8 @@
 
 namespace League\OAuth1\Client\Credentials;
 
-use League\OAuth1\Client\Exceptions\ConfigurationException;
-use League\OAuth1\Client\Exceptions\CredentialsException;
+use League\OAuth1\Client\Exception\ConfigurationException;
+use League\OAuth1\Client\Exception\CredentialsException;
 use Psr\Http\Message\ResponseInterface;
 
 class TemporaryCredentials extends Credentials
@@ -29,7 +29,7 @@ class TemporaryCredentials extends Credentials
      *
      * @return TemporaryCredentials
      *
-     * @throws League\OAuth1\Client\Exceptions\CredentialsException
+     * @throws League\OAuth1\Client\Exception\CredentialsException
      */
     public static function createFromResponse(ResponseInterface $response)
     {
@@ -57,7 +57,7 @@ class TemporaryCredentials extends Credentials
      *
      * @param string $identifier
      *
-     * @throws League\OAuth1\Client\Exceptions\ConfigurationException
+     * @throws League\OAuth1\Client\Exception\ConfigurationException
      */
     public function checkIdentifier($identifier)
     {

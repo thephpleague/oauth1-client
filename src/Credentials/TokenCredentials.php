@@ -16,7 +16,7 @@
 
 namespace League\OAuth1\Client\Credentials;
 
-use League\OAuth1\Client\Exceptions\CredentialsException;
+use League\OAuth1\Client\Exception\CredentialsException;
 use Psr\Http\Message\ResponseInterface;
 
 class TokenCredentials extends Credentials

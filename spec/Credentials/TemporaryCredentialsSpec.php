@@ -3,8 +3,8 @@
 namespace spec\League\OAuth1\Client\Credentials;
 
 use League\OAuth1\Client\Credentials\TemporaryCredentials;
-use League\OAuth1\Client\Exceptions\ConfigurationException;
-use League\OAuth1\Client\Exceptions\CredentialsException;
+use League\OAuth1\Client\Exception\ConfigurationException;
+use League\OAuth1\Client\Exception\CredentialsException;
 use PhpSpec\ObjectBehavior;
 use Psr\Http\Message\ResponseInterface;
 

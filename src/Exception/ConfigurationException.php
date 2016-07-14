@@ -14,7 +14,7 @@
  * @link https://github.com/thephpleague/oauth1-client GitHub
  */
 
-namespace League\OAuth1\Client\Exceptions;
+namespace League\OAuth1\Client\Exception;
 
 class ConfigurationException extends Exception
 {

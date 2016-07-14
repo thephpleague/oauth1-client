@@ -3,7 +3,7 @@
 namespace spec\League\OAuth1\Client\Credentials;
 
 use League\OAuth1\Client\Credentials\ClientCredentials;
-use League\OAuth1\Client\Exceptions\ConfigurationException;
+use League\OAuth1\Client\Exception\ConfigurationException;
 use PhpSpec\ObjectBehavior;
 
 class ClientCredentialsSpec extends ObjectBehavior

@@ -16,7 +16,7 @@
 
 namespace League\OAuth1\Client\Credentials;
 
-use League\OAuth1\Client\Exceptions\ConfigurationException;
+use League\OAuth1\Client\Exception\ConfigurationException;
 
 /**
  * Client Credentials.
@@ -37,7 +37,7 @@ class ClientCredentials extends Credentials
      *
      * @return ClientCredentials
      *
-     * @throws League\OAuth1\Client\Exceptions\ConfigurationException
+     * @throws League\OAuth1\Client\Exception\ConfigurationException
      */
     public static function createFromOptions(array $options)
     {
