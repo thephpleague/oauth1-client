@@ -19,23 +19,9 @@ class HmacSha1Signature extends Signature implements SignatureInterface
      */
     public function sign($uri, array $parameters = array(), $method = 'POST')
     {
-        $url = $this->createUrl($uri);
-
-        $baseString = $this->baseString($url, $method, $parameters);
+        $baseString = $this->baseString($uri, $method, $parameters);
 
         return base64_encode($this->hash($baseString));
-    }
-
-    /**
-     * Create a Guzzle url for the given URI.
-     *
-     * @param string $uri
-     *
-     * @return Url
-     */
-    protected function createUrl($uri)
-    {
-        return Url::factory($uri);
     }
 
     /**
@@ -48,21 +34,22 @@ class HmacSha1Signature extends Signature implements SignatureInterface
      *
      * @return string
      */
-    protected function baseString(Url $url, $method = 'POST', array $parameters = array())
+    protected function baseString($uri, $method = 'POST', array $parameters = array())
     {
         $baseString = rawurlencode($method).'&';
 
-        $schemeHostPath = Url::buildUrl(array(
-           'scheme' => $url->getScheme(),
-           'host' => $url->getHost(),
-           'path' => $url->getPath(),
-        ));
+        $url = parse_url($uri);
+
+        $schemeHostPath = "{$url['scheme']}://{$url['host']}{$url['path']}";
 
         $baseString .= rawurlencode($schemeHostPath).'&';
 
-        $data = array();
-        parse_str($url->getQuery(), $query);
+        $query = array();
+        if (isset($url['query'])) {
+            parse_str($url['query'], $query);
+        }
         $data = array_merge($query, $parameters);
+
 
         // normalize data key/values
         array_walk_recursive($data, function (&$key, &$value) {
