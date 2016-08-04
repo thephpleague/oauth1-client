@@ -2,8 +2,8 @@
 
 namespace League\OAuth1\Client\Server;
 
-use Guzzle\Service\Client as GuzzleClient;
-use Guzzle\Http\Exception\BadResponseException;
+use GuzzleHttp\Client as GuzzleClient;
+use GuzzleHttp\Exception\BadResponseException;
 use League\OAuth1\Client\Credentials\ClientCredentialsInterface;
 use League\OAuth1\Client\Credentials\ClientCredentials;
 use League\OAuth1\Client\Credentials\CredentialsInterface;
