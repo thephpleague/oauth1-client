@@ -49,7 +49,7 @@ class HmacSha1Signature extends Signature implements SignatureInterface
      *
      * @return string
      */
-    protected function baseString(\GuzzleHttp\Psr7\Uri $url, $method = 'POST', array $parameters = array())
+    protected function baseString(Uri $url, $method = 'POST', array $parameters = array())
     {
         $baseString = rawurlencode($method).'&';
 
