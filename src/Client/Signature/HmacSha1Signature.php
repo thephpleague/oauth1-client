@@ -2,7 +2,8 @@
 
 namespace League\OAuth1\Client\Signature;
 
-use Guzzle\Http\Url;
+use GuzzleHttp\Psr7;
+use GuzzleHttp\Psr7\Uri;
 
 class HmacSha1Signature extends Signature implements SignatureInterface
 {
@@ -35,7 +36,7 @@ class HmacSha1Signature extends Signature implements SignatureInterface
      */
     protected function createUrl($uri)
     {
-        return Url::factory($uri);
+        return Psr7\uri_for($uri);
     }
 
     /**
@@ -48,11 +49,11 @@ class HmacSha1Signature extends Signature implements SignatureInterface
      *
      * @return string
      */
-    protected function baseString(Url $url, $method = 'POST', array $parameters = array())
+    protected function baseString(\GuzzleHttp\Psr7\Uri $url, $method = 'POST', array $parameters = array())
     {
         $baseString = rawurlencode($method).'&';
 
-        $schemeHostPath = Url::buildUrl(array(
+        $schemeHostPath = Uri::fromParts(array(
            'scheme' => $url->getScheme(),
            'host' => $url->getHost(),
            'path' => $url->getPath(),
