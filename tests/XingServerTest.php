@@ -1,9 +1,11 @@
 <?php namespace League\OAuth1\Client\Tests;
 
+use GuzzleHttp\Psr7\Response;
 use League\OAuth1\Client\Server\Xing;
 use League\OAuth1\Client\Credentials\ClientCredentials;
 use Mockery as m;
 use PHPUnit_Framework_TestCase;
+use Psr\Http\Message\RequestInterface;
 
 class XingTest extends PHPUnit_Framework_TestCase
 {
@@ -47,8 +49,11 @@ class XingTest extends PHPUnit_Framework_TestCase
         $server->shouldReceive('createHttpClient')->andReturn($client = m::mock('stdClass'));
 
         $me = $this;
-        $client->shouldReceive('post')->with('https://api.xing.com/v1/request_token', m::on(function ($options) use ($me) {
-            $headers = $options['headers'];
+        $client->shouldReceive('sendRequest')->with(m::on(function(RequestInterface $request) use ($me) {
+            $headers = $request->getHeaders();
+            $url = $request->getUri()->__toString();
+            $me->assertSame( 'https://api.xing.com/v1/request_token', $url);
+
             $me->assertTrue(isset($headers['Authorization']));
 
             // OAuth protocol specifies a strict number of
@@ -56,12 +61,11 @@ class XingTest extends PHPUnit_Framework_TestCase
             // We'll validate that here.
             $pattern = '/OAuth oauth_consumer_key=".*?", oauth_nonce="[a-zA-Z0-9]+", oauth_signature_method="HMAC-SHA1", oauth_timestamp="\d{10}", oauth_version="1.0", oauth_callback="'.preg_quote('http%3A%2F%2Fapp.dev%2F', '/').'", oauth_signature=".*?"/';
 
-            $matches = preg_match($pattern, $headers['Authorization']);
+            $matches = preg_match($pattern, $headers['Authorization'][0]);
             $me->assertEquals(1, $matches, 'Asserting that the authorization header contains the correct expression.');
 
             return true;
-        }))->once()->andReturn($response = m::mock('stdClass'));
-        $response->shouldReceive('getBody')->andReturn('oauth_token=temporarycredentialsidentifier&oauth_token_secret=temporarycredentialssecret&oauth_callback_confirmed=true');
+        }))->once()->andReturn(new Response(200, [], 'oauth_token=temporarycredentialsidentifier&oauth_token_secret=temporarycredentialssecret&oauth_callback_confirmed=true'));
 
         $credentials = $server->getTemporaryCredentials();
         $this->assertInstanceOf('League\OAuth1\Client\Credentials\TemporaryCredentials', $credentials);
@@ -106,9 +110,11 @@ class XingTest extends PHPUnit_Framework_TestCase
         $server->shouldReceive('createHttpClient')->andReturn($client = m::mock('stdClass'));
 
         $me = $this;
-        $client->shouldReceive('post')->with('https://api.xing.com/v1/access_token', m::on(function ($options) use ($me) {
-            $headers = $options['headers'];
-            $body = $options['form_params'];
+        $client->shouldReceive('sendRequest')->with(m::on(function(RequestInterface $request) use ($me) {
+            $headers = $request->getHeaders();
+            $url = $request->getUri()->__toString();
+            $body = $request->getBody()->__toString();
+            $me->assertSame('https://api.xing.com/v1/access_token', $url);
 
             $me->assertTrue(isset($headers['Authorization']));
 
@@ -117,14 +123,13 @@ class XingTest extends PHPUnit_Framework_TestCase
             // We'll validate that here.
             $pattern = '/OAuth oauth_consumer_key=".*?", oauth_nonce="[a-zA-Z0-9]+", oauth_signature_method="HMAC-SHA1", oauth_timestamp="\d{10}", oauth_version="1.0", oauth_token="temporarycredentialsidentifier", oauth_signature=".*?"/';
 
-            $matches = preg_match($pattern, $headers['Authorization']);
+            $matches = preg_match($pattern, $headers['Authorization'][0]);
             $me->assertEquals(1, $matches, 'Asserting that the authorization header contains the correct expression.');
 
-            $me->assertSame($body, array('oauth_verifier' => 'myverifiercode'));
+            $me->assertSame($body, http_build_query(array('oauth_verifier' => 'myverifiercode')));
 
             return true;
-        }))->once()->andReturn($response = m::mock('stdClass'));
-        $response->shouldReceive('getBody')->andReturn('oauth_token=tokencredentialsidentifier&oauth_token_secret=tokencredentialssecret');
+        }))->once()->andReturn(new Response(200, [], 'oauth_token=tokencredentialsidentifier&oauth_token_secret=tokencredentialssecret'));
 
         $credentials = $server->getTokenCredentials($temporaryCredentials, 'temporarycredentialsidentifier', 'myverifiercode');
         $this->assertInstanceOf('League\OAuth1\Client\Credentials\TokenCredentials', $credentials);
@@ -143,8 +148,10 @@ class XingTest extends PHPUnit_Framework_TestCase
         $server->shouldReceive('createHttpClient')->andReturn($client = m::mock('stdClass'));
 
         $me = $this;
-        $client->shouldReceive('get')->with('https://api.xing.com/v1/users/me', m::on(function ($options) use ($me) {
-            $headers = $options['headers'];
+        $client->shouldReceive('sendRequest')->with(m::on(function(RequestInterface $request) use ($me) {
+            $headers = $request->getHeaders();
+            $url = $request->getUri()->__toString();
+            $me->assertSame('https://api.xing.com/v1/users/me', $url);
 
             $me->assertTrue(isset($headers['Authorization']));
 
@@ -153,12 +160,11 @@ class XingTest extends PHPUnit_Framework_TestCase
             // We'll validate that here.
             $pattern = '/OAuth oauth_consumer_key=".*?", oauth_nonce="[a-zA-Z0-9]+", oauth_signature_method="HMAC-SHA1", oauth_timestamp="\d{10}", oauth_version="1.0", oauth_token="tokencredentialsidentifier", oauth_signature=".*?"/';
 
-            $matches = preg_match($pattern, $headers['Authorization']);
+            $matches = preg_match($pattern, $headers['Authorization'][0]);
             $me->assertEquals(1, $matches, 'Asserting that the authorization header contains the correct expression.');
 
             return true;
-        }))->once()->andReturn($response = m::mock('stdClass'));
-        $response->shouldReceive('getBody')->once()->andReturn($this->getUserPayload());
+        }))->once()->andReturn(new Response(200, [], $this->getUserPayload()));
 
         $user = $server->getUserDetails($temporaryCredentials);
         $this->assertInstanceOf('League\OAuth1\Client\Server\User', $user);

@@ -2,8 +2,9 @@
 
 namespace League\OAuth1\Client\Server;
 
-use GuzzleHttp\Client as GuzzleHttpClient;
-use GuzzleHttp\Exception\BadResponseException;
+use Http\Client\HttpClient;
+use Http\Discovery\HttpClientDiscovery;
+use Http\Discovery\MessageFactoryDiscovery;
 use League\OAuth1\Client\Credentials\ClientCredentialsInterface;
 use League\OAuth1\Client\Credentials\ClientCredentials;
 use League\OAuth1\Client\Credentials\CredentialsInterface;
@@ -12,6 +13,7 @@ use League\OAuth1\Client\Credentials\TemporaryCredentials;
 use League\OAuth1\Client\Credentials\TokenCredentials;
 use League\OAuth1\Client\Signature\HmacSha1Signature;
 use League\OAuth1\Client\Signature\SignatureInterface;
+use Psr\Http\Message\ResponseInterface;
 
 abstract class Server
 {
@@ -79,18 +81,16 @@ abstract class Server
     {
         $uri = $this->urlTemporaryCredentials();
 
-        $client = $this->createHttpClient();
-
         $header = $this->temporaryCredentialsProtocolHeader($uri);
         $authorizationHeader = array('Authorization' => $header);
         $headers = $this->buildHttpClientHeaders($authorizationHeader);
 
-        try {
-            $response = $client->post($uri, [
-                'headers' => $headers,
-            ]);
-        } catch (BadResponseException $e) {
-            return $this->handleTemporaryCredentialsBadResponse($e);
+        $request = MessageFactoryDiscovery::find()->createRequest('POST', $uri, $headers);
+        $response = $this->createHttpClient()->sendRequest($request);
+        $statusCode = $response->getStatusCode();
+
+        if ($statusCode >= 400 && $statusCode < 600) {
+            $this->handleTemporaryCredentialsBadResponse($response);
         }
 
         return $this->createTemporaryCredentials((string) $response->getBody());
@@ -157,17 +157,15 @@ abstract class Server
         $uri = $this->urlTokenCredentials();
         $bodyParameters = array('oauth_verifier' => $verifier);
 
-        $client = $this->createHttpClient();
-
         $headers = $this->getHeaders($temporaryCredentials, 'POST', $uri, $bodyParameters);
+        $headers['Content-Type'] = 'application/x-www-form-urlencoded';
 
-        try {
-            $response = $client->post($uri, [
-                'headers' => $headers,
-                'form_params' => $bodyParameters,
-            ]);
-        } catch (BadResponseException $e) {
-            return $this->handleTokenCredentialsBadResponse($e);
+        $request = MessageFactoryDiscovery::find()->createRequest('POST', $uri, $headers, http_build_query($bodyParameters));
+        $response = $this->createHttpClient()->sendRequest($request);
+        $statusCode = $response->getStatusCode();
+
+        if ($statusCode >= 400 && $statusCode < 600) {
+            $this->handleTokenCredentialsBadResponse($response);
         }
 
         return $this->createTokenCredentials((string) $response->getBody());
@@ -246,16 +244,12 @@ abstract class Server
         if (!$this->cachedUserDetailsResponse || $force) {
             $url = $this->urlUserDetails();
 
-            $client = $this->createHttpClient();
-
             $headers = $this->getHeaders($tokenCredentials, 'GET', $url);
+            $request = MessageFactoryDiscovery::find()->createRequest('GET', $url, $headers);
+            $response = $this->createHttpClient()->sendRequest($request);
+            $statusCode = $response->getStatusCode();
 
-            try {
-                $response = $client->get($url, [
-                    'headers' => $headers,
-                ]);
-            } catch (BadResponseException $e) {
-                $response = $e->getResponse();
+            if ($statusCode >= 400 && $statusCode < 600) {
                 $body = $response->getBody();
                 $statusCode = $response->getStatusCode();
 
@@ -263,6 +257,7 @@ abstract class Server
                     "Received error [$body] with status code [$statusCode] when retrieving token credentials."
                 );
             }
+
             switch ($this->responseType) {
                 case 'json':
                     $this->cachedUserDetailsResponse = json_decode((string) $response->getBody(), true);
@@ -305,13 +300,13 @@ abstract class Server
     }
 
     /**
-     * Creates a Guzzle HTTP client for the given URL.
+     * Creates a HTTP client
      *
-     * @return GuzzleHttpClient
+     * @return HttpClient
      */
     public function createHttpClient()
     {
-        return new GuzzleHttpClient();
+        return HttpClientDiscovery::find();
     }
 
     /**
@@ -348,7 +343,7 @@ abstract class Server
     }
 
     /**
-     * Get Guzzle HTTP client default headers.
+     * Get HTTP client default headers.
      *
      * @return array
      */
@@ -363,7 +358,7 @@ abstract class Server
     }
 
     /**
-     * Build Guzzle HTTP client headers.
+     * Build HTTP headers.
      *
      * @return array
      */
@@ -405,13 +400,12 @@ abstract class Server
     /**
      * Handle a bad response coming back when getting temporary credentials.
      *
-     * @param BadResponseException $e
+     * @param ResponseInterface $response
      *
      * @throws CredentialsException
      */
-    protected function handleTemporaryCredentialsBadResponse(BadResponseException $e)
+    protected function handleTemporaryCredentialsBadResponse(ResponseInterface $response)
     {
-        $response = $e->getResponse();
         $body = $response->getBody();
         $statusCode = $response->getStatusCode();
 
@@ -449,13 +443,12 @@ abstract class Server
     /**
      * Handle a bad response coming back when getting token credentials.
      *
-     * @param BadResponseException $e
+     * @param ResponseInterface $response
      *
      * @throws CredentialsException
      */
-    protected function handleTokenCredentialsBadResponse(BadResponseException $e)
+    protected function handleTokenCredentialsBadResponse(ResponseInterface $response)
     {
-        $response = $e->getResponse();
         $body = $response->getBody();
         $statusCode = $response->getStatusCode();
 

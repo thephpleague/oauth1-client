@@ -2,8 +2,8 @@
 
 namespace League\OAuth1\Client\Signature;
 
-use GuzzleHttp\Psr7;
-use GuzzleHttp\Psr7\Uri;
+use Http\Discovery\UriFactoryDiscovery;
+use Psr\Http\Message\UriInterface;
 
 class HmacSha1Signature extends Signature implements SignatureInterface
 {
@@ -28,36 +28,31 @@ class HmacSha1Signature extends Signature implements SignatureInterface
     }
 
     /**
-     * Create a Guzzle url for the given URI.
+     * Create a PSR URI for the given string URI.
      *
      * @param string $uri
      *
-     * @return Url
+     * @return UriInterface
      */
     protected function createUrl($uri)
     {
-        return Psr7\uri_for($uri);
+        return UriFactoryDiscovery::find()->createUri($uri);
     }
 
     /**
      * Generate a base string for a HMAC-SHA1 signature
      * based on the given a url, method, and any parameters.
      *
-     * @param Url    $url
+     * @param UriInterface $url
      * @param string $method
      * @param array  $parameters
      *
      * @return string
      */
-    protected function baseString(Uri $url, $method = 'POST', array $parameters = array())
+    protected function baseString(UriInterface $url, $method = 'POST', array $parameters = array())
     {
         $baseString = rawurlencode($method).'&';
-
-        $schemeHostPath = Uri::fromParts(array(
-           'scheme' => $url->getScheme(),
-           'host' => $url->getHost(),
-           'path' => $url->getPath(),
-        ));
+        $schemeHostPath = $this->createUrl(sprintf('%s://%s%s',  $url->getScheme(), $url->getHost(), $url->getPath()));
 
         $baseString .= rawurlencode($schemeHostPath).'&';
 

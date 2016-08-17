@@ -87,9 +87,12 @@ so please help them out with a pull request if you notice this.
 Via Composer
 
 ```shell
-$ composer require league/oauth1-client
+$ composer require league/oauth1-client php-http/message php-http/guzzle6-adapter
 ```
 
+We are not coupled to any library sending HTTP messages. We use an abstraction called
+HTTPlug that allows you to choose the client you want. Read more about it 
+[in the docs](http://docs.php-http.org/en/latest/httplug/users.html). 
 
 ## Usage
 

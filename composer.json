@@ -4,9 +4,14 @@
     "license": "MIT",
     "require": {
         "php": ">=5.5.0",
-        "guzzlehttp/guzzle": "^6.0"
+        "php-http/httplug": "^1.0",
+        "php-http/discovery": "^1.0",
+        "psr/http-message-implementation": "^1.0",
+        "php-http/client-implementation": "^1.0"
     },
     "require-dev": {
+        "php-http/message": "^1.0",
+        "php-http/guzzle6-adapter": "^1.0",
         "phpunit/phpunit": "^4.0",
         "mockery/mockery": "^0.9",
         "squizlabs/php_codesniffer": "^2.0"
