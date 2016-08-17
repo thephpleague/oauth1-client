@@ -33,27 +33,32 @@ class TemporaryCredentialsSpec extends ObjectBehavior
 
         $this->beConstructedThrough('createFromResponse', [$response]);
 
-        $this->shouldThrow(CredentialsException::responseParseError('temporary'))
+        $this->shouldThrow(CredentialsException::failedToParseResponse($response->getWrappedObject(), 'temporary'))
             ->duringInstantiation();
     }
 
-    public function it_provides_a_default_error_for_failed_credentials_retrieval(ResponseInterface $response)
+    public function it_provides_a_default_error_for_failed_credentials_parsing(ResponseInterface $response)
     {
         $response->getBody()->willReturn('oauth_callback_confirmed=false');
 
         $this->beConstructedThrough('createFromResponse', [$response]);
 
-        $this->shouldThrow(CredentialsException::temporaryCredentialsRetrievalError())
+        $this->shouldThrow(CredentialsException::failedParsingTemporaryCredentialsResponse(
+                $response->getWrappedObject()
+            ))
             ->duringInstantiation();
     }
 
-    public function it_relays_custom_error_message_for_failed_credentials_retrieval(ResponseInterface $response)
+    public function it_relays_custom_error_message_for_failed_credentials_parsing(ResponseInterface $response)
     {
         $response->getBody()->willReturn('oauth_callback_confirmed=false&error=custom_message');
 
         $this->beConstructedThrough('createFromResponse', [$response]);
 
-        $this->shouldThrow(CredentialsException::temporaryCredentialsRetrievalError('custom_message'))
+        $this->shouldThrow(CredentialsException::failedParsingTemporaryCredentialsResponse(
+                $response->getWrappedObject(),
+                'custom_message'
+            ))
             ->duringInstantiation();
     }
 

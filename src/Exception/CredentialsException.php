@@ -16,95 +16,90 @@
 
 namespace League\OAuth1\Client\Exception;
 
-use GuzzleHttp\Exception\BadResponseException;
+use Psr\Http\Message\ResponseInterface;
 
 class CredentialsException extends Exception
 {
     /**
      * Handles an error in parsing credentials from a given response.
      *
-     * @param string $type Type of credentials
+     * @param ResponseInterface $response
+     * @param string            $type
      *
-     * @return static
+     * @return CredentialsException
      */
-    public static function responseParseError($type)
+    public static function failedToParseResponse(ResponseInterface $response, $type)
     {
-        return new static(sprintf(
-            'Unable to parse "%s" credentials response.',
-            $type
-        ));
+        $message = sprintf('Unable to parse "%s" credentials response.', $type);
+
+        return static::withResponse($response, $message);
     }
 
     /**
-     * Handles a bad response coming back when getting temporary credentials.
+     * Creates an Exception for when there is a bad response returned while fetching temporary credentials.
      *
-     * @param BadResponseException $e
+     * @param ResponseInterface $response
+     * @param string            $customMessage
      *
-     * @return static
+     * @return CredentialsException
      */
-    public static function temporaryCredentialsBadResponse(BadResponseException $e)
+    public static function failedFetchingTemporaryCredentials(ResponseInterface $response, $customMessage = null)
     {
-        $response = $e->getResponse();
-        $body = $response->getBody();
-        $statusCode = $response->getStatusCode();
-
-        return new static(sprintf(
-            'Received HTTP status code [%d] with message "%s" when getting temporary credentials.',
-            $statusCode,
-            $body
-        ));
-    }
-
-    /**
-     * Handles an error in retrieving credentials from a resource.
-     *
-     * @param string $message
-     *
-     * @return static
-     */
-    public static function temporaryCredentialsRetrievalError($customMessage = null)
-    {
-        $message = 'OAuth keys missing from valid temporary credentials response payload.';
-
-        if (isset($customMessage)) {
-            $message = sprintf('Error "%s" in retrieving temporary credentials.', $customMessage);
+        if (null === $customMessage) {
+            $customMessage = 'Received HTTP status code [%d] with message "%s" when getting temporary credentials.';
         }
 
-        return new static($message);
+        return static::withResponse($response, $customMessage);
     }
 
     /**
-     * Handles a bad response coming back when getting token credentials.
+     * Creates an Exception for when there temporary credentials are missing from a response payload.
      *
-     * @param BadResponseException $e
+     * @param ResponseInterface $response
+     * @param string            $customMessage
      *
-     * @return static
+     * @return CredentialsException
      */
-    public static function tokenCredentialsBadResponse(BadResponseException $e)
+    public static function failedParsingTemporaryCredentialsResponse(ResponseInterface $response, $customMessage = null)
     {
-        $response = $e->getResponse();
-        $body = $response->getBody();
-        $statusCode = $response->getStatusCode();
+        if (null === $customMessage) {
+            $message = sprintf('Error "%s" while retrieving temporary credentials.', $customMessage);
+        } else {
+            $message = 'Could not find temporary credentials in response payload.';
+        }
 
-        return new static(sprintf(
-            'Received HTTP status code [%d] with message "%s" when getting token credentials.',
-            $statusCode,
-            $body
-        ));
+        return static::withResponse($response, $message);
     }
 
     /**
-     * Handles an error in retrieving credentials from a resource.
+     * Creates an Exception for when there is a bad response returned while fetching token credentials.
      *
-     * @param string $error Error message from resource
+     * @param ResponseInterface $response
+     * @param string            $customMessage
      *
-     * @return static
+     * @return CredentialsException
      */
-    public static function tokenCredentialsRetrievalError($error)
+    public static function failedFetchingTokenCredentials(ResponseInterface $response, $customMessage = null)
     {
-        return new static(sprintf(
-            'Error "%s" in retrieving token credentials.',
-            $error
-        ));
+        if (null === $customMessage) {
+            $customMessage = 'Received HTTP status code [%d] with message "%s" when getting token credentials.';
+        }
+
+        return static::withResponse($response, $customMessage);
+    }
+
+    /**
+     * Creates an Exception for when there token credentials are missing from a response payload.
+     *
+     * @param ResponseInterface $response
+     * @param string            $customMessage
+     *
+     * @return CredentialsException
+     */
+    public static function failedParsingTokenCredentialsResponse(ResponseInterface $response, $customMessage)
+    {
+        $message = sprintf('Error "%s" while retrieving token credentials.', $customMessage);
+
+        return static::withResponse($response, $message);
     }
 }

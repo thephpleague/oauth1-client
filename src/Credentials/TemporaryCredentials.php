@@ -36,13 +36,16 @@ class TemporaryCredentials extends Credentials
         parse_str($response->getBody(), $data);
 
         if (!$data || !is_array($data)) {
-            throw CredentialsException::responseParseError('temporary');
+            throw CredentialsException::failedToParseResponse($response, 'temporary');
         }
 
-        if (!isset($data['oauth_callback_confirmed']) || $data['oauth_callback_confirmed'] != 'true') {
+        if (!isset($data['oauth_callback_confirmed']) || $data['oauth_callback_confirmed'] !== 'true') {
             $customMessage = isset($data['error']) ? $data['error'] : null;
 
-            throw CredentialsException::temporaryCredentialsRetrievalError($customMessage);
+            throw CredentialsException::failedParsingTemporaryCredentialsResponse(
+                $response,
+                $customMessage
+            );
         }
 
         return new static(
@@ -61,7 +64,7 @@ class TemporaryCredentials extends Credentials
      */
     public function checkIdentifier($identifier)
     {
-        if ($identifier !== $this->getIdentifier()) {
+        if ($this->getIdentifier() !== $identifier) {
             throw ConfigurationException::temporaryIdentifierMismatch();
         }
     }

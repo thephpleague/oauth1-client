@@ -62,7 +62,7 @@ abstract class AbstractSignature implements Signature
     {
         $key = rawurlencode($this->clientCredentials->getSecret()).'&';
 
-        if ($this->credentials !== null) {
+        if (null !== $this->credentials) {
             $key .= rawurlencode($this->credentials->getSecret());
         }
 

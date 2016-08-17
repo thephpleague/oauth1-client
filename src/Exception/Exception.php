@@ -17,26 +17,40 @@
 namespace League\OAuth1\Client\Exception;
 
 use Exception as BaseException;
-use GuzzleHttp\Exception\BadResponseException;
+use Psr\Http\Message\ResponseInterface;
 
-class Exception extends BaseException
+abstract class Exception extends BaseException
 {
     /**
-     * Handles http response exception encountered when attempting to retrieve
-     * user details.
+     * HTTP response associated with Exception
      *
-     * @param GuzzleHttp\Exception\BadResponseException $e
-     *
-     * @throws Exception
+     * @var ResponseInterface
      */
-    public static function handleUserDetailsRetrievalException(BadResponseException $e)
-    {
-        $response = $e->getResponse();
-        $body = $response->getBody();
-        $statusCode = $response->getStatusCode();
+    private $response;
 
-        throw new static(
-            "Received error [$body] with status code [$statusCode] when retrieving token credentials."
-        );
+    /**
+     * Create a new Exception with the given HTTP response and an option message.
+     *
+     * @param ResponseInterface $response
+     * @param string            $customMessage
+     *
+     * @return Exception
+     */
+    public static function withResponse(ResponseInterface $response, $customMessage = '')
+    {
+        $new = new static($customMessage);
+        $new->response = $response;
+
+        return $new;
+    }
+
+    /**
+     * Retrieve the HTTP Response associated with the resource owner.
+     *
+     * @return ResponseInterface
+     */
+    public function getResponse()
+    {
+        return $this->response;
     }
 }

@@ -24,9 +24,9 @@ use League\OAuth1\Client\Credentials\ClientCredentials;
 use League\OAuth1\Client\Credentials\Credentials;
 use League\OAuth1\Client\Credentials\TemporaryCredentials;
 use League\OAuth1\Client\Credentials\TokenCredentials;
-use League\OAuth1\Client\Exception\Exception;
 use League\OAuth1\Client\Exception\ConfigurationException;
 use League\OAuth1\Client\Exception\CredentialsException;
+use League\OAuth1\Client\Exception\ResourceOwnerException;
 use League\OAuth1\Client\Signature\HmacSha1Signature;
 use League\OAuth1\Client\Signature\Signature;
 use League\OAuth1\Client\Tool\ArrayAccessorTrait;
@@ -100,20 +100,18 @@ abstract class AbstractServer
     }
 
     /**
-     * Gets the URI for retrieving user details.
-     *
-     * @param TokenCredentials $tokenCredentials
-     *
-     * @return string
-     */
-    abstract public function getResourceOwnerDetailsUri(TokenCredentials $tokenCredentials);
-
-    /**
      * Gets the URI for retrieving temporary credentials.
      *
      * @return string
      */
     abstract public function getBaseTemporaryCredentialsUri();
+
+    /**
+     * Gets the URI for redirecting the resource owner to authorize the client.
+     *
+     * @return string
+     */
+    abstract public function getBaseAuthorizationUri();
 
     /**
      * Gets the URI retrieving token credentials.
@@ -123,12 +121,21 @@ abstract class AbstractServer
     abstract public function getBaseTokenCredentialsUri();
 
     /**
+     * Gets the URI for retrieving user details.
+     *
+     * @param TokenCredentials $tokenCredentials
+     *
+     * @return string
+     */
+    abstract public function getResourceOwnerDetailsUri(TokenCredentials $tokenCredentials);
+
+    /**
      * Checks a provider response for errors.
      *
      * @param ResponseInterface $response
      * @param array|string      $data     Parsed response data
      *
-     * @throws IdentityProviderException
+     * @throws ResourceOwnerException
      */
     abstract public function checkResourceOwnerDetailsResponse(ResponseInterface $response, $data);
 
@@ -166,7 +173,7 @@ abstract class AbstractServer
      */
     protected function buildUri($host, $queryString)
     {
-        return $host.(strpos($host, '?') !== false ? '&' : '?').$queryString;
+        return false !== $host.(strpos($host, '?') ? '&' : '?').$queryString;
     }
 
     /**
@@ -191,7 +198,7 @@ abstract class AbstractServer
                 );
                 $response = $this->getHttpClient()->send($request);
             } catch (BadResponseException $e) {
-                Exception::handleUserDetailsRetrievalException($e);
+                ResourceOwnerException::failedFetchingUserDetails($e->getResponse());
             }
 
             $this->parseResourceOwnersDetailsResponse($response);
@@ -252,13 +259,6 @@ abstract class AbstractServer
 
         return $this->buildUri($uri, $queryString);
     }
-
-    /**
-     * Gets the URI for redirecting the resource owner to authorize the client.
-     *
-     * @return string
-     */
-    abstract public function getBaseAuthorizationUri();
 
     /**
      * Gets the base protocol parameters for an OAuth request.
@@ -454,7 +454,7 @@ abstract class AbstractServer
             $request = $this->getRequestFactory()->getRequest('POST', $uri, $headers);
             $response = $this->getHttpClient()->send($request);
         } catch (BadResponseException $e) {
-            throw CredentialsException::temporaryCredentialsBadResponse($e);
+            throw CredentialsException::failedFetchingTemporaryCredentials($e->getMessage());
         }
 
         return TemporaryCredentials::createFromResponse($response);
@@ -504,7 +504,7 @@ abstract class AbstractServer
             $request = $this->getRequestFactory()->getRequest('POST', $uri, $headers, $body);
             $response = $this->getHttpClient()->send($request);
         } catch (BadResponseException $e) {
-            throw CredentialsException::tokenCredentialsBadResponse($e);
+            throw CredentialsException::failedFetchingTokenCredentials($e->getResponse());
         }
 
         return TokenCredentials::createFromResponse($response);

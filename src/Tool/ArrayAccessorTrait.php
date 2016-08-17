@@ -36,7 +36,7 @@ trait ArrayAccessorTrait
             return $default;
         }
 
-        if (strpos($key, '.') !== false) {
+        if (false !== strpos($key, '.')) {
             $keys = explode('.', $key);
 
             foreach ($keys as $innerKey) {

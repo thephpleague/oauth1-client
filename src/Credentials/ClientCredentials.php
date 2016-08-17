@@ -65,7 +65,7 @@ class ClientCredentials extends Credentials
     {
         parent::__construct($identifier, $secret);
 
-        if ($callbackUri !== null) {
+        if (null !== $callbackUri) {
             $this->callbackUri = (string) $callbackUri;
         }
     }

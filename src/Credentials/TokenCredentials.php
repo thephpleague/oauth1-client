@@ -35,11 +35,14 @@ class TokenCredentials extends Credentials
         parse_str($response->getBody(), $data);
 
         if (!$data || !is_array($data)) {
-            throw CredentialsException::responseParseError('token');
+            throw CredentialsException::failedToParseResponse($response, 'token');
         }
 
         if (isset($data['error'])) {
-            throw CredentialsException::tokenCredentialsRetrievalError($data['error']);
+            throw CredentialsException::failedParsingTokenCredentialsResponse(
+                $response,
+                $data['error']
+            );
         }
 
         return new static(

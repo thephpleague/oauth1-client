@@ -56,8 +56,7 @@ class ConfigurationException extends Exception
     public static function temporaryIdentifierMismatch()
     {
         return new static(
-            'Temporary identifier passed back by server does not match that of '.
-            'stored temporary credentials. Potential man-in-the-middle.'
+            'Temporary identifier passed back by server does not match that of stored temporary credentials. Potential man-in-the-middle.'
         );
     }
 }

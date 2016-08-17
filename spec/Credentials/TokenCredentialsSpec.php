@@ -32,17 +32,23 @@ class TokenCredentialsSpec extends ObjectBehavior
 
         $this->beConstructedThrough('createFromResponse', [$response]);
 
-        $this->shouldThrow(CredentialsException::responseParseError('token'))
+        $this->shouldThrow(CredentialsException::failedToParseResponse(
+                $response->getWrappedObject(),
+                'token'
+            ))
             ->duringInstantiation();
     }
 
-    public function it_provides_a_default_error_for_failed_credentials_retrieval(ResponseInterface $response)
+    public function it_finds_error_in_response_body_for_failed_credentials_parsing(ResponseInterface $response)
     {
         $response->getBody()->willReturn('error=custom_message');
 
         $this->beConstructedThrough('createFromResponse', [$response]);
 
-        $this->shouldThrow(CredentialsException::tokenCredentialsRetrievalError('custom_message'))
+        $this->shouldThrow(CredentialsException::failedParsingTokenCredentialsResponse(
+                $response->getWrappedObject(),
+                'custom_message'
+            ))
             ->duringInstantiation();
     }
 
