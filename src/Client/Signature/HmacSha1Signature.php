@@ -52,7 +52,7 @@ class HmacSha1Signature extends Signature implements SignatureInterface
     protected function baseString(UriInterface $url, $method = 'POST', array $parameters = array())
     {
         $baseString = rawurlencode($method).'&';
-        $schemeHostPath = $this->createUrl(sprintf('%s://%s%s',  $url->getScheme(), $url->getHost(), $url->getPath()));
+        $schemeHostPath = $this->createUrl(sprintf('%s://%s%s', $url->getScheme(), $url->getHost(), $url->getPath()));
 
         $baseString .= rawurlencode($schemeHostPath).'&';
 

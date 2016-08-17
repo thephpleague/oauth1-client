@@ -160,7 +160,8 @@ abstract class Server
         $headers = $this->getHeaders($temporaryCredentials, 'POST', $uri, $bodyParameters);
         $headers['Content-Type'] = 'application/x-www-form-urlencoded';
 
-        $request = MessageFactoryDiscovery::find()->createRequest('POST', $uri, $headers, http_build_query($bodyParameters));
+        $request = MessageFactoryDiscovery::find()
+            ->createRequest('POST', $uri, $headers, http_build_query($bodyParameters));
         $response = $this->createHttpClient()->sendRequest($request);
         $statusCode = $response->getStatusCode();
 
