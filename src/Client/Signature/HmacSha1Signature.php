@@ -2,7 +2,8 @@
 
 namespace League\OAuth1\Client\Signature;
 
-use Guzzle\Http\Url;
+use GuzzleHttp\Psr7;
+use GuzzleHttp\Psr7\Uri;
 
 class HmacSha1Signature extends Signature implements SignatureInterface
 {
@@ -19,9 +20,23 @@ class HmacSha1Signature extends Signature implements SignatureInterface
      */
     public function sign($uri, array $parameters = array(), $method = 'POST')
     {
-        $baseString = $this->baseString($uri, $method, $parameters);
+        $url = $this->createUrl($uri);
+
+        $baseString = $this->baseString($url, $method, $parameters);
 
         return base64_encode($this->hash($baseString));
+    }
+
+    /**
+     * Create a Guzzle url for the given URI.
+     *
+     * @param string $uri
+     *
+     * @return Url
+     */
+    protected function createUrl($uri)
+    {
+        return Psr7\uri_for($uri);
     }
 
     /**
@@ -34,29 +49,20 @@ class HmacSha1Signature extends Signature implements SignatureInterface
      *
      * @return string
      */
-    protected function baseString($url, $method = 'POST', array $parameters = array())
+    protected function baseString(Uri $url, $method = 'POST', array $parameters = array())
     {
         $baseString = rawurlencode($method).'&';
 
-        $parsedUrl = parse_url($url);
-        if (!isset($parsedUrl['query'])) {
-            $parsedUrl['query'] = '';
-        }
-
-        $schemeHostPath = sprintf(
-            '%s://%s',
-            $parsedUrl['scheme'],
-            $parsedUrl['host']
-        );
-
-        if ($parsedUrl['path']) {
-            $schemeHostPath .= '/'.ltrim($parsedUrl['path'], '/');
-        }
+        $schemeHostPath = Uri::fromParts(array(
+           'scheme' => $url->getScheme(),
+           'host' => $url->getHost(),
+           'path' => $url->getPath(),
+        ));
 
         $baseString .= rawurlencode($schemeHostPath).'&';
 
         $data = array();
-        parse_str($parsedUrl['query'], $query);
+        parse_str($url->getQuery(), $query);
         $data = array_merge($query, $parameters);
 
         // normalize data key/values
