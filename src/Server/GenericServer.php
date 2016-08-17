@@ -22,63 +22,63 @@ use Psr\Http\Message\ResponseInterface;
 class GenericServer extends AbstractServer
 {
     /**
-     * Temporary credentials url.
+     * Temporary credentials uri.
      *
      * @var string
      */
-    protected $temporaryCredentialsUrl;
+    protected $temporaryCredentialsUri;
 
     /**
-     * Authorization url.
+     * Authorization uri.
      *
      * @var string
      */
-    protected $authorizationUrl;
+    protected $authorizationUri;
 
     /**
-     * Token credentials url.
+     * Token credentials uri.
      *
      * @var string
      */
-    protected $tokenCredentialsUrl;
+    protected $tokenCredentialsUri;
 
     /**
-     * Resource owner details url.
+     * Resource owner details uri.
      *
      * @var string
      */
-    protected $resourceOwnerDetailsUrl;
+    protected $resourceOwnerDetailsUri;
 
     /**
      * {@inheritdoc}
      */
-    public function getBaseTemporaryCredentialsUrl()
+    public function getBaseTemporaryCredentialsUri()
     {
-        return $this->temporaryCredentialsUrl;
+        return $this->temporaryCredentialsUri;
     }
 
     /**
      * {@inheritdoc}
      */
-    public function getBaseAuthorizationUrl()
+    public function getBaseAuthorizationUri()
     {
-        return $this->authorizationUrl;
+        return $this->authorizationUri;
     }
 
     /**
      * {@inheritdoc}
      */
-    public function getBaseTokenCredentialsUrl()
+    public function getBaseTokenCredentialsUri()
     {
-        return $this->tokenCredentialsUrl;
+        return $this->tokenCredentialsUri;
     }
 
     /**
      * {@inheritdoc}
      */
-    public function getResourceOwnerDetailsUrl(TokenCredentials $tokenCredentials)
+    public function getResourceOwnerDetailsUri(TokenCredentials $tokenCredentials)
     {
-        return $this->resourceOwnerDetailsUrl;
+        return $this->resourceOwnerDetailsUri;
     }
 
     /**

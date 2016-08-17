@@ -12,7 +12,7 @@ class ClientCredentialsSpec extends ObjectBehavior
 
     private $secret = 'client_secret';
 
-    private $callbackUrl = 'http://client.com/callback';
+    private $callbackUri = 'http://client.com/callback';
 
     public function let()
     {
@@ -20,7 +20,7 @@ class ClientCredentialsSpec extends ObjectBehavior
             [
                 'identifier' => $this->identifier,
                 'secret' => $this->secret,
-                'callbackUrl' => $this->callbackUrl,
+                'callbackUri' => $this->callbackUri,
             ],
         ]);
     }
@@ -52,8 +52,8 @@ class ClientCredentialsSpec extends ObjectBehavior
         $this->getSecret()->shouldBe($this->secret);
     }
 
-    public function it_returns_the_callback_url()
+    public function it_returns_the_callback_uri()
     {
-        $this->getCallbackUrl()->shouldBe($this->callbackUrl);
+        $this->getCallbackUri()->shouldBe($this->callbackUri);
     }
 }

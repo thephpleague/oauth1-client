@@ -30,7 +30,7 @@ interface Signature
 
     /**
      * Set the credentials used in the signature. These can be temporary
-     * credentials when getting token credentials durlng the OAuth
+     * credentials when getting token credentials during the OAuth
      * authentication process, or token credentials when querying
      * the API.
      *
@@ -48,11 +48,11 @@ interface Signature
     /**
      * Sign the given request for the client.
      *
-     * @param string $url
+     * @param string $uri
      * @param array  $parameters
      * @param string $method
      *
      * @return string
      */
-    public function sign($url, array $parameters = [], $method = 'POST');
+    public function sign($uri, array $parameters = [], $method = 'POST');
 }

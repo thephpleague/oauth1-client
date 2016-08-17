@@ -29,35 +29,35 @@ class HmacSha1Signature extends AbstractSignature implements Signature
     /**
      * {@inheritdoc}
      */
-    public function sign($url, array $parameters = [], $method = 'POST')
+    public function sign($uri, array $parameters = [], $method = 'POST')
     {
-        $baseString = $this->baseString($url, $method, $parameters);
+        $baseString = $this->baseString($uri, $method, $parameters);
 
         return base64_encode($this->hash($baseString));
     }
 
     /**
      * Generate a base string for a HMAC-SHA1 signature
-     * based on the given a url, method, and any parameters.
+     * based on the given a uri, method, and any parameters.
      *
-     * @param string $url
+     * @param string $uri
      * @param string $method
      * @param array  $parameters
      *
      * @return string
      */
-    private function baseString($url, $method = 'POST', array $parameters = [])
+    private function baseString($uri, $method = 'POST', array $parameters = [])
     {
         $baseString = rawurlencode($method).'&';
 
-        $urlParts = $this->getUrlParts($url);
+        $uriParts = $this->getUriParts($uri);
 
-        $schemeHostPath = $urlParts['scheme'].'://'.$urlParts['host'].$urlParts['path'];
+        $schemeHostPath = $uriParts['scheme'].'://'.$uriParts['host'].$uriParts['path'];
 
         $baseString .= rawurlencode($schemeHostPath).'&';
 
         $data = [];
-        parse_str($urlParts['query'], $query);
+        parse_str($uriParts['query'], $query);
         foreach (array_merge($query, $parameters) as $key => $value) {
             $data[rawurlencode($key)] = rawurlencode($value);
         }
@@ -72,26 +72,26 @@ class HmacSha1Signature extends AbstractSignature implements Signature
     }
 
     /**
-     * Parses a given url into parts, ensurlng specific keys are set in the
+     * Parses a given uri into parts, ensuring specific keys are set in the
      * resulting array.
      *
-     * @param string $url
+     * @param string $uri
      *
      * @return array
      */
-    private function getUrlParts($url)
+    private function getUriParts($uri)
     {
         $requiredParts = ['scheme', 'host', 'path', 'query'];
 
-        $urlParts = parse_url($url);
+        $uriParts = parse_url($uri);
 
-        array_map(function ($part) use (&$urlParts) {
-            if (!isset($urlParts[$part])) {
-                $urlParts[$part] = '';
+        array_map(function ($part) use (&$uriParts) {
+            if (!isset($uriParts[$part])) {
+                $uriParts[$part] = '';
             }
         }, $requiredParts);
 
-        return $urlParts;
+        return $uriParts;
     }
 
     /**

@@ -16,30 +16,30 @@ class GenericServerSpec extends ObjectBehavior
 
     private $clientSecret;
 
-    private $temporaryCredentialsUrl;
+    private $temporaryCredentialsUri;
 
-    private $authorizationUrl;
+    private $authorizationUri;
 
-    private $tokenCredentialsUrl;
+    private $tokenCredentialsUri;
 
-    private $resourceOwnerDetailsUrl;
+    private $resourceOwnerDetailsUri;
 
     public function let()
     {
         $this->clientIdentifier = 'client_identifier';
         $this->clientSecret = 'client_secret';
-        $this->temporaryCredentialsUrl = 'http://server.com/request_token';
-        $this->authorizationUrl = 'http://server.com/authorize';
-        $this->tokenCredentialsUrl = 'http://server.com/access_token';
-        $this->resourceOwnerDetailsUrl = 'http://server.com/me';
+        $this->temporaryCredentialsUri = 'http://server.com/request_token';
+        $this->authorizationUri = 'http://server.com/authorize';
+        $this->tokenCredentialsUri = 'http://server.com/access_token';
+        $this->resourceOwnerDetailsUri = 'http://server.com/me';
 
         $this->beConstructedWith([
             'identifier' => $this->clientIdentifier,
             'secret' => $this->clientSecret,
-            'temporaryCredentialsUrl' => $this->temporaryCredentialsUrl,
-            'authorizationUrl' => $this->authorizationUrl,
-            'tokenCredentialsUrl' => $this->tokenCredentialsUrl,
-            'resourceOwnerDetailsUrl' => $this->resourceOwnerDetailsUrl,
+            'temporaryCredentialsUri' => $this->temporaryCredentialsUri,
+            'authorizationUri' => $this->authorizationUri,
+            'tokenCredentialsUri' => $this->tokenCredentialsUri,
+            'resourceOwnerDetailsUri' => $this->resourceOwnerDetailsUri,
         ]);
     }
 
@@ -48,24 +48,24 @@ class GenericServerSpec extends ObjectBehavior
         $this->shouldHaveType(GenericServer::class);
     }
 
-    public function it_exposes_the_base_temporary_credentials_url()
+    public function it_exposes_the_base_temporary_credentials_uri()
     {
-        $this->getBaseTemporaryCredentialsUrl()->shouldBe($this->temporaryCredentialsUrl);
+        $this->getBaseTemporaryCredentialsUri()->shouldBe($this->temporaryCredentialsUri);
     }
 
-    public function it_exposes_the_base_authorization_url()
+    public function it_exposes_the_base_authorization_uri()
     {
-        $this->getBaseAuthorizationUrl()->shouldBe($this->authorizationUrl);
+        $this->getBaseAuthorizationUri()->shouldBe($this->authorizationUri);
     }
 
-    public function it_exposes_the_base_token_credentials_url()
+    public function it_exposes_the_base_token_credentials_uri()
     {
-        $this->getBaseTokenCredentialsUrl()->shouldBe($this->tokenCredentialsUrl);
+        $this->getBaseTokenCredentialsUri()->shouldBe($this->tokenCredentialsUri);
     }
 
-    public function it_exposes_the_resource_owner_details_url(TokenCredentials $tokenCredentials)
+    public function it_exposes_the_resource_owner_details_uri(TokenCredentials $tokenCredentials)
     {
-        $this->getResourceOwnerDetailsUrl($tokenCredentials)->shouldBe($this->resourceOwnerDetailsUrl);
+        $this->getResourceOwnerDetailsUri($tokenCredentials)->shouldBe($this->resourceOwnerDetailsUri);
     }
 
     public function it_performs_no_checking_of_a_resource_owner_details_response(ResponseInterface $response)
@@ -96,7 +96,7 @@ class GenericServerSpec extends ObjectBehavior
         $headers = $this->getHeaders(
             $tokenCredentials,
             'get',
-            $this->tokenCredentialsUrl,
+            $this->tokenCredentialsUri,
             ['body' => 'parameter']
         );
 

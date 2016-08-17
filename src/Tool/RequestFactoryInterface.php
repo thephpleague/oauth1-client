@@ -27,7 +27,7 @@ interface RequestFactoryInterface
      * Creates a PSR-7 Request instance.
      *
      * @param null|string                     $method  HTTP method for the request.
-     * @param null|string                     $url     URI for the request.
+     * @param null|string                     $uri     URI for the request.
      * @param array                           $headers Headers for the message.
      * @param string|resource|StreamInterface $body    Message body.
      * @param string                          $version HTTP protocol version.
@@ -36,7 +36,7 @@ interface RequestFactoryInterface
      */
     public static function getRequest(
         $method,
-        $url,
+        $uri,
         array $headers = [],
         $body = null,
         $version = '1.1'

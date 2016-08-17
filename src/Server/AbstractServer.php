@@ -100,27 +100,27 @@ abstract class AbstractServer
     }
 
     /**
-     * Gets the URL for retrieving user details.
+     * Gets the URI for retrieving user details.
      *
      * @param TokenCredentials $tokenCredentials
      *
      * @return string
      */
-    abstract public function getResourceOwnerDetailsUrl(TokenCredentials $tokenCredentials);
+    abstract public function getResourceOwnerDetailsUri(TokenCredentials $tokenCredentials);
 
     /**
-     * Gets the URL for retrieving temporary credentials.
+     * Gets the URI for retrieving temporary credentials.
      *
      * @return string
      */
-    abstract public function getBaseTemporaryCredentialsUrl();
+    abstract public function getBaseTemporaryCredentialsUri();
 
     /**
-     * Gets the URL retrieving token credentials.
+     * Gets the URI retrieving token credentials.
      *
      * @return string
      */
-    abstract public function getBaseTokenCredentialsUrl();
+    abstract public function getBaseTokenCredentialsUri();
 
     /**
      * Checks a provider response for errors.
@@ -156,7 +156,7 @@ abstract class AbstractServer
     }
 
     /**
-     * Builds a url by combining hostname and query string after checking for
+     * Builds a URI by combining hostname and query string after checking for
      * exisiting '?' character in host.
      *
      * @param string $host
@@ -164,7 +164,7 @@ abstract class AbstractServer
      *
      * @return string
      */
-    protected function buildUrl($host, $queryString)
+    protected function buildUri($host, $queryString)
     {
         return $host.(strpos($host, '?') !== false ? '&' : '?').$queryString;
     }
@@ -180,13 +180,13 @@ abstract class AbstractServer
     protected function fetchResourceOwnerDetails(TokenCredentials $tokenCredentials, $force = true)
     {
         if (!$this->cachedUserDetailsResponse || $force) {
-            $url = $this->getResourceOwnerDetailsUrl($tokenCredentials);
-            $headers = $this->getHeaders($tokenCredentials, 'GET', $url);
+            $uri = $this->getResourceOwnerDetailsUri($tokenCredentials);
+            $headers = $this->getHeaders($tokenCredentials, 'GET', $uri);
 
             try {
                 $request = $this->getRequestFactory()->getRequest(
                     'GET',
-                    $url,
+                    $uri,
                     $headers
                 );
                 $response = $this->getHttpClient()->send($request);
@@ -216,20 +216,20 @@ abstract class AbstractServer
      * Creates a new authenticated request.
      *
      * @param string           $method
-     * @param string           $url
+     * @param string           $uri
      * @param TokenCredentials $tokenCredentials
      *
      * @return Psr\Http\Message\RequestInterface
      */
-    public function getAuthenticatedRequest($method, $url, TokenCredentials $tokenCredentials)
+    public function getAuthenticatedRequest($method, $uri, TokenCredentials $tokenCredentials)
     {
-        $headers = $this->getHeaders($tokenCredentials, $method, $url);
+        $headers = $this->getHeaders($tokenCredentials, $method, $uri);
 
-        return $this->getRequestFactory()->getRequest($method, $url, $headers);
+        return $this->getRequestFactory()->getRequest($method, $uri, $headers);
     }
 
     /**
-     * Gets the authorization URL by passing in the temporary credentials
+     * Gets the authorization URI by passing in the temporary credentials
      * identifier or an object instance.
      *
      * @param TemporaryCredentials|string $temporaryIdentifier
@@ -237,7 +237,7 @@ abstract class AbstractServer
      *
      * @return string
      */
-    public function getAuthorizationUrl($temporaryIdentifier, array $options = [])
+    public function getAuthorizationUri($temporaryIdentifier, array $options = [])
     {
         // Somebody can pass through an instance of temporary
         // credentials and we'll extract the identifier from there.
@@ -247,18 +247,18 @@ abstract class AbstractServer
 
         $parameters = ['oauth_token' => $temporaryIdentifier];
 
-        $url = $this->getBaseAuthorizationUrl($options);
+        $uri = $this->getBaseAuthorizationUri($options);
         $queryString = http_build_query($parameters);
 
-        return $this->buildUrl($url, $queryString);
+        return $this->buildUri($uri, $queryString);
     }
 
     /**
-     * Gets the URL for redirecting the resource owner to authorize the client.
+     * Gets the URI for redirecting the resource owner to authorize the client.
      *
      * @return string
      */
-    abstract public function getBaseAuthorizationUrl();
+    abstract public function getBaseAuthorizationUri();
 
     /**
      * Gets the base protocol parameters for an OAuth request.
@@ -328,14 +328,14 @@ abstract class AbstractServer
      *
      * @param Credentials $credentials
      * @param string      $method
-     * @param string      $url
+     * @param string      $uri
      * @param array       $bodyParameters
      *
      * @return array
      */
-    public function getHeaders(Credentials $credentials, $method, $url, array $bodyParameters = [])
+    public function getHeaders(Credentials $credentials, $method, $uri, array $bodyParameters = [])
     {
-        $header = $this->getProtocolHeader(strtoupper($method), $url, $credentials, $bodyParameters);
+        $header = $this->getProtocolHeader(strtoupper($method), $uri, $credentials, $bodyParameters);
         $authorizationHeader = ['Authorization' => $header];
         $headers = $this->buildHttpClientHeaders($authorizationHeader);
 
@@ -373,13 +373,13 @@ abstract class AbstractServer
      * string.
      *
      * @param string      $method
-     * @param string      $url
+     * @param string      $uri
      * @param Credentials $credentials
      * @param array       $bodyParameters
      *
      * @return string
      */
-    protected function getProtocolHeader($method, $url, Credentials $credentials, array $bodyParameters = [])
+    protected function getProtocolHeader($method, $uri, Credentials $credentials, array $bodyParameters = [])
     {
         $parameters = array_merge(
             $this->getBaseProtocolParameters(),
@@ -393,7 +393,7 @@ abstract class AbstractServer
         $this->signature->setCredentials($credentials);
 
         $parameters['oauth_signature'] = $this->signature->sign(
-            $url,
+            $uri,
             array_merge($parameters, $bodyParameters),
             $method
         );
@@ -445,13 +445,13 @@ abstract class AbstractServer
      */
     public function getTemporaryCredentials()
     {
-        $url = $this->getBaseTemporaryCredentialsUrl();
-        $header = $this->getTemporaryCredentialsProtocolHeader($url);
+        $uri = $this->getBaseTemporaryCredentialsUri();
+        $header = $this->getTemporaryCredentialsProtocolHeader($uri);
         $authorizationHeader = ['Authorization' => $header];
         $headers = $this->buildHttpClientHeaders($authorizationHeader);
 
         try {
-            $request = $this->getRequestFactory()->getRequest('POST', $url, $headers);
+            $request = $this->getRequestFactory()->getRequest('POST', $uri, $headers);
             $response = $this->getHttpClient()->send($request);
         } catch (BadResponseException $e) {
             throw CredentialsException::temporaryCredentialsBadResponse($e);
@@ -464,17 +464,17 @@ abstract class AbstractServer
      * Generates the OAuth protocol header for a temporary credentials
      * request, based on the URI.
      *
-     * @param string $url
+     * @param string $uri
      *
      * @return string
      */
-    protected function getTemporaryCredentialsProtocolHeader($url)
+    protected function getTemporaryCredentialsProtocolHeader($uri)
     {
         $parameters = array_merge($this->getBaseProtocolParameters(), [
-            'oauth_callback' => $this->clientCredentials->getCallbackUrl(),
+            'oauth_callback' => $this->clientCredentials->getCallbackUri(),
         ]);
 
-        $parameters['oauth_signature'] = $this->signature->sign($url, $parameters, 'POST');
+        $parameters['oauth_signature'] = $this->signature->sign($uri, $parameters, 'POST');
 
         return $this->normalizeProtocolParameters($parameters);
     }
@@ -495,13 +495,13 @@ abstract class AbstractServer
     public function getTokenCredentials(TemporaryCredentials $temporaryCredentials, $temporaryIdentifier, $verifier)
     {
         $temporaryCredentials->checkIdentifier($temporaryIdentifier);
-        $url = $this->getBaseTokenCredentialsUrl();
+        $uri = $this->getBaseTokenCredentialsUri();
         $bodyParameters = ['oauth_verifier' => $verifier];
-        $headers = $this->getHeaders($temporaryCredentials, 'POST', $url, $bodyParameters);
+        $headers = $this->getHeaders($temporaryCredentials, 'POST', $uri, $bodyParameters);
         $body = json_encode($bodyParameters);
 
         try {
-            $request = $this->getRequestFactory()->getRequest('POST', $url, $headers, $body);
+            $request = $this->getRequestFactory()->getRequest('POST', $uri, $headers, $body);
             $response = $this->getHttpClient()->send($request);
         } catch (BadResponseException $e) {
             throw CredentialsException::tokenCredentialsBadResponse($e);

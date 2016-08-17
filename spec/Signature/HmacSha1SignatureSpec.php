@@ -9,7 +9,7 @@ use PhpSpec\ObjectBehavior;
 
 class HmacSha1SignatureSpec extends ObjectBehavior
 {
-    private $url = 'http://client.com/url';
+    private $uri = 'http://client.com/path';
 
     public function let(ClientCredentials $clientCredentials)
     {
@@ -32,7 +32,7 @@ class HmacSha1SignatureSpec extends ObjectBehavior
     {
         $parameters = ['various' => 'parameters'];
 
-        $this->sign($this->url, $parameters)->shouldBe('dZByEX2zf8gH2n9BdPQCa2DsgjI=');
+        $this->sign($this->uri, $parameters)->shouldBe('bBVy3KhYrsZ3EdPPR7m54emDGFM=');
     }
 
     public function it_signs_the_request_when_additional_credentials_have_been_associated(TemporaryCredentials $temporaryCredentials)
@@ -42,6 +42,6 @@ class HmacSha1SignatureSpec extends ObjectBehavior
 
         $parameters = ['various' => 'parameters'];
 
-        $this->sign($this->url, $parameters)->shouldBe('wO16c/4081trlCdWmqo2ouDRCJI=');
+        $this->sign($this->uri, $parameters)->shouldBe('Qm78J3RWucX3gW9n/yMDMIwSR8k=');
     }
 }

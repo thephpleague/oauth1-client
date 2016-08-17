@@ -29,7 +29,7 @@ class RequestFactory implements RequestFactoryInterface
      * Creates a PSR-7 Request instance.
      *
      * @param null|string                     $method  HTTP method for the request.
-     * @param null|string                     $url     URI for the request.
+     * @param null|string                     $uri     URI for the request.
      * @param array                           $headers Headers for the message.
      * @param string|resource|StreamInterface $body    Message body.
      * @param string                          $version HTTP protocol version.
@@ -38,11 +38,11 @@ class RequestFactory implements RequestFactoryInterface
      */
     public static function getRequest(
         $method,
-        $url,
+        $uri,
         array $headers = [],
         $body = null,
         $version = '1.1'
     ) {
-        return new Request($method, $url, $headers, $body, $version);
+        return new Request($method, $uri, $headers, $body, $version);
     }
 }
