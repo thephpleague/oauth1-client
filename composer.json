@@ -12,12 +12,13 @@
     "phploc/phploc": "^3.0",
     "phpspec/phpspec": "^2.5",
     "satooshi/php-coveralls": "^1.0",
-    "sebastian/phpcpd": "^2.0",
-    "squizlabs/php_codesniffer": "^2.6"
+    "sebastian/phpcpd": "*",
+    "squizlabs/php_codesniffer": "^2.6",
+    "behat/behat": "^3.1"
   },
   "keywords": [
     "oauth",
-    "oauth2",
+    "oauth1",
     "authorization",
     "authentication",
     "idp",
@@ -55,9 +56,7 @@
       "@composer install",
       "@phpcs",
       "@phpcpd",
-      "@phploc",
-      "@phpspec",
-      "@behat"
+      "@phpspec"
     ]
   }
 }
