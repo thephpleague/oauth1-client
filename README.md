@@ -250,13 +250,7 @@ $request = $server->getAuthenticatedRequest(
 ### Running automated tests
 
 ``` bash
-$ ./vendor/bin/phpunit
-```
-
-### Running code standard linter
-
-``` bash
-$ ./vendor/bin/phpcs src --standard=psr2 -sp
+$ composer run-script test
 ```
 
 ## Contributing
