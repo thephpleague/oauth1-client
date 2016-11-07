@@ -19,6 +19,8 @@
  */
 
 use League\OAuth1\Client\Credentials\ClientCredentials;
+use League\OAuth1\Client\Credentials\RsaClientCredentials;
+use League\OAuth1\Client\Signature\RsaSha1Signature;
 use Mockery as m;
 use PHPUnit_Framework_TestCase;
 
@@ -53,6 +55,24 @@ class ServerTest extends PHPUnit_Framework_TestCase
         $this->assertEquals('myidentifier', $credentials->getIdentifier());
         $this->assertEquals('mysecret', $credentials->getSecret());
         $this->assertEquals('http://app.dev/', $credentials->getCallbackUri());
+    }
+
+    public function testCreatingWithArrayRsa()
+    {
+        $config = [
+            'identifier' => 'app_key',
+            'secret' => 'secret',
+            'callback_uri' => 'https://example.com/callback',
+            'rsa_public_key' => __DIR__.'/test_rsa_publickey.pem',
+            'rsa_private_key' => __DIR__.'/test_rsa_privatekey.pem',
+        ];
+        $server = new ServerStub($config);
+
+        $credentials = $server->getClientCredentials();
+        $this->assertInstanceOf(RsaClientCredentials::class, $credentials);
+
+        $signature = $server->getSignature();
+        $this->assertInstanceOf(RsaSha1Signature::class, $signature);
     }
 
     public function testCreatingWithObject()
