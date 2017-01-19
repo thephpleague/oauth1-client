@@ -40,6 +40,29 @@ class HmacSha1Signature extends Signature implements SignatureInterface
     }
 
     /**
+     * Creates a host string according to https://oauth.net/core/1.0a/#rfc.section.9.1.2
+     *
+     * @param Uri $url
+     *
+     * @return string
+     */
+    protected function prepareHostString(Uri $url)
+    {
+        $urlParts = array(
+            'scheme' => $url->getScheme(),
+            'host' => $url->getHost(),
+            'path' => $url->getPath(),
+        );
+
+        $port = $url->getPort();
+        if ($port && $port !== 80 && $port !== 443) {
+            $urlParts['port'] = $port;
+        }
+
+        return Uri::fromParts($urlParts);
+    }
+
+    /**
      * Generate a base string for a HMAC-SHA1 signature
      * based on the given a url, method, and any parameters.
      *
@@ -53,13 +76,9 @@ class HmacSha1Signature extends Signature implements SignatureInterface
     {
         $baseString = rawurlencode($method).'&';
 
-        $schemeHostPath = Uri::fromParts(array(
-           'scheme' => $url->getScheme(),
-           'host' => $url->getHost(),
-           'path' => $url->getPath(),
-        ));
+        $hostString = $this->prepareHostString($url);
 
-        $baseString .= rawurlencode($schemeHostPath).'&';
+        $baseString .= rawurlencode($hostString).'&';
 
         $data = array();
         parse_str($url->getQuery(), $query);
