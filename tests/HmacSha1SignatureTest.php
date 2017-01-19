@@ -45,6 +45,36 @@ class HmacSha1SignatureTest extends PHPUnit_Framework_TestCase
         $this->assertEquals('A3Y7C1SUHXR1EBYIUlT3d6QT1cQ=', $signature->sign($uri, $parameters));
     }
 
+    public function testSigningRequestWith80thPort()
+    {
+        $signature = new HmacSha1Signature($this->getMockClientCredentials());
+
+        $uri = 'http://www.example.com:80/?qux=corge';
+        $parameters = array('foo' => 'bar', 'baz' => null);
+
+        $this->assertEquals('A3Y7C1SUHXR1EBYIUlT3d6QT1cQ=', $signature->sign($uri, $parameters));
+    }
+
+    public function testSigningRequestWith443thPort()
+    {
+        $signature = new HmacSha1Signature($this->getMockClientCredentials());
+
+        $uri = 'https://www.example.com:443/?qux=corge';
+        $parameters = array('foo' => 'bar', 'baz' => null);
+
+        $this->assertEquals('sNS9G4Ft7wRj+F8nygSEiokgvog=', $signature->sign($uri, $parameters));
+    }
+
+    public function testSigningRequestWithNonStandardPort()
+    {
+        $signature = new HmacSha1Signature($this->getMockClientCredentials());
+
+        $uri = 'https://www.example.com:8080/?qux=corge';
+        $parameters = array('foo' => 'bar', 'baz' => null);
+
+        $this->assertEquals('ccm9Tkv8PCxH6OjLJqwlCWBENro=', $signature->sign($uri, $parameters));
+    }
+
     public function testQueryStringFromArray()
     {
         $array = array('a' => 'b');
