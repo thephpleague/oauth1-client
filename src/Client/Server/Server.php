@@ -8,9 +8,11 @@ use League\OAuth1\Client\Credentials\ClientCredentialsInterface;
 use League\OAuth1\Client\Credentials\ClientCredentials;
 use League\OAuth1\Client\Credentials\CredentialsInterface;
 use League\OAuth1\Client\Credentials\CredentialsException;
+use League\OAuth1\Client\Credentials\RsaClientCredentials;
 use League\OAuth1\Client\Credentials\TemporaryCredentials;
 use League\OAuth1\Client\Credentials\TokenCredentials;
 use League\OAuth1\Client\Signature\HmacSha1Signature;
+use League\OAuth1\Client\Signature\RsaSha1Signature;
 use League\OAuth1\Client\Signature\SignatureInterface;
 
 abstract class Server
@@ -66,6 +68,10 @@ abstract class Server
         }
 
         $this->clientCredentials = $clientCredentials;
+
+        if (!$signature && $clientCredentials instanceof RsaClientCredentials) {
+            $signature = new RsaSha1Signature($clientCredentials);
+        }
         $this->signature = $signature ?: new HmacSha1Signature($clientCredentials);
     }
 
@@ -391,7 +397,14 @@ abstract class Server
             }
         }
 
-        $_clientCredentials = new ClientCredentials();
+        if (isset($clientCredentials['rsa_private_key']) && isset($clientCredentials['rsa_public_key'])) {
+            $_clientCredentials = new RsaClientCredentials();
+            $_clientCredentials->setRsaPrivateKey($clientCredentials['rsa_private_key']);
+            $_clientCredentials->setRsaPublicKey($clientCredentials['rsa_public_key']);
+        } else {
+            $_clientCredentials = new ClientCredentials();
+        }
+
         $_clientCredentials->setIdentifier($clientCredentials['identifier']);
         $_clientCredentials->setSecret($clientCredentials['secret']);
 
