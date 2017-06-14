@@ -364,6 +364,7 @@ abstract class Server
         if (!empty($this->userAgent)) {
             $defaultHeaders['User-Agent'] = $this->userAgent;
         }
+        $defaultHeaders['Accept'] = 'application/'. $this->responseType;
 
         return $defaultHeaders;
     }
