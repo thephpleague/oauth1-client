@@ -95,7 +95,7 @@ class HmacSha1Signature extends Signature implements SignatureInterface
 
         foreach ($data as $key => $value) {
             if ($prevKey) {
-                $key = $prevKey.'['.$key.']'; // Handle multi-dimensional array
+                $key = $prevKey.'%5B'.$key.'%5D'; // Handle multi-dimensional array
             }
             if (is_array($value)) {
                 $queryParams = $this->queryStringFromData($value, $queryParams, $key);
