@@ -32,6 +32,7 @@ so please help them out with a pull request if you notice this.
 - [Etsy](https://packagist.org/packages/y0lk/oauth1-etsy)
 - [Xero](https://packagist.org/packages/Invoiced/oauth1-xero)
 - [Gramin](https://packagist.org/packages/techgyani/garmin-wellness)
+- [Goodreads](https://packagist.org/packages/netgalley/oauth1-goodreads)
 
 #### Terminology (as per the RFC 5849 specification):
 
