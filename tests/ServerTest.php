@@ -19,6 +19,7 @@
  */
 
 use League\OAuth1\Client\Credentials\ClientCredentials;
+use League\OAuth1\Client\Credentials\CredentialsException;
 use League\OAuth1\Client\Credentials\RsaClientCredentials;
 use League\OAuth1\Client\Signature\RsaSha1Signature;
 use Mockery as m;
@@ -149,6 +150,46 @@ class ServerTest extends PHPUnit_Framework_TestCase
         $credentials->shouldReceive('getIdentifier')->andReturn('foo');
 
         $server->getTokenCredentials($credentials, 'bar', 'verifier');
+    }
+
+    /**
+     * @expectedException League\OAuth1\Client\Credentials\CredentialsException
+     * @expectExceptionMessage No token found.
+     */
+    public function testGettingTokenCredentialsWithoutToken()
+    {
+        $server = m::mock('League\OAuth1\Client\Tests\ServerStub[createHttpClient]', array($this->getMockClientCredentials()));
+
+        $temporaryCredentials = m::mock('League\OAuth1\Client\Credentials\TemporaryCredentials');
+        $temporaryCredentials->shouldReceive('getIdentifier')->andReturn('temporarycredentialsidentifier');
+        $temporaryCredentials->shouldReceive('getSecret')->andReturn('temporarycredentialssecret');
+
+        $server->shouldReceive('createHttpClient')->andReturn($client = m::mock('stdClass'));
+
+        $client->shouldReceive('post')->with('http://www.example.com/token', m::type('array'))->once()->andReturn($response = m::mock('stdClass'));
+        $response->shouldReceive('getBody')->andReturn('oauth_problem=token_rejected&oauth_problem_advice=The%20access%20token%20is%20not%20valid');
+
+        $server->getTokenCredentials($temporaryCredentials, 'temporarycredentialsidentifier', 'myverifiercode');
+    }
+
+    /**
+     * @expectedException League\OAuth1\Client\Credentials\CredentialsException
+     * @expectExceptionMessage No token secret found.
+     */
+    public function testGettingTokenCredentialsWithoutSecret()
+    {
+        $server = m::mock('League\OAuth1\Client\Tests\ServerStub[createHttpClient]', array($this->getMockClientCredentials()));
+
+        $temporaryCredentials = m::mock('League\OAuth1\Client\Credentials\TemporaryCredentials');
+        $temporaryCredentials->shouldReceive('getIdentifier')->andReturn('temporarycredentialsidentifier');
+        $temporaryCredentials->shouldReceive('getSecret')->andReturn('temporarycredentialssecret');
+
+        $server->shouldReceive('createHttpClient')->andReturn($client = m::mock('stdClass'));
+
+        $client->shouldReceive('post')->with('http://www.example.com/token', m::type('array'))->once()->andReturn($response = m::mock('stdClass'));
+        $response->shouldReceive('getBody')->andReturn('oauth_token=oauth_token&oauth_problem=token_rejected&oauth_problem_advice=The%20access%20token%20is%20not%20valid');
+
+        $server->getTokenCredentials($temporaryCredentials, 'temporarycredentialsidentifier', 'myverifiercode');
     }
 
     public function testGettingTokenCredentials()

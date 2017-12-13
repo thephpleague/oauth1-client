@@ -496,6 +496,14 @@ abstract class Server
             throw new CredentialsException("Error [{$data['error']}] in retrieving token credentials.");
         }
 
+        if (!isset($data['oauth_token'])) {
+            throw new CredentialsException('No token found.');
+        }
+
+        if (!isset($data['oauth_token_secret'])) {
+            throw new CredentialsException('No token secret found.');
+        }
+
         $tokenCredentials = new TokenCredentials();
         $tokenCredentials->setIdentifier($data['oauth_token']);
         $tokenCredentials->setSecret($data['oauth_token_secret']);
