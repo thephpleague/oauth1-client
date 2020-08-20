@@ -20,7 +20,7 @@ class ServerTest extends TestCase
 {
     public static function setUpBeforeClass(): void
     {
-        require_once dirname(__DIR__) . '/Stubs/ServerStub.php';
+        require_once \dirname(__DIR__) . '/Stubs/ServerStub.php';
     }
 
     public function tearDown(): void

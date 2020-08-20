@@ -15,12 +15,12 @@ class RsaClientCredentials extends ClientCredentials
     protected $rsaPrivateKeyFile;
 
     /**
-     * @var resource|null
+     * @var null|resource
      */
     protected $rsaPublicKey;
 
     /**
-     * @var resource|null
+     * @var null|resource
      */
     protected $rsaPrivateKey;
 
@@ -58,6 +58,7 @@ class RsaClientCredentials extends ClientCredentials
      * Gets the RSA public key.
      *
      * @throws CredentialsException when the key could not be loaded.
+     *
      * @return resource
      */
     public function getRsaPublicKey()
@@ -83,6 +84,7 @@ class RsaClientCredentials extends ClientCredentials
      * Gets the RSA private key.
      *
      * @throws CredentialsException when the key could not be loaded.
+     *
      * @return resource
      */
     public function getRsaPrivateKey()

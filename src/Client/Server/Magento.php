@@ -54,7 +54,7 @@ class Magento extends Server
     public function __construct($clientCredentials, SignatureInterface $signature = null)
     {
         parent::__construct($clientCredentials, $signature);
-        if (is_array($clientCredentials)) {
+        if (\is_array($clientCredentials)) {
             $this->parseConfigurationArray($clientCredentials);
         }
     }
@@ -98,7 +98,7 @@ class Magento extends Server
      */
     public function userDetails($data, TokenCredentials $tokenCredentials): User
     {
-        if (!is_array($data) || !count($data)) {
+        if (!\is_array($data) || !\count($data)) {
             throw new UnexpectedValueException('Not possible to get user info');
         }
 

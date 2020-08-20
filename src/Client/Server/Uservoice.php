@@ -22,7 +22,7 @@ class Uservoice extends Server
     {
         parent::__construct($clientCredentials, $signature);
 
-        if (is_array($clientCredentials)) {
+        if (\is_array($clientCredentials)) {
             $this->parseConfigurationArray($clientCredentials);
         }
     }
@@ -74,11 +74,11 @@ class Uservoice extends Server
         if ($data['user']['name']) {
             $parts = explode(' ', $data['user']['name']);
 
-            if (count($parts) > 0) {
+            if (\count($parts) > 0) {
                 $user->firstName = $parts[0];
             }
 
-            if (count($parts) > 1) {
+            if (\count($parts) > 1) {
                 $user->lastName = $parts[1];
             }
         }

@@ -1,4 +1,6 @@
-<?php namespace League\OAuth1\Client\Tests;
+<?php
+
+namespace League\OAuth1\Client\Tests;
 
 use GuzzleHttp\Client as GuzzleClient;
 use InvalidArgumentException;

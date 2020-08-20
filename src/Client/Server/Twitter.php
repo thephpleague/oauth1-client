@@ -56,11 +56,11 @@ class Twitter extends Server
             $user->email = $data['email'];
         }
 
-        $used = array('id', 'screen_name', 'name', 'location', 'description', 'profile_image_url', 'email');
+        $used = ['id', 'screen_name', 'name', 'location', 'description', 'profile_image_url', 'email'];
 
         foreach ($data as $key => $value) {
             if (strpos($key, 'url') !== false) {
-                if (!in_array($key, $used, true)) {
+                if (!\in_array($key, $used, true)) {
                     $used[] = $key;
                 }
 

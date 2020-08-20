@@ -1,5 +1,6 @@
 .*
 !.git*
+!.php_cs.dist
 !.scrutinizer.yml
 !.travis.yml
 /vendor

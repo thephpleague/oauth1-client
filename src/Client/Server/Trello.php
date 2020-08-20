@@ -49,7 +49,7 @@ class Trello extends Server
     {
         parent::__construct($clientCredentials, $signature);
 
-        if (is_array($clientCredentials)) {
+        if (\is_array($clientCredentials)) {
             $this->parseConfiguration($clientCredentials);
         }
     }
@@ -107,7 +107,7 @@ class Trello extends Server
     /**
      * Get application name.
      *
-     * @return string|null
+     * @return null|string
      */
     public function getApplicationName(): ?string
     {

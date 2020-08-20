@@ -1,13 +1,13 @@
 <?php
 
-require_once __DIR__.'/../../vendor/autoload.php';
+require_once __DIR__ . '/../../vendor/autoload.php';
 
 // Create server
-$server = new League\OAuth1\Client\Server\Xing(array(
+$server = new League\OAuth1\Client\Server\Xing([
     'identifier' => 'your-identifier',
     'secret' => 'your-secret',
-    'callback_uri' => "http://your-callback-uri/",
-));
+    'callback_uri' => 'http://your-callback-uri/',
+]);
 
 // Start session
 session_start();
@@ -18,7 +18,7 @@ if (isset($_GET['user'])) {
     // Check somebody hasn't manually entered this URL in,
     // by checking that we have the token credentials in
     // the session.
-    if ( ! isset($_SESSION['token_credentials'])) {
+    if (! isset($_SESSION['token_credentials'])) {
         echo 'No token credentials.';
         exit(1);
     }
@@ -44,7 +44,7 @@ if (isset($_GET['user'])) {
     var_dump($user);
 
 // Step 3
-} elseif (isset($_GET['oauth_token']) && isset($_GET['oauth_verifier'])) {
+} elseif (isset($_GET['oauth_token'], $_GET['oauth_verifier'])) {
 
     // Retrieve the temporary credentials from step 2
     $temporaryCredentials = unserialize($_SESSION['temporary_credentials']);

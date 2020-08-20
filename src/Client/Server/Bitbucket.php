@@ -52,11 +52,11 @@ class Bitbucket extends Server
         $user->lastName = $data['user']['last_name'];
         $user->imageUrl = $data['user']['avatar'];
 
-        $used = array('username', 'display_name', 'avatar');
+        $used = ['username', 'display_name', 'avatar'];
 
         foreach ($data as $key => $value) {
             if (strpos($key, 'url') !== false) {
-                if (!in_array($key, $used, true)) {
+                if (!\in_array($key, $used, true)) {
                     $used[] = $key;
                 }
 

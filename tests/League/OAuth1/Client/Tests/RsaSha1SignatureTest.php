@@ -60,6 +60,7 @@ class RsaSha1SignatureTest extends TestCase
      * @param array $args
      *
      * @throws \ReflectionException
+     *
      * @return mixed
      */
     protected function invokeQueryStringFromData(array $args)

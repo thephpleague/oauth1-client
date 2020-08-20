@@ -60,7 +60,7 @@ abstract class Server
     public function __construct($clientCredentials, ?SignatureInterface $signature = null)
     {
         // Pass through an array or client credentials, we don't care
-        if (is_array($clientCredentials)) {
+        if (\is_array($clientCredentials)) {
             $clientCredentials = $this->createClientCredentials($clientCredentials);
         } elseif (!$clientCredentials instanceof ClientCredentialsInterface) {
             throw new InvalidArgumentException('Client credentials must be an array or valid object.');
@@ -80,6 +80,7 @@ abstract class Server
      *
      * @throws \GuzzleHttp\Exception\GuzzleException
      * @throws \League\OAuth1\Client\Credentials\CredentialsException
+     *
      * @return TemporaryCredentials
      */
     public function getTemporaryCredentials(): TemporaryCredentials
@@ -149,6 +150,7 @@ abstract class Server
      *
      * @throws \GuzzleHttp\Exception\GuzzleException
      * @throws \League\OAuth1\Client\Credentials\CredentialsException
+     *
      * @return TokenCredentials
      */
     public function getTokenCredentials(TemporaryCredentials $temporaryCredentials, $temporaryIdentifier, $verifier): TokenCredentials
@@ -186,6 +188,7 @@ abstract class Server
      * @param bool $force
      *
      * @throws \GuzzleHttp\Exception\GuzzleException
+     *
      * @return \League\OAuth1\Client\Server\User
      */
     public function getUserDetails(TokenCredentials $tokenCredentials, $force = false): User
@@ -202,6 +205,7 @@ abstract class Server
      * @param bool $force
      *
      * @throws \GuzzleHttp\Exception\GuzzleException
+     *
      * @return string|int
      */
     public function getUserUid(TokenCredentials $tokenCredentials, bool $force = false)
@@ -218,7 +222,8 @@ abstract class Server
      * @param bool $force
      *
      * @throws \GuzzleHttp\Exception\GuzzleException
-     * @return string|null
+     *
+     * @return null|string
      */
     public function getUserEmail(TokenCredentials $tokenCredentials, bool $force = false): ?string
     {
@@ -234,6 +239,7 @@ abstract class Server
      * @param bool $force
      *
      * @throws \GuzzleHttp\Exception\GuzzleException
+     *
      * @return string
      */
     public function getUserScreenName(TokenCredentials $tokenCredentials, bool $force = false): string
@@ -250,6 +256,7 @@ abstract class Server
      * @param bool $force
      *
      * @throws \GuzzleHttp\Exception\GuzzleException
+     *
      * @return mixed HTTP client response
      */
     protected function fetchUserDetails(TokenCredentials $tokenCredentials, bool $force = true)
@@ -447,13 +454,14 @@ abstract class Server
      * @param string $body
      *
      * @throws \League\OAuth1\Client\Credentials\CredentialsException
+     *
      * @return TemporaryCredentials
      */
     protected function createTemporaryCredentials($body): TemporaryCredentials
     {
         parse_str($body, $data);
 
-        if (!$data || !is_array($data)) {
+        if (!$data || !\is_array($data)) {
             throw new CredentialsException('Unable to parse temporary credentials response.');
         }
 
@@ -499,7 +507,7 @@ abstract class Server
     {
         parse_str($body, $data);
 
-        if (!$data || !is_array($data)) {
+        if (!$data || !\is_array($data)) {
             throw new CredentialsException('Unable to parse token credentials response.');
         }
 
@@ -519,6 +527,7 @@ abstract class Server
      * Each request builds on these parameters.
      *
      * @return array
+     *
      * @see    OAuth 1.0 RFC 5849 Section 3.1
      */
     protected function baseProtocolParameters(): array
@@ -616,6 +625,7 @@ abstract class Server
      * @param int $length
      *
      * @return string
+     *
      * @see    OAuth 1.0 RFC 5849 Section 3.3
      */
     protected function nonce($length = 32): string
