@@ -7,21 +7,21 @@ abstract class Credentials implements CredentialsInterface
     /**
      * The credentials identifier.
      *
-     * @var string
+     * @var null|string
      */
     protected $identifier;
 
     /**
      * The credentials secret.
      *
-     * @var string
+     * @var null|string
      */
     protected $secret;
 
     /**
      * {@inheritDoc}
      */
-    public function getIdentifier()
+    public function getIdentifier(): ?string
     {
         return $this->identifier;
     }
@@ -29,7 +29,7 @@ abstract class Credentials implements CredentialsInterface
     /**
      * {@inheritDoc}
      */
-    public function setIdentifier($identifier)
+    public function setIdentifier($identifier): void
     {
         $this->identifier = $identifier;
     }
@@ -37,7 +37,7 @@ abstract class Credentials implements CredentialsInterface
     /**
      * {@inheritDoc}
      */
-    public function getSecret()
+    public function getSecret(): ?string
     {
         return $this->secret;
     }
@@ -45,7 +45,7 @@ abstract class Credentials implements CredentialsInterface
     /**
      * {@inheritDoc}
      */
-    public function setSecret($secret)
+    public function setSecret($secret): void
     {
         $this->secret = $secret;
     }

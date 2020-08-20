@@ -1,0 +1,29 @@
+version: '3.7'
+
+services:
+  php:
+    image: audithsoftworks/docker:php
+    working_dir: /var/www
+    volumes:
+      - .:/var/www
+    environment:
+      XDEBUG_CONFIG: "remote_host=172.80.0.1"
+      REDIS_PORT: 6379
+      WORKDIR: "/var/www"
+      MYUID: "${MYUID:-1000}"
+      MYGID: "${MYGID:-1000}"
+    entrypoint: build/docker-entrypoint.sh
+    command: php-fpm
+    stdin_open: true
+    tty: true\
+    ipc: host
+    networks:
+      default:
+        ipv4_address: 172.80.0.100
+volumes:
+  db-data: {}
+networks:
+  default:
+    ipam:
+      config:
+        - subnet: 172.80.0.0/24

@@ -3,13 +3,14 @@
 namespace League\OAuth1\Client\Server;
 
 use League\OAuth1\Client\Credentials\TokenCredentials;
+use UnexpectedValueException;
 
 class Tumblr extends Server
 {
     /**
      * {@inheritDoc}
      */
-    public function urlTemporaryCredentials()
+    public function urlTemporaryCredentials(): string
     {
         return 'https://www.tumblr.com/oauth/request_token';
     }
@@ -17,7 +18,7 @@ class Tumblr extends Server
     /**
      * {@inheritDoc}
      */
-    public function urlAuthorization()
+    public function urlAuthorization(): string
     {
         return 'https://www.tumblr.com/oauth/authorize';
     }
@@ -25,7 +26,7 @@ class Tumblr extends Server
     /**
      * {@inheritDoc}
      */
-    public function urlTokenCredentials()
+    public function urlTokenCredentials(): string
     {
         return 'https://www.tumblr.com/oauth/access_token';
     }
@@ -33,7 +34,7 @@ class Tumblr extends Server
     /**
      * {@inheritDoc}
      */
-    public function urlUserDetails()
+    public function urlUserDetails(): string
     {
         return 'https://api.tumblr.com/v2/user/info';
     }
@@ -41,11 +42,11 @@ class Tumblr extends Server
     /**
      * {@inheritDoc}
      */
-    public function userDetails($data, TokenCredentials $tokenCredentials)
+    public function userDetails($data, TokenCredentials $tokenCredentials): User
     {
         // If the API has broke, return nothing
         if (!isset($data['response']['user']) || !is_array($data['response']['user'])) {
-            return;
+            throw new UnexpectedValueException('No user data in response from API.');
         }
 
         $data = $data['response']['user'];
@@ -55,7 +56,7 @@ class Tumblr extends Server
         $user->nickname = $data['name'];
 
         // Save all extra data
-        $used = array('name');
+        $used = ['name'];
         $user->extra = array_diff_key($data, array_flip($used));
 
         return $user;
@@ -67,7 +68,7 @@ class Tumblr extends Server
     public function userUid($data, TokenCredentials $tokenCredentials)
     {
         if (!isset($data['response']['user']) || !is_array($data['response']['user'])) {
-            return;
+            throw new UnexpectedValueException('No user data in response from API.');
         }
 
         $data = $data['response']['user'];
@@ -78,18 +79,18 @@ class Tumblr extends Server
     /**
      * {@inheritDoc}
      */
-    public function userEmail($data, TokenCredentials $tokenCredentials)
+    public function userEmail($data, TokenCredentials $tokenCredentials): ?string
     {
-        return;
+        return null;
     }
 
     /**
      * {@inheritDoc}
      */
-    public function userScreenName($data, TokenCredentials $tokenCredentials)
+    public function userScreenName($data, TokenCredentials $tokenCredentials): ?string
     {
         if (!isset($data['response']['user']) || !is_array($data['response']['user'])) {
-            return;
+            throw new UnexpectedValueException('No user data in response from API.');
         }
 
         $data = $data['response']['user'];

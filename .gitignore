@@ -1,4 +1,5 @@
-/build
+.*
+!.git*
+!.scrutinizer.yml
+!.travis.yml
 /vendor
-/composer.lock
-.DS_Store

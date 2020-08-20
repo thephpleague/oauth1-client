@@ -29,9 +29,9 @@ class RsaClientCredentials extends ClientCredentials
      *
      * @param string $filename
      *
-     * @return self
+     * @return $this
      */
-    public function setRsaPublicKey($filename)
+    public function setRsaPublicKey(string $filename): self
     {
         $this->rsaPublicKeyFile = $filename;
         $this->rsaPublicKey = null;
@@ -44,9 +44,9 @@ class RsaClientCredentials extends ClientCredentials
      *
      * @param string $filename
      *
-     * @return self
+     * @return $this
      */
-    public function setRsaPrivateKey($filename)
+    public function setRsaPrivateKey(string $filename): self
     {
         $this->rsaPrivateKeyFile = $filename;
         $this->rsaPrivateKey = null;
@@ -58,7 +58,6 @@ class RsaClientCredentials extends ClientCredentials
      * Gets the RSA public key.
      *
      * @throws CredentialsException when the key could not be loaded.
-     *
      * @return resource
      */
     public function getRsaPublicKey()
@@ -84,7 +83,6 @@ class RsaClientCredentials extends ClientCredentials
      * Gets the RSA private key.
      *
      * @throws CredentialsException when the key could not be loaded.
-     *
      * @return resource
      */
     public function getRsaPrivateKey()

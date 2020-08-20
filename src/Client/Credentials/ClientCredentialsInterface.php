@@ -6,15 +6,13 @@ interface ClientCredentialsInterface extends CredentialsInterface
 {
     /**
      * Get the credentials callback URI.
-     *
-     * @return string
      */
-    public function getCallbackUri();
+    public function getCallbackUri(): ?string;
 
     /**
      * Set the credentials callback URI.
      *
-     * @return string
+     * @param string $callbackUri
      */
-    public function setCallbackUri($callbackUri);
+    public function setCallbackUri(string $callbackUri): void;
 }

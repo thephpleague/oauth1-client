@@ -1,6 +1,6 @@
 <?php
 
-namespace League\OAuth1\Client\Tests;
+namespace League\OAuth1\Client\Stubs;
 
 use League\OAuth1\Client\Credentials\TokenCredentials;
 use League\OAuth1\Client\Server\Server;
@@ -11,7 +11,7 @@ class ServerStub extends Server
     /**
      * {@inheritDoc}
      */
-    public function urlTemporaryCredentials()
+    public function urlTemporaryCredentials(): string
     {
         return 'http://www.example.com/temporary';
     }
@@ -19,7 +19,7 @@ class ServerStub extends Server
     /**
      * {@inheritDoc}
      */
-    public function urlAuthorization()
+    public function urlAuthorization(): string
     {
         return 'http://www.example.com/authorize';
     }
@@ -27,7 +27,7 @@ class ServerStub extends Server
     /**
      * {@inheritDoc}
      */
-    public function urlTokenCredentials()
+    public function urlTokenCredentials(): string
     {
         return 'http://www.example.com/token';
     }
@@ -35,7 +35,7 @@ class ServerStub extends Server
     /**
      * {@inheritDoc}
      */
-    public function urlUserDetails()
+    public function urlUserDetails(): string
     {
         return 'http://www.example.com/user';
     }
@@ -43,10 +43,11 @@ class ServerStub extends Server
     /**
      * {@inheritDoc}
      */
-    public function userDetails($data, TokenCredentials $tokenCredentials)
+    public function userDetails($data, TokenCredentials $tokenCredentials): User
     {
         $user = new User;
         $user->firstName = $data['foo'];
+
         return $user;
     }
 
@@ -55,22 +56,22 @@ class ServerStub extends Server
      */
     public function userUid($data, TokenCredentials $tokenCredentials)
     {
-        return isset($data['id']) ? $data['id'] : null;
+        return $data['id'] ?? null;
     }
 
     /**
      * {@inheritDoc}
      */
-    public function userEmail($data, TokenCredentials $tokenCredentials)
+    public function userEmail($data, TokenCredentials $tokenCredentials): ?string
     {
-        return isset($data['contact_email']) ? $data['contact_email'] : null;
+        return $data['contact_email'] ?? null;
     }
 
     /**
      * {@inheritDoc}
      */
-    public function userScreenName($data, TokenCredentials $tokenCredentials)
+    public function userScreenName($data, TokenCredentials $tokenCredentials): ?string
     {
-        return isset($data['username']) ? $data['username'] : null;
+        return $data['username'] ?? null;
     }
 }

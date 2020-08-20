@@ -2,96 +2,104 @@
 
 namespace League\OAuth1\Client\Server;
 
-class User implements \IteratorAggregate
+use ArrayIterator;
+use IteratorAggregate;
+
+class User implements IteratorAggregate
 {
     /**
      * The user's unique ID.
      *
      * @var mixed
      */
-    public $uid = null;
+    public $uid;
 
     /**
      * The user's nickname (screen name, username etc).
      *
      * @var mixed
      */
-    public $nickname = null;
+    public $nickname;
 
     /**
      * The user's name.
      *
      * @var mixed
      */
-    public $name = null;
+    public $name;
 
     /**
      * The user's first name.
      *
      * @var string
      */
-    public $firstName = null;
+    public $firstName;
 
     /**
      * The user's last name.
      *
      * @var string
      */
-    public $lastName = null;
+    public $lastName;
 
     /**
      * The user's email.
      *
      * @var string
      */
-    public $email = null;
+    public $email;
 
     /**
      * The user's location.
      *
      * @var string|array
      */
-    public $location = null;
+    public $location;
 
     /**
      * The user's description.
      *
      * @var string
      */
-    public $description = null;
+    public $description;
 
     /**
      * The user's image URL.
      *
      * @var string
      */
-    public $imageUrl = null;
+    public $imageUrl;
 
     /**
      * The users' URLs.
      *
-     * @var string|array
+     * @var array
      */
-    public $urls = array();
+    public $urls = [];
 
     /**
      * Any extra data.
      *
      * @var array
      */
-    public $extra = array();
+    public $extra = [];
 
     /**
      * Set a property on the user.
      *
      * @param string $key
-     * @param mixed  $value
+     * @param mixed $value
      */
-    public function __set($key, $value)
+    public function __set($key, $value): void
     {
         if (isset($this->{$key})) {
             $this->{$key} = $value;
         }
+    }
+
+    public function __isset($key): bool
+    {
+        return isset($this->{$key});
     }
 
     /**
@@ -103,9 +111,7 @@ class User implements \IteratorAggregate
      */
     public function __get($key)
     {
-        if (isset($this->{$key})) {
-            return $this->{$key};
-        }
+        return $this->{$key} ?? null;
     }
 
     /**
@@ -113,6 +119,6 @@ class User implements \IteratorAggregate
      */
     public function getIterator()
     {
-        return new \ArrayIterator($this);
+        return new ArrayIterator($this);
     }
 }

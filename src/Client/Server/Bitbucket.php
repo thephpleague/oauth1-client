@@ -9,7 +9,7 @@ class Bitbucket extends Server
     /**
      * {@inheritDoc}
      */
-    public function urlTemporaryCredentials()
+    public function urlTemporaryCredentials(): string
     {
         return 'https://bitbucket.org/api/1.0/oauth/request_token';
     }
@@ -17,7 +17,7 @@ class Bitbucket extends Server
     /**
      * {@inheritDoc}
      */
-    public function urlAuthorization()
+    public function urlAuthorization(): string
     {
         return 'https://bitbucket.org/api/1.0/oauth/authenticate';
     }
@@ -25,7 +25,7 @@ class Bitbucket extends Server
     /**
      * {@inheritDoc}
      */
-    public function urlTokenCredentials()
+    public function urlTokenCredentials(): string
     {
         return 'https://bitbucket.org/api/1.0/oauth/access_token';
     }
@@ -33,7 +33,7 @@ class Bitbucket extends Server
     /**
      * {@inheritDoc}
      */
-    public function urlUserDetails()
+    public function urlUserDetails(): string
     {
         return 'https://bitbucket.org/api/1.0/user';
     }
@@ -41,7 +41,7 @@ class Bitbucket extends Server
     /**
      * {@inheritDoc}
      */
-    public function userDetails($data, TokenCredentials $tokenCredentials)
+    public function userDetails($data, TokenCredentials $tokenCredentials): User
     {
         $user = new User();
 
@@ -56,7 +56,7 @@ class Bitbucket extends Server
 
         foreach ($data as $key => $value) {
             if (strpos($key, 'url') !== false) {
-                if (!in_array($key, $used)) {
+                if (!in_array($key, $used, true)) {
                     $used[] = $key;
                 }
 
@@ -81,15 +81,15 @@ class Bitbucket extends Server
     /**
      * {@inheritDoc}
      */
-    public function userEmail($data, TokenCredentials $tokenCredentials)
+    public function userEmail($data, TokenCredentials $tokenCredentials): ?string
     {
-        return;
+        return null;
     }
 
     /**
      * {@inheritDoc}
      */
-    public function userScreenName($data, TokenCredentials $tokenCredentials)
+    public function userScreenName($data, TokenCredentials $tokenCredentials): ?string
     {
         return $data['user']['display_name'];
     }

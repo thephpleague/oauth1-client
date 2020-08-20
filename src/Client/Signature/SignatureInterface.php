@@ -22,23 +22,21 @@ interface SignatureInterface
      *
      * @param CredentialsInterface $credentials
      */
-    public function setCredentials(CredentialsInterface $credentials);
+    public function setCredentials(CredentialsInterface $credentials): void;
 
     /**
      * Get the OAuth signature method.
-     *
-     * @return string
      */
-    public function method();
+    public function method(): string;
 
     /**
      * Sign the given request for the client.
      *
      * @param string $uri
-     * @param array  $parameters
+     * @param array $parameters
      * @param string $method
      *
      * @return string
      */
-    public function sign($uri, array $parameters = array(), $method = 'POST');
+    public function sign($uri, array $parameters = [], $method = 'POST'): string;
 }

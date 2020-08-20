@@ -32,7 +32,7 @@ abstract class Signature implements SignatureInterface
     /**
      * {@inheritDoc}
      */
-    public function setCredentials(CredentialsInterface $credentials)
+    public function setCredentials(CredentialsInterface $credentials): void
     {
         $this->credentials = $credentials;
     }
@@ -42,9 +42,9 @@ abstract class Signature implements SignatureInterface
      *
      * @return string
      */
-    protected function key()
+    protected function key(): string
     {
-        $key = rawurlencode($this->clientCredentials->getSecret()).'&';
+        $key = rawurlencode($this->clientCredentials->getSecret()) . '&';
 
         if ($this->credentials !== null) {
             $key .= rawurlencode($this->credentials->getSecret());

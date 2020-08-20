@@ -30,39 +30,39 @@ class Uservoice extends Server
     /**
      * {@inheritDoc}
      */
-    public function urlTemporaryCredentials()
+    public function urlTemporaryCredentials(): string
     {
-        return $this->base.'/oauth/request_token';
+        return $this->base . '/oauth/request_token';
     }
 
     /**
      * {@inheritDoc}
      */
-    public function urlAuthorization()
+    public function urlAuthorization(): string
     {
-        return $this->base.'/oauth/authorize';
+        return $this->base . '/oauth/authorize';
     }
 
     /**
      * {@inheritDoc}
      */
-    public function urlTokenCredentials()
+    public function urlTokenCredentials(): string
     {
-        return $this->base.'/oauth/access_token';
+        return $this->base . '/oauth/access_token';
     }
 
     /**
      * {@inheritdoc}
      */
-    public function urlUserDetails()
+    public function urlUserDetails(): string
     {
-        return $this->base.'/api/v1/users/current.json';
+        return $this->base . '/api/v1/users/current.json';
     }
 
     /**
      * {@inheritDoc}
      */
-    public function userDetails($data, TokenCredentials $tokenCredentials)
+    public function userDetails($data, TokenCredentials $tokenCredentials): User
     {
         $user = new User();
 
@@ -99,7 +99,7 @@ class Uservoice extends Server
     /**
      * {@inheritdoc}
      */
-    public function userEmail($data, TokenCredentials $tokenCredentials)
+    public function userEmail($data, TokenCredentials $tokenCredentials): ?string
     {
         return $data['user']['email'];
     }
@@ -107,7 +107,7 @@ class Uservoice extends Server
     /**
      * {@inheritdoc}
      */
-    public function userScreenName($data, TokenCredentials $tokenCredentials)
+    public function userScreenName($data, TokenCredentials $tokenCredentials): ?string
     {
         return $data['user']['name'];
     }
@@ -119,7 +119,7 @@ class Uservoice extends Server
      *
      * @throws InvalidArgumentException
      */
-    private function parseConfigurationArray(array $configuration = array())
+    private function parseConfigurationArray(array $configuration = []): void
     {
         if (isset($configuration['host'])) {
             throw new InvalidArgumentException('Missing host');
