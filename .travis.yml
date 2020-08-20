@@ -1,5 +1,9 @@
 language: php
 
+cache:
+  directories:
+    - ./vendor
+
 before_script:
   - travis_retry composer self-update
   - travis_retry composer global require hirak/prestissimo
@@ -7,12 +11,12 @@ before_script:
   - travis_retry phpenv rehash
 
 script:
-  - ./vendor/bin/php-cs-fixer
+  - ./vendor/bin/php-cs-fixer fix --dry-run
   - ./vendor/bin/phpunit --coverage-text --coverage-clover=coverage.clover
 
-after_script:
-  - if [ "$TRAVIS_PHP_VERSION" != "7.0" ]; then wget https://scrutinizer-ci.com/ocular.phar; fi
-  - if [ "$TRAVIS_PHP_VERSION" != "7.0" ]; then php ocular.phar code-coverage:upload --format=php-clover coverage.clover; fi
+#after_script:
+#  - wget https://scrutinizer-ci.com/ocular.phar
+#  - php ocular.phar code-coverage:upload --format=php-clover coverage.clover
 
 stages:
   - build

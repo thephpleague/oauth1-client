@@ -15,7 +15,7 @@ services:
     entrypoint: build/docker-entrypoint.sh
     command: php-fpm
     stdin_open: true
-    tty: true\
+    tty: true
     ipc: host
     networks:
       default:
