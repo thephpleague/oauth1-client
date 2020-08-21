@@ -39,6 +39,7 @@
         {
             "name": "Shahriyar Imanov",
             "email": "shehi@imanov.me",
+            "homepage": "https://www.github.com/shehi",
             "role": "Developer"
         }
     ],
@@ -49,7 +50,8 @@
     },
     "extra": {
         "branch-alias": {
-            "dev-master": "1.0-dev"
+            "dev-master": "1.0-dev",
+            "dev-develop": "2.0-dev"
         }
     }
 }
