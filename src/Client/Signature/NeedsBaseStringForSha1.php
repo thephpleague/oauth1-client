@@ -5,7 +5,7 @@ namespace League\OAuth1\Client\Signature;
 use GuzzleHttp\Psr7\Uri;
 use Psr\Http\Message\UriInterface;
 
-trait NeedsBaseStringFromRsaSha1
+trait NeedsBaseStringForSha1
 {
     /**
      * Generate a base string for a RSA-SHA1 signature

@@ -7,7 +7,7 @@ use Psr\Http\Message\UriInterface;
 
 class HmacSha1Signature extends Signature
 {
-    use NeedsBaseStringFromRsaSha1;
+    use NeedsBaseStringForSha1;
 
     /**
      * {@inheritDoc}

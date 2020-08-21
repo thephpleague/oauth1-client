@@ -7,7 +7,7 @@ use Psr\Http\Message\UriInterface;
 
 class RsaSha1Signature extends Signature
 {
-    use NeedsBaseStringFromRsaSha1;
+    use NeedsBaseStringForSha1;
 
     /**
      * {@inheritdoc}
