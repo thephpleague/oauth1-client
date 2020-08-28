@@ -1,20 +1,19 @@
 <?php namespace League\OAuth1\Client\Tests;
 
+use InvalidArgumentException;
 use League\OAuth1\Client\Server\Xing;
 use League\OAuth1\Client\Credentials\ClientCredentials;
 use Mockery as m;
+use PHPUnit\Framework\TestCase;
 use PHPUnit_Framework_TestCase;
 
-class XingTest extends PHPUnit_Framework_TestCase
+class XingTest extends TestCase
 {
-    /**
-     * Close mockery.
-     *
-     * @return void
-     */
-    public function tearDown()
+    protected function tearDown(): void
     {
         m::close();
+
+        parent::tearDown();
     }
 
     public function testCreatingWithArray()
@@ -82,15 +81,14 @@ class XingTest extends PHPUnit_Framework_TestCase
         $this->assertEquals($expected, $server->getAuthorizationUrl($credentials));
     }
 
-    /**
-     * @expectedException InvalidArgumentException
-     */
     public function testGettingTokenCredentialsFailsWithManInTheMiddle()
     {
         $server = new Xing($this->getMockClientCredentials());
 
         $credentials = m::mock('League\OAuth1\Client\Credentials\TemporaryCredentials');
         $credentials->shouldReceive('getIdentifier')->andReturn('foo');
+
+        $this->expectException(InvalidArgumentException::class);
 
         $server->getTokenCredentials($credentials, 'bar', 'verifier');
     }

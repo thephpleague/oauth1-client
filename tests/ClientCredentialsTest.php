@@ -20,18 +20,16 @@
 
 use League\OAuth1\Client\Credentials\ClientCredentials;
 use Mockery as m;
+use PHPUnit\Framework\TestCase;
 use PHPUnit_Framework_TestCase;
 
-class ClientCredentialsTest extends PHPUnit_Framework_TestCase
+class ClientCredentialsTest extends TestCase
 {
-    /**
-     * Close mockery.
-     *
-     * @return void
-     */
-    public function tearDown()
+    protected function tearDown(): void
     {
         m::close();
+
+        parent::tearDown();
     }
 
     public function testManipulating()

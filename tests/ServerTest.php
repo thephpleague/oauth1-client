@@ -18,32 +18,31 @@
  * @link       http://cartalyst.com
  */
 
+use InvalidArgumentException;
 use League\OAuth1\Client\Credentials\ClientCredentials;
 use League\OAuth1\Client\Credentials\RsaClientCredentials;
 use League\OAuth1\Client\Signature\RsaSha1Signature;
 use Mockery as m;
+use PHPUnit\Framework\TestCase;
 use PHPUnit_Framework_TestCase;
 
-class ServerTest extends PHPUnit_Framework_TestCase
+class ServerTest extends TestCase
 {
     /**
      * Setup resources and dependencies.
-     *
-     * @return void
      */
-    public static function setUpBeforeClass()
+    public static function setUpBeforeClass(): void
     {
+        parent::setUpBeforeClass();
+
         require_once __DIR__.'/stubs/ServerStub.php';
     }
 
-    /**
-     * Close mockery.
-     *
-     * @return void
-     */
-    public function tearDown()
+    protected function tearDown(): void
     {
         m::close();
+
+        parent::tearDown();
     }
 
     public function testCreatingWithArray()
@@ -87,12 +86,11 @@ class ServerTest extends PHPUnit_Framework_TestCase
         $this->assertEquals($credentials, $server->getClientCredentials());
     }
 
-    /**
-     * @expectedException InvalidArgumentException
-     **/
     public function testCreatingWithInvalidInput()
     {
-        $server = new ServerStub(uniqid());
+        $this->expectException(InvalidArgumentException::class);
+
+        new ServerStub(uniqid());
     }
 
     public function testGettingTemporaryCredentials()
@@ -138,15 +136,14 @@ class ServerTest extends PHPUnit_Framework_TestCase
         $this->assertEquals($expected, $server->getAuthorizationUrl($credentials));
     }
 
-    /**
-     * @expectedException InvalidArgumentException
-     */
     public function testGettingTokenCredentialsFailsWithManInTheMiddle()
     {
         $server = new ServerStub($this->getMockClientCredentials());
 
         $credentials = m::mock('League\OAuth1\Client\Credentials\TemporaryCredentials');
         $credentials->shouldReceive('getIdentifier')->andReturn('foo');
+
+        $this->expectException(InvalidArgumentException::class);
 
         $server->getTokenCredentials($credentials, 'bar', 'verifier');
     }
