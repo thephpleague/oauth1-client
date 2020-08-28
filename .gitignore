@@ -1,4 +1,6 @@
 /build
 /vendor
 /composer.lock
+/coverage.xml
+/.phpunit.result.cache
 .DS_Store

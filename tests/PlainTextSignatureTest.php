@@ -20,18 +20,16 @@
 
 use League\OAuth1\Client\Signature\PlainTextSignature;
 use Mockery as m;
+use PHPUnit\Framework\TestCase;
 use PHPUnit_Framework_TestCase;
 
-class PlainTextSignatureTest extends PHPUnit_Framework_TestCase
+class PlainTextSignatureTest extends TestCase
 {
-    /**
-     * Close mockery.
-     *
-     * @return void
-     */
-    public function tearDown()
+    protected function tearDown(): void
     {
         m::close();
+
+        parent::tearDown();
     }
 
     public function testSigningRequest()

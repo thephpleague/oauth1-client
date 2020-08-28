@@ -1,20 +1,19 @@
 <?php namespace League\OAuth1\Client\Tests;
 
+use InvalidArgumentException;
 use League\OAuth1\Client\Server\Trello;
 use League\OAuth1\Client\Credentials\ClientCredentials;
 use Mockery as m;
+use PHPUnit\Framework\TestCase;
 use PHPUnit_Framework_TestCase;
 
-class TrelloTest extends PHPUnit_Framework_TestCase
+class TrelloTest extends TestCase
 {
-    /**
-     * Close mockery.
-     *
-     * @return void
-     */
-    public function tearDown()
+    protected function tearDown(): void
     {
         m::close();
+
+        parent::tearDown();
     }
 
     public function testCreatingWithArray()
@@ -176,15 +175,14 @@ class TrelloTest extends PHPUnit_Framework_TestCase
         $this->assertEquals($expected, $server->getAuthorizationUrl($credentials));
     }
 
-    /**
-     * @expectedException InvalidArgumentException
-     */
     public function testGettingTokenCredentialsFailsWithManInTheMiddle()
     {
         $server = new Trello($this->getMockClientCredentials());
 
         $credentials = m::mock('League\OAuth1\Client\Credentials\TemporaryCredentials');
         $credentials->shouldReceive('getIdentifier')->andReturn('foo');
+
+        $this->expectException(InvalidArgumentException::class);
 
         $server->getTokenCredentials($credentials, 'bar', 'verifier');
     }

@@ -21,18 +21,16 @@
 
 use League\OAuth1\Client\Signature\HmacSha1Signature;
 use Mockery as m;
+use PHPUnit\Framework\TestCase;
 use PHPUnit_Framework_TestCase;
 
-class HmacSha1SignatureTest extends PHPUnit_Framework_TestCase
+class HmacSha1SignatureTest extends TestCase
 {
-    /**
-     * Close mockery.
-     *
-     * @return void
-     */
-    public function tearDown()
+    protected function tearDown(): void
     {
         m::close();
+
+        parent::tearDown();
     }
 
     public function testSigningRequest()
