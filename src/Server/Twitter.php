@@ -6,42 +6,27 @@ use League\OAuth1\Client\Credentials\TokenCredentials;
 
 class Twitter extends Server
 {
-    /**
-     * {@inheritDoc}
-     */
-    public function urlTemporaryCredentials()
+    public function urlTemporaryCredentials(): string
     {
         return 'https://api.twitter.com/oauth/request_token';
     }
 
-    /**
-     * {@inheritDoc}
-     */
-    public function urlAuthorization()
+    public function urlAuthorization(): string
     {
         return 'https://api.twitter.com/oauth/authenticate';
     }
 
-    /**
-     * {@inheritDoc}
-     */
-    public function urlTokenCredentials()
+    public function urlTokenCredentials(): string
     {
         return 'https://api.twitter.com/oauth/access_token';
     }
 
-    /**
-     * {@inheritDoc}
-     */
-    public function urlUserDetails()
+    public function urlUserDetails(): string
     {
         return 'https://api.twitter.com/1.1/account/verify_credentials.json?include_email=true';
     }
 
-    /**
-     * {@inheritDoc}
-     */
-    public function userDetails($data, TokenCredentials $tokenCredentials)
+    public function userDetails($data, TokenCredentials $tokenCredentials): User
     {
         $user = new User();
 
@@ -51,16 +36,13 @@ class Twitter extends Server
         $user->location = $data['location'];
         $user->description = $data['description'];
         $user->imageUrl = $data['profile_image_url'];
-        $user->email = null;
-        if (isset($data['email'])) {
-            $user->email = $data['email'];
-        }
+        $user->email = $data['email'] ?? null;
 
-        $used = array('id', 'screen_name', 'name', 'location', 'description', 'profile_image_url', 'email');
+        $used = ['id', 'screen_name', 'name', 'location', 'description', 'profile_image_url', 'email'];
 
         foreach ($data as $key => $value) {
             if (strpos($key, 'url') !== false) {
-                if (!in_array($key, $used)) {
+                if (!in_array($key, $used, true)) {
                     $used[] = $key;
                 }
 
@@ -75,25 +57,19 @@ class Twitter extends Server
     }
 
     /**
-     * {@inheritDoc}
+     * @inheritDoc
      */
     public function userUid($data, TokenCredentials $tokenCredentials)
     {
         return $data['id'];
     }
 
-    /**
-     * {@inheritDoc}
-     */
-    public function userEmail($data, TokenCredentials $tokenCredentials)
+    public function userEmail($data, TokenCredentials $tokenCredentials):? string
     {
-        return;
+        return null;
     }
 
-    /**
-     * {@inheritDoc}
-     */
-    public function userScreenName($data, TokenCredentials $tokenCredentials)
+    public function userScreenName($data, TokenCredentials $tokenCredentials):? string
     {
         return $data['name'];
     }

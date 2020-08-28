@@ -15,7 +15,7 @@ class PlainTextSignature extends Signature implements SignatureInterface
     /**
      * {@inheritDoc}
      */
-    public function sign($uri, array $parameters = array(), $method = 'POST')
+    public function sign($uri, array $parameters = [], $method = 'POST')
     {
         return $this->key();
     }

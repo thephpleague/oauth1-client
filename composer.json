@@ -4,12 +4,17 @@
     "license": "MIT",
     "require": {
         "php": ">=7.2",
+        "ext-json": "*",
+        "ext-openssl": "*",
         "guzzlehttp/guzzle": "^6.0|^7.0"
     },
     "require-dev": {
         "phpunit/phpunit": "^8.5",
         "mockery/mockery": "^1.3",
         "squizlabs/php_codesniffer": "^2.9"
+    },
+    "suggest": {
+        "ext-simplexml": "For decoding XML-based responses."
     },
     "keywords": [
         "oauth",
@@ -35,7 +40,8 @@
     ],
     "autoload": {
         "psr-4": {
-            "League\\OAuth1\\": "src/"
+            "League\\OAuth1\\Client\\": "src/",
+            "League\\OAuth1\\Client\\Tests\\": "tests/"
         }
     },
     "extra": {

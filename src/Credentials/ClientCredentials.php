@@ -11,18 +11,12 @@ class ClientCredentials extends Credentials implements ClientCredentialsInterfac
      */
     protected $callbackUri;
 
-    /**
-     * {@inheritDoc}
-     */
-    public function getCallbackUri()
+    public function getCallbackUri(): string
     {
         return $this->callbackUri;
     }
 
-    /**
-     * {@inheritDoc}
-     */
-    public function setCallbackUri($callbackUri)
+    public function setCallbackUri(string $callbackUri): void
     {
         $this->callbackUri = $callbackUri;
     }

@@ -1,5 +1,8 @@
-<?php namespace League\OAuth1\Client\Tests;
+<?php
 
+namespace League\OAuth1\Client\Tests;
+
+use GuzzleHttp\Client;
 use InvalidArgumentException;
 use League\OAuth1\Client\Server\Trello;
 use League\OAuth1\Client\Credentials\ClientCredentials;
@@ -43,7 +46,7 @@ class TrelloTest extends TestCase
     {
         $server = m::mock('League\OAuth1\Client\Server\Trello[createHttpClient]', array($this->getMockClientCredentials()));
 
-        $server->shouldReceive('createHttpClient')->andReturn($client = m::mock('stdClass'));
+        $server->shouldReceive('createHttpClient')->andReturn($client = m::mock(Client::class));
 
         $me = $this;
         $client->shouldReceive('post')->with('https://trello.com/1/OAuthGetRequestToken', m::on(function($options) use ($me) {
@@ -195,7 +198,7 @@ class TrelloTest extends TestCase
         $temporaryCredentials->shouldReceive('getIdentifier')->andReturn('temporarycredentialsidentifier');
         $temporaryCredentials->shouldReceive('getSecret')->andReturn('temporarycredentialssecret');
 
-        $server->shouldReceive('createHttpClient')->andReturn($client = m::mock('stdClass'));
+        $server->shouldReceive('createHttpClient')->andReturn($client = m::mock(Client::class));
 
         $me = $this;
         $client->shouldReceive('post')->with('https://trello.com/1/OAuthGetAccessToken', m::on(function($options) use ($me) {
@@ -232,7 +235,7 @@ class TrelloTest extends TestCase
         $temporaryCredentials->shouldReceive('getIdentifier')->andReturn('tokencredentialsidentifier');
         $temporaryCredentials->shouldReceive('getSecret')->andReturn('tokencredentialssecret');
 
-        $server->shouldReceive('createHttpClient')->andReturn($client = m::mock('stdClass'));
+        $server->shouldReceive('createHttpClient')->andReturn($client = m::mock(Client::class));
 
         $me = $this;
         $client->shouldReceive('get')->with('https://trello.com/1/members/me?key='.$this->getApplicationKey().'&token='.$this->getAccessToken(), m::on(function($options) use ($me) {

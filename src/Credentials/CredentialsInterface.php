@@ -6,29 +6,21 @@ interface CredentialsInterface
 {
     /**
      * Get the credentials identifier.
-     *
-     * @return string
      */
-    public function getIdentifier();
+    public function getIdentifier(): ?string;
 
     /**
      * Set the credentials identifier.
-     *
-     * @param string $identifier
      */
-    public function setIdentifier($identifier);
+    public function setIdentifier(string $identifier): void;
 
     /**
      * Get the credentials secret.
-     *
-     * @return string
      */
-    public function getSecret();
+    public function getSecret(): ?string;
 
     /**
      * Set the credentials secret.
-     *
-     * @param string $secret
      */
-    public function setSecret($secret);
+    public function setSecret(string $secret): void;
 }
