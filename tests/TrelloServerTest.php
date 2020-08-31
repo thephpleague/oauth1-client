@@ -9,6 +9,7 @@ use League\OAuth1\Client\Credentials\ClientCredentials;
 use Mockery as m;
 use PHPUnit\Framework\TestCase;
 use PHPUnit_Framework_TestCase;
+use Psr\Http\Message\ResponseInterface;
 
 class TrelloTest extends TestCase
 {
@@ -63,7 +64,7 @@ class TrelloTest extends TestCase
             $me->assertEquals(1, $matches, 'Asserting that the authorization header contains the correct expression.');
 
             return true;
-        }))->once()->andReturn($response = m::mock('stdClass'));
+        }))->once()->andReturn($response = m::mock(ResponseInterface::class));
         $response->shouldReceive('getBody')->andReturn('oauth_token=temporarycredentialsidentifier&oauth_token_secret=temporarycredentialssecret&oauth_callback_confirmed=true');
 
         $credentials = $server->getTemporaryCredentials();
@@ -218,7 +219,7 @@ class TrelloTest extends TestCase
             $me->assertSame($body, array('oauth_verifier' => 'myverifiercode'));
 
             return true;
-        }))->once()->andReturn($response = m::mock('stdClass'));
+        }))->once()->andReturn($response = m::mock(ResponseInterface::class));
         $response->shouldReceive('getBody')->andReturn('oauth_token=tokencredentialsidentifier&oauth_token_secret=tokencredentialssecret');
 
         $credentials = $server->getTokenCredentials($temporaryCredentials, 'temporarycredentialsidentifier', 'myverifiercode');
@@ -252,7 +253,7 @@ class TrelloTest extends TestCase
             $me->assertEquals(1, $matches, 'Asserting that the authorization header contains the correct expression.');
 
             return true;
-        }))->once()->andReturn($response = m::mock('stdClass'));
+        }))->once()->andReturn($response = m::mock(ResponseInterface::class));
         $response->shouldReceive('getBody')->once()->andReturn($this->getUserPayload());
 
         $user = $server
