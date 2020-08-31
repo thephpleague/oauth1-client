@@ -21,7 +21,7 @@ class HmacSignature extends BaseSignature
     {
         $oauthParameters = $this->generateOAuthParameters();
 
-        $signingString = $this->createSigningString($request, $oauthParameters);
+        $baseString = $this->baseStringBuilder->build($request, $oauthParameters);
 
         $key = sprintf(
             '%s&%s',
@@ -29,7 +29,7 @@ class HmacSignature extends BaseSignature
             rawurlencode($this->contextCredentials->getSecret())
         );
 
-        $oauthParameters['oauth_signature'] = base64_encode(hash_hmac('sha1', $signingString, $key, true));
+        $oauthParameters['oauth_signature'] = base64_encode(hash_hmac('sha1', $baseString, $key, true));
 
         return $request->withHeader(...$this->createAuthorizationHeader($oauthParameters, $realm));
     }

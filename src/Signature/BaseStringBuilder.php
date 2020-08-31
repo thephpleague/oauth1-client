@@ -5,16 +5,33 @@ namespace League\OAuth1\Client\Signature;
 use Psr\Http\Message\RequestInterface;
 use function GuzzleHttp\Psr7\parse_query;
 
-class ParameterNormalizer
+class BaseStringBuilder
 {
     /**
-     * Extract and normalizes parameters according to the RFC-5849 OAuth 1 spec.
+     * Creates a base string for the given Request and additional OAuth parameters.
+     *
+     * @link https://tools.ietf.org/html/rfc5849#section-3.4.1 Signature Base String
+     */
+    public function build(RequestInterface $request, array $oauthParameters = []): string
+    {
+        $uri = $request->getUri()->withQuery('');
+
+        return sprintf(
+            '%s&%s&%s',
+            strtoupper($request->getMethod()),
+            rawurlencode($uri),
+            $this->normalizeParameters($request, $oauthParameters)
+        );
+    }
+
+    /**
+     * Normalizes parameters according to the RFC-5849 OAuth 1 spec.
      *
      * @link https://tools.ietf.org/html/rfc5849#section-3.4.1.3.1 Parameter Sources
      * @link https://tools.ietf.org/html/rfc5849#section-3.4.1.3.2 Parameters Normalization
      * @link https://tools.ietf.org/html/rfc5849#section-3.5.1     Authorization Header
      */
-    public function extractAndNormalize(RequestInterface $request, array $oauthParameters = []): string
+    private function normalizeParameters(RequestInterface $request, array $oauthParameters = []): string
     {
         // This array contains groups of key/value arrays. This allows it to contain duplicate key and values (if say
         // the same key existed in the query as well as the body) which is important for correct signature construction.

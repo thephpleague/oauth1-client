@@ -18,8 +18,8 @@ abstract class BaseSignature implements Signature
     /** @var CredentialsInterface */
     protected $contextCredentials;
 
-    /** @var ParameterNormalizer */
-    private $parameterNormalizer;
+    /** @var BaseStringBuilder */
+    protected $baseStringBuilder;
 
     protected function __construct(
         ClientCredentials $clientCredentials,
@@ -29,7 +29,7 @@ abstract class BaseSignature implements Signature
         $this->contextCredentials = $contextCredentials;
 
         // @todo Allow custom resolution of parameter normalizer
-        $this->parameterNormalizer = new ParameterNormalizer();
+        $this->baseStringBuilder = new BaseStringBuilder();
     }
 
     public static function withTemporaryCredentials(
@@ -58,30 +58,6 @@ abstract class BaseSignature implements Signature
             'oauth_timestamp' => time(),
             'oauth_nonce' => $this->getNonce(),
         ];
-    }
-
-    /**
-     * Creates a signing string for the given request and additional parameters
-     */
-    protected function createSigningString(RequestInterface $request, array $oauthParameters): string
-    {
-        return sprintf(
-            '%s&%s',
-            $this->createBaseStringUri($request),
-            $this->parameterNormalizer->extractAndNormalize($request, $oauthParameters)
-        );
-    }
-
-    /**
-     * Creates a base string URI from the given Request.
-     *
-     * @link https://tools.ietf.org/html/rfc5849#section-3.4.1.2
-     */
-    protected function createBaseStringUri(RequestInterface $request): string
-    {
-        $url = $request->getUri()->withQuery('');
-
-        return sprintf('%s&%s', strtoupper($request->getMethod()), rawurlencode($url));
     }
 
     /**
