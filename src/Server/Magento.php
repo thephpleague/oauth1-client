@@ -2,8 +2,12 @@
 
 namespace League\OAuth1\Client\Server;
 
+use InvalidArgumentException;
+use League\OAuth1\Client\Credentials\ClientCredentials;
 use League\OAuth1\Client\Credentials\TemporaryCredentials;
 use League\OAuth1\Client\Credentials\TokenCredentials;
+use League\OAuth1\Client\Signature\SignatureInterface;
+use LogicException;
 
 /**
  * Magento OAuth 1.0a.
@@ -19,99 +23,70 @@ use League\OAuth1\Client\Credentials\TokenCredentials;
  */
 class Magento extends Server
 {
-    /**
-     * Admin url.
-     *
-     * @var string
-     */
+    /** @var string */
     protected $adminUrl;
 
-    /**
-     * Base uri.
-     *
-     * @var string
-     */
+    /** @var string */
     protected $baseUri;
 
-    /**
-     * Server is admin.
-     *
-     * @var bool
-     */
+    /**@var bool */
     protected $isAdmin = false;
 
-    /**
-     * oauth_verifier stored for use with.
-     *
-     * @var string
-     */
+    /** @var string */
     private $verifier;
 
     /**
-     * {@inheritDoc}
+     * @param ClientCredentials|array $clientCredentials
      */
     public function __construct($clientCredentials, SignatureInterface $signature = null)
     {
         parent::__construct($clientCredentials, $signature);
+
         if (is_array($clientCredentials)) {
             $this->parseConfigurationArray($clientCredentials);
         }
     }
 
-    /**
-     * {@inheritDoc}
-     */
-    public function urlTemporaryCredentials()
+    public function urlTemporaryCredentials(): string
     {
-        return $this->baseUri.'/oauth/initiate';
+        return $this->baseUri . '/oauth/initiate';
     }
 
-    /**
-     * {@inheritDoc}
-     */
-    public function urlAuthorization()
+    public function urlAuthorization(): string
     {
         return $this->isAdmin
             ? $this->adminUrl
-            : $this->baseUri.'/oauth/authorize';
+            : $this->baseUri . '/oauth/authorize';
     }
 
-    /**
-     * {@inheritDoc}
-     */
-    public function urlTokenCredentials()
+    public function urlTokenCredentials(): string
     {
-        return $this->baseUri.'/oauth/token';
+        return $this->baseUri . '/oauth/token';
     }
 
-    /**
-     * {@inheritDoc}
-     */
-    public function urlUserDetails()
+    public function urlUserDetails(): string
     {
-        return $this->baseUri.'/api/rest/customers';
+        return $this->baseUri . '/api/rest/customers';
     }
 
-    /**
-     * {@inheritDoc}
-     */
-    public function userDetails($data, TokenCredentials $tokenCredentials)
+    public function userDetails($data, TokenCredentials $tokenCredentials): User
     {
-        if (!is_array($data) || !count($data)) {
-            throw new \Exception('Not possible to get user info');
+        if (!is_array($data) || empty($data)) {
+            throw new LogicException('Not possible to get user info');
         }
 
-        $id = key($data);
+        $id   = key($data);
         $data = current($data);
 
-        $user = new User();
+        $user      = new User();
         $user->uid = $id;
 
-        $mapping = array(
+        $mapping = [
             'email' => 'email',
             'firstName' => 'firstname',
-            'lastName'  => 'lastname',
-        );
+            'lastName' => 'lastname',
+        ];
+
         foreach ($mapping as $userKey => $dataKey) {
             if (!isset($data[$dataKey])) {
                 continue;
@@ -124,57 +99,48 @@ class Magento extends Server
         return $user;
     }
 
-    /**
-     * {@inheritDoc}
-     */
     public function userUid($data, TokenCredentials $tokenCredentials)
     {
         return key($data);
     }
 
-    /**
-     * {@inheritDoc}
-     */
-    public function userEmail($data, TokenCredentials $tokenCredentials)
+    public function userEmail($data, TokenCredentials $tokenCredentials): ?string
     {
         $data = current($data);
-        if (!isset($data['email'])) {
-            return;
-        }
-        return $data['email'];
+
+        return $data['email'] ?? null;
     }
 
-    /**
-     * {@inheritDoc}
-     */
-    public function userScreenName($data, TokenCredentials $tokenCredentials)
+    public function userScreenName($data, TokenCredentials $tokenCredentials):? string
     {
-        return;
+        return null;
     }
 
-    /**
-     * {@inheritDoc}
-     */
-    public function getTokenCredentials(TemporaryCredentials $temporaryCredentials, $temporaryIdentifier, $verifier)
-    {
+    public function getTokenCredentials(
+        TemporaryCredentials $temporaryCredentials,
+        string $temporaryIdentifier,
+        string $verifier
+    ): TokenCredentials {
         $this->verifier = $verifier;
 
-        return parent::getTokenCredentials($temporaryCredentials, $temporaryIdentifier, $verifier);
-    }
-
-    /**
-     * {@inheritDoc}
-     */
-    protected function additionalProtocolParameters()
-    {
-        return array(
-            'oauth_verifier' => $this->verifier,
+        return parent::getTokenCredentials(
+            $temporaryCredentials,
+            $temporaryIdentifier,
+            $verifier
         );
     }
 
-    protected function getHttpClientDefaultHeaders()
+    protected function additionalProtocolParameters(): array
+    {
+        return [
+            'oauth_verifier' => $this->verifier,
+        ];
+    }
+
+    protected function getHttpClientDefaultHeaders(): array
     {
         $defaultHeaders = parent::getHttpClientDefaultHeaders();
+
         // Accept header is required, @see Mage_Api2_Model_Renderer::factory
         $defaultHeaders['Accept'] = 'application/json';
 
@@ -184,29 +150,29 @@ class Magento extends Server
     /**
      * Parse configuration array to set attributes.
      *
-     * @param array $configuration
-     * @throws \Exception
+     * @throws InvalidArgumentException If invalid credentials are passed
      */
-    private function parseConfigurationArray(array $configuration = array())
+    private function parseConfigurationArray(array $configuration = []): void
     {
         if (!isset($configuration['host'])) {
-            throw new \Exception('Missing Magento Host');
+            throw new InvalidArgumentException('Missing Magento Host');
         }
-        $url = parse_url($configuration['host']);
+
+        $url           = parse_url($configuration['host']);
         $this->baseUri = sprintf('%s://%s', $url['scheme'], $url['host']);
 
         if (isset($url['port'])) {
-            $this->baseUri .= ':'.$url['port'];
+            $this->baseUri .= ':' . $url['port'];
         }
 
         if (isset($url['path'])) {
-            $this->baseUri .= '/'.trim($url['path'], '/');
+            $this->baseUri .= '/' . trim($url['path'], '/');
         }
         $this->isAdmin = !empty($configuration['admin']);
         if (!empty($configuration['adminUrl'])) {
-            $this->adminUrl = $configuration['adminUrl'].'/oauth_authorize';
+            $this->adminUrl = $configuration['adminUrl'] . '/oauth_authorize';
         } else {
-            $this->adminUrl = $this->baseUri.'/admin/oauth_authorize';
+            $this->adminUrl = $this->baseUri . '/admin/oauth_authorize';
         }
     }
 }

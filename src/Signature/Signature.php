@@ -7,46 +7,30 @@ use League\OAuth1\Client\Credentials\CredentialsInterface;
 
 abstract class Signature implements SignatureInterface
 {
-    /**
-     * The client credentials.
-     *
-     * @var ClientCredentialsInterface
-     */
+    /** @var ClientCredentialsInterface */
     protected $clientCredentials;
 
-    /**
-     * The (temporary or token) credentials.
-     *
-     * @var CredentialsInterface
-     */
+    /** @var CredentialsInterface */
     protected $credentials;
 
-    /**
-     * {@inheritDoc}
-     */
     public function __construct(ClientCredentialsInterface $clientCredentials)
     {
         $this->clientCredentials = $clientCredentials;
     }
 
-    /**
-     * {@inheritDoc}
-     */
-    public function setCredentials(CredentialsInterface $credentials)
+    public function setCredentials(CredentialsInterface $credentials): void
     {
         $this->credentials = $credentials;
     }
 
     /**
      * Generate a signing key.
-     *
-     * @return string
      */
-    protected function key()
+    protected function key(): string
     {
-        $key = rawurlencode($this->clientCredentials->getSecret()).'&';
+        $key = rawurlencode($this->clientCredentials->getSecret()) . '&';
 
-        if ($this->credentials !== null) {
+        if (null !== $this->credentials) {
             $key .= rawurlencode($this->credentials->getSecret());
         }
 

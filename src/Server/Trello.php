@@ -3,42 +3,23 @@
 namespace League\OAuth1\Client\Server;
 
 use League\OAuth1\Client\Credentials\TokenCredentials;
+use League\OAuth1\Client\Signature\SignatureInterface;
 
 class Trello extends Server
 {
-    /**
-     * Access token.
-     *
-     * @var string
-     */
+    /** @var string */
     protected $accessToken;
 
-    /**
-     * Application expiration.
-     *
-     * @var string
-     */
+    /** @var string */
     protected $applicationExpiration;
 
-    /**
-     * Application key.
-     *
-     * @var string
-     */
+    /** @var string */
     protected $applicationKey;
 
-    /**
-     * Application name.
-     *
-     * @var string
-     */
+    /** @var string */
     protected $applicationName;
 
-    /**
-     * Application scope.
-     *
-     * @var string
-     */
+    /** @var string */
     protected $applicationScope;
 
     /**
@@ -55,12 +36,8 @@ class Trello extends Server
 
     /**
      * Set the access token.
-     *
-     * @param string $accessToken
-     *
-     * @return Trello
      */
-    public function setAccessToken($accessToken)
+    public function setAccessToken(string $accessToken): Trello
     {
         $this->accessToken = $accessToken;
 
@@ -69,12 +46,8 @@ class Trello extends Server
 
     /**
      * Set the application expiration.
-     *
-     * @param string $applicationExpiration
-     *
-     * @return Trello
      */
-    public function setApplicationExpiration($applicationExpiration)
+    public function setApplicationExpiration(string $applicationExpiration): Trello
     {
         $this->applicationExpiration = $applicationExpiration;
 
@@ -83,22 +56,16 @@ class Trello extends Server
 
     /**
      * Get application expiration.
-     *
-     * @return string
      */
-    public function getApplicationExpiration()
+    public function getApplicationExpiration(): string
     {
         return $this->applicationExpiration ?: '1day';
     }
 
     /**
      * Set the application name.
-     *
-     * @param string $applicationName
-     *
-     * @return Trello
      */
-    public function setApplicationName($applicationName)
+    public function setApplicationName(string $applicationName): Trello
     {
         $this->applicationName = $applicationName;
 
@@ -107,22 +74,16 @@ class Trello extends Server
 
     /**
      * Get application name.
-     *
-     * @return string|null
      */
-    public function getApplicationName()
+    public function getApplicationName():? String
     {
         return $this->applicationName ?: null;
     }
 
     /**
      * Set the application scope.
-     *
-     * @param string $applicationScope
-     *
-     * @return Trello
      */
-    public function setApplicationScope($applicationScope)
+    public function setApplicationScope(string $applicationScope): Trello
     {
         $this->applicationScope = $applicationScope;
 
@@ -131,51 +92,34 @@ class Trello extends Server
 
     /**
      * Get application scope.
-     *
-     * @return string
      */
-    public function getApplicationScope()
+    public function getApplicationScope(): string
     {
         return $this->applicationScope ?: 'read';
     }
 
-    /**
-     * {@inheritDoc}
-     */
-    public function urlTemporaryCredentials()
+    public function urlTemporaryCredentials(): string
     {
         return 'https://trello.com/1/OAuthGetRequestToken';
     }
 
-    /**
-     * {@inheritDoc}
-     */
-    public function urlAuthorization()
+    public function urlAuthorization(): string
     {
         return 'https://trello.com/1/OAuthAuthorizeToken?'.
             $this->buildAuthorizationQueryParameters();
     }
 
-    /**
-     * {@inheritDoc}
-     */
-    public function urlTokenCredentials()
+    public function urlTokenCredentials(): string
     {
         return 'https://trello.com/1/OAuthGetAccessToken';
     }
 
-    /**
-     * {@inheritDoc}
-     */
-    public function urlUserDetails()
+    public function urlUserDetails(): string
     {
         return 'https://trello.com/1/members/me?key='.$this->applicationKey.'&token='.$this->accessToken;
     }
 
-    /**
-     * {@inheritDoc}
-     */
-    public function userDetails($data, TokenCredentials $tokenCredentials)
+    public function userDetails($data, TokenCredentials $tokenCredentials): User
     {
         $user = new User();
 
@@ -196,35 +140,27 @@ class Trello extends Server
         return $data['id'];
     }
 
-    /**
-     * {@inheritDoc}
-     */
-    public function userEmail($data, TokenCredentials $tokenCredentials)
+    public function userEmail($data, TokenCredentials $tokenCredentials):? string
     {
-        return;
+        return null;
     }
 
-    /**
-     * {@inheritDoc}
-     */
-    public function userScreenName($data, TokenCredentials $tokenCredentials)
+    public function userScreenName($data, TokenCredentials $tokenCredentials):? string
     {
         return $data['username'];
     }
 
     /**
      * Build authorization query parameters.
-     *
-     * @return string
      */
-    private function buildAuthorizationQueryParameters()
+    private function buildAuthorizationQueryParameters(): string
     {
-        $params = array(
+        $params = [
             'response_type' => 'fragment',
             'scope' => $this->getApplicationScope(),
             'expiration' => $this->getApplicationExpiration(),
             'name' => $this->getApplicationName(),
-        );
+        ];
 
         return http_build_query($params);
     }
@@ -234,14 +170,14 @@ class Trello extends Server
      *
      * @param array $configuration
      */
-    private function parseConfiguration(array $configuration = array())
+    private function parseConfiguration(array $configuration = []): void
     {
-        $configToPropertyMap = array(
+        $configToPropertyMap = [
             'identifier' => 'applicationKey',
             'expiration' => 'applicationExpiration',
             'name' => 'applicationName',
             'scope' => 'applicationScope',
-        );
+        ];
 
         foreach ($configToPropertyMap as $config => $property) {
             if (isset($configuration[$config])) {

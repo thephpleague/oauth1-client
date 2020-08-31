@@ -1,11 +1,15 @@
-<?php namespace League\OAuth1\Client\Tests;
+<?php
 
+namespace League\OAuth1\Client\Tests;
+
+use GuzzleHttp\Client;
 use InvalidArgumentException;
 use League\OAuth1\Client\Server\Xing;
 use League\OAuth1\Client\Credentials\ClientCredentials;
 use Mockery as m;
 use PHPUnit\Framework\TestCase;
 use PHPUnit_Framework_TestCase;
+use Psr\Http\Message\ResponseInterface;
 
 class XingTest extends TestCase
 {
@@ -43,7 +47,7 @@ class XingTest extends TestCase
     {
         $server = m::mock('League\OAuth1\Client\Server\Xing[createHttpClient]', array($this->getMockClientCredentials()));
 
-        $server->shouldReceive('createHttpClient')->andReturn($client = m::mock('stdClass'));
+        $server->shouldReceive('createHttpClient')->andReturn($client = m::mock(Client::class));
 
         $me = $this;
         $client->shouldReceive('post')->with('https://api.xing.com/v1/request_token', m::on(function ($options) use ($me) {
@@ -59,7 +63,7 @@ class XingTest extends TestCase
             $me->assertEquals(1, $matches, 'Asserting that the authorization header contains the correct expression.');
 
             return true;
-        }))->once()->andReturn($response = m::mock('stdClass'));
+        }))->once()->andReturn($response = m::mock(ResponseInterface::class));
         $response->shouldReceive('getBody')->andReturn('oauth_token=temporarycredentialsidentifier&oauth_token_secret=temporarycredentialssecret&oauth_callback_confirmed=true');
 
         $credentials = $server->getTemporaryCredentials();
@@ -101,7 +105,7 @@ class XingTest extends TestCase
         $temporaryCredentials->shouldReceive('getIdentifier')->andReturn('temporarycredentialsidentifier');
         $temporaryCredentials->shouldReceive('getSecret')->andReturn('temporarycredentialssecret');
 
-        $server->shouldReceive('createHttpClient')->andReturn($client = m::mock('stdClass'));
+        $server->shouldReceive('createHttpClient')->andReturn($client = m::mock(Client::class));
 
         $me = $this;
         $client->shouldReceive('post')->with('https://api.xing.com/v1/access_token', m::on(function ($options) use ($me) {
@@ -121,7 +125,7 @@ class XingTest extends TestCase
             $me->assertSame($body, array('oauth_verifier' => 'myverifiercode'));
 
             return true;
-        }))->once()->andReturn($response = m::mock('stdClass'));
+        }))->once()->andReturn($response = m::mock(ResponseInterface::class));
         $response->shouldReceive('getBody')->andReturn('oauth_token=tokencredentialsidentifier&oauth_token_secret=tokencredentialssecret');
 
         $credentials = $server->getTokenCredentials($temporaryCredentials, 'temporarycredentialsidentifier', 'myverifiercode');
@@ -138,7 +142,7 @@ class XingTest extends TestCase
         $temporaryCredentials->shouldReceive('getIdentifier')->andReturn('tokencredentialsidentifier');
         $temporaryCredentials->shouldReceive('getSecret')->andReturn('tokencredentialssecret');
 
-        $server->shouldReceive('createHttpClient')->andReturn($client = m::mock('stdClass'));
+        $server->shouldReceive('createHttpClient')->andReturn($client = m::mock(Client::class));
 
         $me = $this;
         $client->shouldReceive('get')->with('https://api.xing.com/v1/users/me', m::on(function ($options) use ($me) {
@@ -155,7 +159,7 @@ class XingTest extends TestCase
             $me->assertEquals(1, $matches, 'Asserting that the authorization header contains the correct expression.');
 
             return true;
-        }))->once()->andReturn($response = m::mock('stdClass'));
+        }))->once()->andReturn($response = m::mock(ResponseInterface::class));
         $response->shouldReceive('getBody')->once()->andReturn($this->getUserPayload());
 
         $user = $server->getUserDetails($temporaryCredentials);

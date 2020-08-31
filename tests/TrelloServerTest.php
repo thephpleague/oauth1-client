@@ -1,11 +1,15 @@
-<?php namespace League\OAuth1\Client\Tests;
+<?php
 
+namespace League\OAuth1\Client\Tests;
+
+use GuzzleHttp\Client;
 use InvalidArgumentException;
 use League\OAuth1\Client\Server\Trello;
 use League\OAuth1\Client\Credentials\ClientCredentials;
 use Mockery as m;
 use PHPUnit\Framework\TestCase;
 use PHPUnit_Framework_TestCase;
+use Psr\Http\Message\ResponseInterface;
 
 class TrelloTest extends TestCase
 {
@@ -43,7 +47,7 @@ class TrelloTest extends TestCase
     {
         $server = m::mock('League\OAuth1\Client\Server\Trello[createHttpClient]', array($this->getMockClientCredentials()));
 
-        $server->shouldReceive('createHttpClient')->andReturn($client = m::mock('stdClass'));
+        $server->shouldReceive('createHttpClient')->andReturn($client = m::mock(Client::class));
 
         $me = $this;
         $client->shouldReceive('post')->with('https://trello.com/1/OAuthGetRequestToken', m::on(function($options) use ($me) {
@@ -60,7 +64,7 @@ class TrelloTest extends TestCase
             $me->assertEquals(1, $matches, 'Asserting that the authorization header contains the correct expression.');
 
             return true;
-        }))->once()->andReturn($response = m::mock('stdClass'));
+        }))->once()->andReturn($response = m::mock(ResponseInterface::class));
         $response->shouldReceive('getBody')->andReturn('oauth_token=temporarycredentialsidentifier&oauth_token_secret=temporarycredentialssecret&oauth_callback_confirmed=true');
 
         $credentials = $server->getTemporaryCredentials();
@@ -195,7 +199,7 @@ class TrelloTest extends TestCase
         $temporaryCredentials->shouldReceive('getIdentifier')->andReturn('temporarycredentialsidentifier');
         $temporaryCredentials->shouldReceive('getSecret')->andReturn('temporarycredentialssecret');
 
-        $server->shouldReceive('createHttpClient')->andReturn($client = m::mock('stdClass'));
+        $server->shouldReceive('createHttpClient')->andReturn($client = m::mock(Client::class));
 
         $me = $this;
         $client->shouldReceive('post')->with('https://trello.com/1/OAuthGetAccessToken', m::on(function($options) use ($me) {
@@ -215,7 +219,7 @@ class TrelloTest extends TestCase
             $me->assertSame($body, array('oauth_verifier' => 'myverifiercode'));
 
             return true;
-        }))->once()->andReturn($response = m::mock('stdClass'));
+        }))->once()->andReturn($response = m::mock(ResponseInterface::class));
         $response->shouldReceive('getBody')->andReturn('oauth_token=tokencredentialsidentifier&oauth_token_secret=tokencredentialssecret');
 
         $credentials = $server->getTokenCredentials($temporaryCredentials, 'temporarycredentialsidentifier', 'myverifiercode');
@@ -232,7 +236,7 @@ class TrelloTest extends TestCase
         $temporaryCredentials->shouldReceive('getIdentifier')->andReturn('tokencredentialsidentifier');
         $temporaryCredentials->shouldReceive('getSecret')->andReturn('tokencredentialssecret');
 
-        $server->shouldReceive('createHttpClient')->andReturn($client = m::mock('stdClass'));
+        $server->shouldReceive('createHttpClient')->andReturn($client = m::mock(Client::class));
 
         $me = $this;
         $client->shouldReceive('get')->with('https://trello.com/1/members/me?key='.$this->getApplicationKey().'&token='.$this->getAccessToken(), m::on(function($options) use ($me) {
@@ -249,7 +253,7 @@ class TrelloTest extends TestCase
             $me->assertEquals(1, $matches, 'Asserting that the authorization header contains the correct expression.');
 
             return true;
-        }))->once()->andReturn($response = m::mock('stdClass'));
+        }))->once()->andReturn($response = m::mock(ResponseInterface::class));
         $response->shouldReceive('getBody')->once()->andReturn($this->getUserPayload());
 
         $user = $server
