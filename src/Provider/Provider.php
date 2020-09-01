@@ -19,10 +19,7 @@ interface Provider
     /**
      * Prepares the given request for fetching temporary credentials from the provider.
      */
-    public function prepareTemporaryCredentialsRequest(
-        RequestInterface $request,
-        ClientCredentials $clientCredentials
-    ): RequestInterface;
+    public function prepareTemporaryCredentialsRequest(RequestInterface $request): RequestInterface;
 
     /**
      * Creates a request with the given factory for redirecting the user to the provider for authorization.
@@ -34,7 +31,6 @@ interface Provider
      */
     public function prepareAuthorizationRequest(
         RequestInterface $request,
-        ClientCredentials $clientCredentials,
         Credentials $temporaryCredentials
     ): RequestInterface;
 
@@ -48,7 +44,6 @@ interface Provider
      */
     public function prepareTokenCredentialsRequest(
         RequestInterface $request,
-        ClientCredentials $clientCredentials,
         Credentials $temporaryCredentials,
         string $verifier
     ): RequestInterface;
@@ -68,7 +63,6 @@ interface Provider
      */
     public function prepareAuthenticatedRequest(
         RequestInterface $request,
-        ClientCredentials $clientCredentials,
         Credentials $tokenCredentials
     ): RequestInterface;
 }

@@ -1,12 +1,12 @@
 <?php
 
-namespace League\OAuth1\Client\Request;
+namespace League\OAuth1\Client;
 
 use InvalidArgumentException;
 use Psr\Http\Message\RequestInterface;
 use function GuzzleHttp\Psr7\stream_for;
 
-class OAuthParametersInjector
+class RequestInjector
 {
     public const LOCATION_HEADER = 'header';
     public const LOCATION_BODY   = 'body';

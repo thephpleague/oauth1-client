@@ -4,8 +4,8 @@ namespace League\OAuth1\Client\Provider;
 
 use League\OAuth1\Client\Credentials\ClientCredentials;
 use League\OAuth1\Client\Credentials\Credentials;
-use League\OAuth1\Client\Request\OAuthParametersBuilder;
-use League\OAuth1\Client\Request\OAuthParametersInjector;
+use League\OAuth1\Client\ParametersBuilder;
+use League\OAuth1\Client\RequestInjector;
 use League\OAuth1\Client\Signature\HmacSigner;
 use League\OAuth1\Client\Signature\Signer;
 use LogicException;
@@ -14,31 +14,118 @@ use Psr\Http\Message\RequestInterface;
 
 abstract class BaseProvider implements Provider
 {
+    /** @var ClientCredentials */
+    private $clientCredentials;
+
+    /** @var callable */
+    private $signerResolver;
+
+    /** @var Signer */
+    private $signer;
+
+    /** @var callable */
+    private $parametersBuilderResolver;
+
+    /** @var ParametersBuilder */
+    private $parametersBuilder;
+
+    /** @var callable */
+    private $requestInjectorResolver;
+
+    /** @var RequestInjector */
+    private $requestInjector;
+
+    public function __construct(
+        ClientCredentials $clientCredentials,
+        Signer $signer = null
+    ) {
+        $this->clientCredentials = $clientCredentials;
+
+        $this->resolveSignerUsing(function () use ($signer): Signer {
+            return $signer ?: $this->createSigner();
+        });
+
+        $this->resolveParametersBuilderUsing(function (): ParametersBuilder {
+            return new ParametersBuilder($this->getSigner());
+        });
+
+        $this->resolveRequestInjectorUsing(static function (): RequestInjector {
+            return new RequestInjector();
+        });
+    }
+
+    public function resolveSignerUsing(callable $callback): BaseProvider
+    {
+        $this->signerResolver = $callback;
+
+        return $this;
+    }
+
+    public function resolveParametersBuilderUsing(callable $callback): BaseProvider
+    {
+        $this->parametersBuilderResolver = $callback;
+
+        return $this;
+    }
+
+    public function resolveRequestInjectorUsing(callable $callback): BaseProvider
+    {
+        $this->requestInjectorResolver = $callback;
+
+        return $this;
+    }
+
+    private function getParametersBuilder(): ParametersBuilder
+    {
+        if (null === $this->parametersBuilder) {
+            $this->parametersBuilder = ($this->parametersBuilderResolver)($this);
+        }
+
+        return $this->parametersBuilder;
+    }
+
+    private function getSigner(): Signer
+    {
+        if (null === $this->signer) {
+            $this->signer = ($this->signerResolver)($this);
+        }
+
+        return $this->signer;
+    }
+
+    private function getRequestInjector(): RequestInjector
+    {
+        if (null === $this->requestInjector) {
+            $this->requestInjector = ($this->requestInjectorResolver)($this);
+        }
+
+        return $this->requestInjector;
+    }
+
     public function createTemporaryCredentialsRequest(RequestFactoryInterface $requestFactory): RequestInterface
     {
         if (false === filter_var($uri = $this->getTemporaryCredentialsUri(), FILTER_VALIDATE_URL)) {
             throw new LogicException('You have not configured a valid temporary credentials URI');
         }
 
-        return $requestFactory->createRequest('POST', $uri);
+        return $requestFactory->createRequest($this->getTemporaryCredentialsMethod(), $uri);
     }
 
-    public function prepareTemporaryCredentialsRequest(
-        RequestInterface $request,
-        ClientCredentials $clientCredentials
-    ): RequestInterface {
-        $signer = $this->getSigner('withClientCredentials', $clientCredentials);
+    public function prepareTemporaryCredentialsRequest(RequestInterface $request): RequestInterface
+    {
+        $oauthParameters = $this
+            ->getParametersBuilder()
+            ->forTemporaryCredentialsRequest($this->clientCredentials);
 
-        $oauthParameters = (new OAuthParametersBuilder($signer))
-            ->forTemporaryCredentialsRequest($clientCredentials);
+        $signature = $this
+            ->getSigner()
+            ->sign($request, $oauthParameters);
 
-        $signature = $signer->sign($request, $oauthParameters);
-
-        return (new OAuthParametersInjector())->inject(
+        return (new RequestInjector())->inject(
             $request,
             $oauthParameters,
             $signature,
-            $this->getTemporaryCredentialsParametersLocation()
+            $this->getTemporaryCredentialsLocation()
         );
     }
 
@@ -48,26 +135,26 @@ abstract class BaseProvider implements Provider
             throw new LogicException('You have not configured a valid authorization URI');
         }
 
-        return $requestFactory->createRequest('GET', $uri);
+        return $requestFactory->createRequest($this->getAuthorizationMethod(), $uri);
     }
 
     public function prepareAuthorizationRequest(
         RequestInterface $request,
-        ClientCredentials $clientCredentials,
         Credentials $temporaryCredentials
     ): RequestInterface {
-        $signer = $this->getSigner('withTemporaryCredentials', $clientCredentials, $temporaryCredentials);
+        $oauthParameters = $this
+            ->getParametersBuilder()
+            ->forAuthorizationRequest($this->clientCredentials);
 
-        $oauthParameters = (new OAuthParametersBuilder($signer))
-            ->forAuthorizationRequest($clientCredentials);
+        $signature = $this
+            ->getSigner()
+            ->sign($request, $oauthParameters, $temporaryCredentials);
 
-        $signature = $signer->sign($request, $oauthParameters);
-
-        return (new OAuthParametersInjector())->inject(
+        return $this->getRequestInjector()->inject(
             $request,
             $oauthParameters,
             $signature,
-            $this->getAuthorizationParametersLocation()
+            $this->getAuthorizationLocation()
         );
     }
 
@@ -77,31 +164,31 @@ abstract class BaseProvider implements Provider
             throw new LogicException('You have not configured a valid token credentials URI');
         }
 
-        return $requestFactory->createRequest('POST', $uri);
+        return $requestFactory->createRequest($this->getTokenCredentialsMethod(), $uri);
     }
 
     public function prepareTokenCredentialsRequest(
         RequestInterface $request,
-        ClientCredentials $clientCredentials,
         Credentials $temporaryCredentials,
         string $verifier
     ): RequestInterface {
-        $signer = $this->getSigner('withTemporaryCredentials', $clientCredentials, $temporaryCredentials);
-
-        $oauthParameters = (new OAuthParametersBuilder($signer))
+        $oauthParameters = $this
+            ->getParametersBuilder()
             ->forTokenCredentialsRequest(
-                $clientCredentials,
+                $this->clientCredentials,
                 $temporaryCredentials,
                 $verifier
             );
 
-        $signature = $signer->sign($request, $oauthParameters);
+        $signature = $this
+            ->getSigner()
+            ->sign($request, $oauthParameters, $temporaryCredentials);
 
-        return (new OAuthParametersInjector())->inject(
+        return $this->getRequestInjector()->inject(
             $request,
             $oauthParameters,
             $signature,
-            $this->getTokenCredentialsParametersLocation()
+            $this->getTokenCredentialsLocation()
         );
     }
 
@@ -111,55 +198,83 @@ abstract class BaseProvider implements Provider
             throw new LogicException('You have not configured a valid user details URI');
         }
 
-        return $requestFactory->createRequest('GET', $uri);
+        return $requestFactory->createRequest($this->getUserDetailsMethod(), $uri);
     }
 
     public function prepareAuthenticatedRequest(
         RequestInterface $request,
-        ClientCredentials $clientCredentials,
         Credentials $tokenCredentials
     ): RequestInterface {
-        $signer = $this->getSigner('withTokenCredentials', $clientCredentials, $tokenCredentials);
+        $oauthParameters = $this
+            ->getParametersBuilder()
+            ->forAuthenticatedRequest($this->clientCredentials, $tokenCredentials);
 
-        $oauthParameters = (new OAuthParametersBuilder($signer))
-            ->forAuthenticatedRequest($clientCredentials, $tokenCredentials);
+        $signature = $this
+            ->getSigner()
+            ->sign($request, $oauthParameters, $tokenCredentials);
 
-        $signature = $signer->sign($request, $oauthParameters);
-
-        return (new OAuthParametersInjector())->inject(
+        return $this->getRequestInjector()->inject(
             $request,
             $oauthParameters,
             $signature,
-            $this->getAuthenticatedParametersLocation()
+            $this->getAuthenticatedLocation()
         );
     }
 
     /**
-     * Gets the signature class to use.
+     * Gets the signer class to use.
      */
-    protected function getSignatureClass(): string
+    protected function getSignerClass(): string
     {
         return HmacSigner::class;
     }
 
-    protected function getTemporaryCredentialsParametersLocation(): string
+    /**
+     * Creates a default signer instance.
+     */
+    private function createSigner(): Signer
     {
-        return OAuthParametersInjector::LOCATION_QUERY;
+        return new ($this->getSignerClass())($this->clientCredentials);
     }
 
-    protected function getAuthorizationParametersLocation(): string
+    protected function getTemporaryCredentialsMethod(): string
     {
-        return OAuthParametersInjector::LOCATION_BODY;
+        return 'GET';
     }
 
-    protected function getTokenCredentialsParametersLocation(): string
+    protected function getTemporaryCredentialsLocation(): string
     {
-        return OAuthParametersInjector::LOCATION_HEADER;
+        return RequestInjector::LOCATION_QUERY;
     }
 
-    protected function getAuthenticatedParametersLocation(): string
+    protected function getAuthorizationMethod(): string
     {
-        return OAuthParametersInjector::LOCATION_HEADER;
+        return 'POST';
+    }
+
+    protected function getAuthorizationLocation(): string
+    {
+        return RequestInjector::LOCATION_BODY;
+    }
+
+    protected function getTokenCredentialsMethod(): string
+    {
+        return 'POST';
+    }
+
+    protected function getTokenCredentialsLocation(): string
+    {
+        return RequestInjector::LOCATION_HEADER;
+    }
+
+    protected function getUserDetailsMethod(): string
+    {
+        return 'GET';
+    }
+
+    protected function getAuthenticatedLocation(): string
+    {
+        return RequestInjector::LOCATION_HEADER;
     }
 
     /**
@@ -181,12 +296,4 @@ abstract class BaseProvider implements Provider
      * Get the URI for user details from.
      */
     abstract protected function getUserDetailsUri(): string;
-
-    private function getSigner(string $constructor, ...$arguments): Signer
-    {
-        return forward_static_call(
-            [$this->getSignatureClass(), $constructor],
-            ...$arguments
-        );
-    }
 }

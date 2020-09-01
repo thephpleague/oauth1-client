@@ -8,18 +8,6 @@ use Psr\Http\Message\RequestInterface;
 
 interface Signer
 {
-    public static function withClientCredentials(ClientCredentials $clientCredentials): Signer;
-
-    public static function withTemporaryCredentials(
-        ClientCredentials $clientCredentials,
-        Credentials $temporaryCredentials
-    ): Signer;
-
-    public static function withTokenCredentials(
-        ClientCredentials $clientCredentials,
-        Credentials $tokenCredentials
-    ): Signer;
-
     /**
      * Returns the OAuth signature method.
      */
@@ -28,5 +16,5 @@ interface Signer
     /**
      * Returns a signature for hte given request.
      */
-    public function sign(RequestInterface $request, array $oauthParameters): string;
+    public function sign(RequestInterface $request, array $oauthParameters, Credentials $contextCredentials = null): string;
 }

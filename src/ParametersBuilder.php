@@ -1,13 +1,13 @@
 <?php
 
-namespace League\OAuth1\Client\Request;
+namespace League\OAuth1\Client;
 
 use Exception;
 use League\OAuth1\Client\Credentials\ClientCredentials;
 use League\OAuth1\Client\Credentials\Credentials;
 use League\OAuth1\Client\Signature\Signer;
 
-class OAuthParametersBuilder
+class ParametersBuilder
 {
     /** @var Signer */
     private $signer;
@@ -21,9 +21,6 @@ class OAuthParametersBuilder
         $this->realm  = $realm;
     }
 
-    /**
-     * @throws Exception If it was not possible to gather sufficient entropy
-     */
     public function forTemporaryCredentialsRequest(ClientCredentials $clientCredentials): array
     {
         return array_replace($this->generateBaseParameters(), [
@@ -32,9 +29,6 @@ class OAuthParametersBuilder
         ]);
     }
 
-    /**
-     * @throws Exception If it was not possible to gather sufficient entropy
-     */
     public function forAuthorizationRequest(Credentials $temporaryCredentials): array
     {
         return array_replace($this->generateBaseParameters(), [
@@ -42,9 +36,6 @@ class OAuthParametersBuilder
         ]);
     }
 
-    /**
-     * @throws Exception If it was not possible to gather sufficient entropy
-     */
     public function forTokenCredentialsRequest(
         ClientCredentials $clientCredentials,
         Credentials $temporaryCredentials,
@@ -57,9 +48,6 @@ class OAuthParametersBuilder
         ]);
     }
 
-    /**
-     * @throws Exception If it was not possible to gather sufficient entropy
-     */
     public function forAuthenticatedRequest(
         ClientCredentials $clientCredentials,
         Credentials $tokenCredentials
@@ -70,9 +58,6 @@ class OAuthParametersBuilder
         ]);
     }
 
-    /**
-     * @throws Exception If it was not possible to gather sufficient entropy
-     */
     private function generateBaseParameters(): array
     {
         $parameters = [

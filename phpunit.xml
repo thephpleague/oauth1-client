@@ -24,4 +24,7 @@
         <log type="coverage-text" target="php://stdout" showUncoveredFiles="true"/>
         <log type="coverage-clover" target="coverage.xml" showUncoveredFiles="true"/>
     </logging>
+    <listeners>
+        <listener class="\Mockery\Adapter\Phpunit\TestListener"/>
+    </listeners>
 </phpunit>

@@ -1,27 +1,26 @@
 <?php
 
-use League\OAuth1\Client\ClientConfig;
+use GuzzleHttp\Client as HttpClient;
+use Http\Factory\Guzzle\RequestFactory;
+use League\OAuth1\Client\Client;
 use League\OAuth1\Client\Credentials\ClientCredentials;
 use League\OAuth1\Client\Credentials\Credentials;
-use League\OAuth1\Client\GuzzleClientFactory;
 use League\OAuth1\Client\Provider\Twitter;
 use Psr\Http\Client\ClientExceptionInterface;
 
 require_once __DIR__ . '/../../vendor/autoload.php';
 
-$config = (new ClientConfig())
-    ->setProvider(Twitter::class)
-    ->setCredentials(new ClientCredentials(
-        'your identifier',
-        'your secret',
-        'http://your-callback-uri/'
-    ))
-    ->setHttpClientOptions([
-        'timeout' => 10,
-    ]);
+$provider = new Twitter(new ClientCredentials(
+    'your identifier',
+    'your secret',
+    'http://your-callback-uri/'
+));
 
-$client = (new GuzzleClientFactory())
-    ->createClient($config);
+$client = new Client(
+    $provider,
+    new RequestFactory(),
+    new HttpClient(['timeout' => 30])
+);
 
 // Start session
 session_start();
