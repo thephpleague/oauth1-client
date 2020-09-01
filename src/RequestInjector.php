@@ -30,7 +30,7 @@ class RequestInjector
         }
 
         throw new InvalidArgumentException(sprintf(
-            'Invalid OAuth parameters injection location "%s".',
+            'Invalid request injection location "%s".',
             $location
         ));
     }
@@ -69,12 +69,12 @@ class RequestInjector
         $parts = [];
 
         if (isset($oauthParameters['realm'])) {
-            $parts[] = sprintf('realm="%s"', $oauthParameters['realm']);
+            $parts[] = sprintf('realm="%s"', rawurlencode($oauthParameters['realm']));
             unset($oauthParameters['realm']);
         }
 
         foreach ($oauthParameters as $key => $value) {
-            $parts[] = sprintf('%s="%s"', $key, $value);
+            $parts[] = sprintf('%s="%s"', rawurlencode($key), rawurlencode($value));
         }
 
         $value = sprintf('OAuth %s', implode(', ', $parts));

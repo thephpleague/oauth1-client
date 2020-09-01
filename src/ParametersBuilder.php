@@ -25,7 +25,7 @@ class ParametersBuilder
     {
         return array_replace($this->generateBaseParameters(), [
             'oauth_consumer_key' => $clientCredentials->getIdentifier(),
-            'oauth_callback' => $clientCredentials->getCallbackUri(),
+            'oauth_callback' => (string) $clientCredentials->getCallbackUri(),
         ]);
     }
 
