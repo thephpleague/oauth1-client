@@ -10,17 +10,12 @@ use Psr\Http\Message\RequestInterface;
 
 abstract class BaseProvider implements Provider
 {
-    protected const TEMPORARY_CREDENTIALS_URI = null;
-    protected const AUTHORIZATION_URI         = null;
-    protected const TOKEN_CREDENTIALS_URI     = null;
-    protected const USER_DETAILS_URI          = null;
-
     public function createTemporaryCredentialsRequest(RequestFactoryInterface $requestFactory): RequestInterface {
-        if (false === filter_var(self::TEMPORARY_CREDENTIALS_URI, FILTER_VALIDATE_URL)) {
+        if (false === filter_var($uri = $this->getTemporaryCredentialsUri(), FILTER_VALIDATE_URL)) {
             throw new LogicException('You have not configured a valid temporary credentials URI');
         }
 
-        return $requestFactory->createRequest('POST', self::TEMPORARY_CREDENTIALS_URI);
+        return $requestFactory->createRequest('POST', $uri);
     }
 
     public function prepareTemporaryCredentialsRequest(
@@ -34,11 +29,11 @@ abstract class BaseProvider implements Provider
 
     public function createAuthorizationRequest(RequestFactoryInterface $requestFactory): RequestInterface
     {
-        if (false === filter_var(self::AUTHORIZATION_URI, FILTER_VALIDATE_URL)) {
+        if (false === filter_var($uri = $this->getAuthorizationUri(), FILTER_VALIDATE_URL)) {
             throw new LogicException('You have not configured a valid authorization URI');
         }
 
-        return $requestFactory->createRequest('GET', self::AUTHORIZATION_URI);
+        return $requestFactory->createRequest('GET', $uri);
     }
 
     public function prepareAuthorizationRequest(
@@ -52,11 +47,11 @@ abstract class BaseProvider implements Provider
 
     public function createTokenCredentialsRequest(RequestFactoryInterface $requestFactory): RequestInterface
     {
-        if (false === filter_var(self::TOKEN_CREDENTIALS_URI, FILTER_VALIDATE_URL)) {
+        if (false === filter_var($uri = $this->getTokenCredentialsUri(), FILTER_VALIDATE_URL)) {
             throw new LogicException('You have not configured a valid token credentials URI');
         }
 
-        return $requestFactory->createRequest('POST', self::TOKEN_CREDENTIALS_URI);
+        return $requestFactory->createRequest('POST', $uri);
     }
 
     public function prepareTokenCredentialsRequest(
@@ -71,11 +66,11 @@ abstract class BaseProvider implements Provider
 
     public function createUserDetailsRequest(RequestFactoryInterface $requestFactory): RequestInterface
     {
-        if (false === filter_var(self::USER_DETAILS_URI, FILTER_VALIDATE_URL)) {
+        if (false === filter_var($uri = $this->getUserDetailsUri(), FILTER_VALIDATE_URL)) {
             throw new LogicException('You have not configured a valid user details URI');
         }
 
-        return $requestFactory->createRequest('GET', self::USER_DETAILS_URI);
+        return $requestFactory->createRequest('GET', $uri);
     }
 
     public function prepareAuthenticatedRequest(
@@ -86,4 +81,24 @@ abstract class BaseProvider implements Provider
 
         return $request;
     }
+
+    /**
+     * Get the URI for fetching temporary credentials from.
+     */
+    abstract protected function getTemporaryCredentialsUri(): string;
+
+    /**
+     * Get the URI for starting the authorization process at.
+     */
+    abstract protected function getAuthorizationUri(): string;
+
+    /**
+     * Get the URI for fetching token credentials from.
+     */
+    abstract protected function getTokenCredentialsUri(): string;
+
+    /**
+     * Get the URI for user details from.
+     */
+    abstract protected function getUserDetailsUri(): string;
 }
