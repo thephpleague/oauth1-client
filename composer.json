@@ -22,7 +22,9 @@
     "roave/security-advisories": "dev-master"
   },
   "suggest": {
-    "ext-simplexml": "For decoding XML-based responses."
+    "ext-simplexml": "For decoding XML-based responses.",
+    "guzzlehttp/guzzle": "The recommended PSR-18 HTTP client implementation",
+    "http-interop/http-factory-guzzle": "The recommended PSR-17 HTTP factory implementation"
   },
   "keywords": [
     "oauth",
