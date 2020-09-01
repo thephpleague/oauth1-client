@@ -41,9 +41,9 @@ class Client
         RequestFactoryInterface $requestFactory,
         ClientInterface $httpClient
     ) {
-        $this->provider = $provider;
+        $this->provider       = $provider;
         $this->requestFactory = $requestFactory;
-        $this->httpClient = $httpClient;
+        $this->httpClient     = $httpClient;
     }
 
     /**
@@ -53,9 +53,7 @@ class Client
      */
     public function fetchTemporaryCredentials(ClientCredentials $clientCredentials = null): Credentials
     {
-        if (null === $clientCredentials) {
-            $clientCredentials = $this->getClientCredentials();
-        }
+        $clientCredentials = $this->findClientCredentials($clientCredentials);
 
         if (null === $clientCredentials) {
             throw new LogicException(
@@ -75,19 +73,20 @@ class Client
     /**
      * Prepares an authorization request based on the fetched temporary credentials.
      */
-    public function prepareAuthorizationRequest(Credentials $temporaryCredentials = null): RequestInterface
-    {
-        if (null === $temporaryCredentials) {
-            $temporaryCredentials = $this->getTemporaryCredentials();
-        }
+    public function prepareAuthorizationRequest(
+        ClientCredentials $clientCredentials = null,
+        Credentials $temporaryCredentials = null
+    ): RequestInterface {
+        $clientCredentials    = $this->findClientCredentials($clientCredentials);
+        $temporaryCredentials = $this->findTemporaryCredentials($temporaryCredentials);
 
-        if (null === $temporaryCredentials) {
+        if (null === $clientCredentials || null === $temporaryCredentials) {
             throw new LogicException('You must provide temporary credentials to prepare an authorization request.');
         }
 
         $request = $this->provider->createAuthorizationRequest($this->requestFactory);
 
-        return $this->provider->prepareAuthorizationRequest($request, $temporaryCredentials);
+        return $this->provider->prepareAuthorizationRequest($request, $clientCredentials, $temporaryCredentials);
     }
 
     /**
@@ -95,19 +94,18 @@ class Client
      *
      * @throws ClientExceptionInterface If an error happens while processing the request
      */
-    public function fetchTokenCredentials(Credentials $temporaryCredentials = null, string $verifier = null): Credentials
-    {
-        if (null === $temporaryCredentials) {
-            $temporaryCredentials = $this->getTemporaryCredentials();
-        }
+    public function fetchTokenCredentials(
+        ClientCredentials $clientCredentials = null,
+        Credentials $temporaryCredentials = null,
+        string $verifier = null
+    ): Credentials {
+        $clientCredentials    = $this->findClientCredentials($clientCredentials);
+        $temporaryCredentials = $this->findTemporaryCredentials($temporaryCredentials);
+        $verifier             = $this->findVerifier($verifier);
 
-        if (null === $verifier) {
-            $verifier = $this->getVerifier();
-        }
-
-        if (null === $temporaryCredentials || null === $verifier) {
+        if (null === $clientCredentials || null === $temporaryCredentials || null === $verifier) {
             throw new LogicException(
-                'You have must first authorize before fetching token credentials.'
+                'You have must first provide client credentials and authorize before fetching token credentials.'
             );
         }
 
@@ -116,6 +114,7 @@ class Client
         $response = $this->httpClient->sendRequest(
             $this->provider->prepareTokenCredentialsRequest(
                 $request,
+                $clientCredentials,
                 $temporaryCredentials,
                 $verifier
             )
@@ -126,12 +125,16 @@ class Client
 
     /**
      * Fetches user details.
+     *
+     * @throws ClientExceptionInterface If an error happens while processing the request
      */
-    public function fetchUserDetails(Credentials $tokenCredentials = null): User
-    {
+    public function fetchUserDetails(
+        ClientCredentials $clientCredentials = null,
+        Credentials $tokenCredentials = null
+    ): User {
         $request = $this->provider->createUserDetailsRequest($this->requestFactory);
 
-        $response = $this->executeAuthenticatedRequest($request, $tokenCredentials);
+        $response = $this->executeAuthenticatedRequest($request, $clientCredentials, $tokenCredentials);
 
         return $this->provider->extractUserDetails($response);
     }
@@ -141,18 +144,20 @@ class Client
      *
      * @throws ClientExceptionInterface If an error happens while processing the request
      */
-    public function executeAuthenticatedRequest(RequestInterface $request, Credentials $tokenCredentials = null): ResponseInterface
-    {
-        if (null === $tokenCredentials) {
-            $tokenCredentials = $this->getTokenCredentials();
-        }
+    public function executeAuthenticatedRequest(
+        RequestInterface $request,
+        ClientCredentials $clientCredentials = null,
+        Credentials $tokenCredentials = null
+    ): ResponseInterface {
+        $clientCredentials = $this->findClientCredentials($clientCredentials);
+        $tokenCredentials = $this->findTokenCredentials($tokenCredentials);
 
-        if (null === $tokenCredentials) {
-            throw new LogicException('You must provide token credentials to prepare an authenticated request.');
+        if (null === $clientCredentials || null === $tokenCredentials) {
+            throw new LogicException('You must provide client and token credentials to prepare an authenticated request.');
         }
 
         return $this->httpClient->sendRequest(
-            $this->provider->prepareAuthenticatedRequest($request)
+            $this->provider->prepareAuthenticatedRequest($request, $clientCredentials, $tokenCredentials)
         );
     }
 
@@ -194,6 +199,26 @@ class Client
     public function setTokenCredentials(Credentials $tokenCredentials): void
     {
         $this->tokenCredentials = $tokenCredentials;
+    }
+
+    private function findClientCredentials(?ClientCredentials $clientCredentials): ?ClientCredentials
+    {
+        return $clientCredentials ?: $this->getClientCredentials();
+    }
+
+    private function findTemporaryCredentials(?Credentials $temporaryCredentials): ?Credentials
+    {
+        return $temporaryCredentials ?: $this->getTemporaryCredentials();
+    }
+
+    private function findTokenCredentials(?Credentials $tokenCredentials): ?Credentials
+    {
+        return $tokenCredentials ?: $this->getTokenCredentials();
+    }
+
+    private function findVerifier(?string $verifier): ?string
+    {
+        return $verifier ?: $this->getVerifier();
     }
 
     private function extractTemporaryCredentials(ResponseInterface $response): Credentials

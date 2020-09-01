@@ -34,6 +34,7 @@ interface Provider
      */
     public function prepareAuthorizationRequest(
         RequestInterface $request,
+        ClientCredentials $clientCredentials,
         Credentials $temporaryCredentials
     ): RequestInterface;
 
@@ -47,6 +48,7 @@ interface Provider
      */
     public function prepareTokenCredentialsRequest(
         RequestInterface $request,
+        ClientCredentials $clientCredentials,
         Credentials $temporaryCredentials,
         string $verifier
     ): RequestInterface;
@@ -66,6 +68,7 @@ interface Provider
      */
     public function prepareAuthenticatedRequest(
         RequestInterface $request,
+        ClientCredentials $clientCredentials,
         Credentials $tokenCredentials
     ): RequestInterface;
 }

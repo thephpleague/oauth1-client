@@ -6,17 +6,19 @@ use League\OAuth1\Client\Credentials\ClientCredentials;
 use League\OAuth1\Client\Credentials\Credentials;
 use Psr\Http\Message\RequestInterface;
 
-interface Signature
+interface Signer
 {
+    public static function withClientCredentials(ClientCredentials $clientCredentials): Signer;
+
     public static function withTemporaryCredentials(
         ClientCredentials $clientCredentials,
         Credentials $temporaryCredentials
-    ): Signature;
+    ): Signer;
 
     public static function withTokenCredentials(
         ClientCredentials $clientCredentials,
         Credentials $tokenCredentials
-    ): Signature;
+    ): Signer;
 
     /**
      * Returns the OAuth signature method.
@@ -24,7 +26,7 @@ interface Signature
     public function getMethod(): string;
 
     /**
-     * Signs the given Request.
+     * Returns a signature for hte given request.
      */
-    public function sign(RequestInterface $request, string $realm = null): RequestInterface;
+    public function sign(RequestInterface $request, array $oauthParameters): string;
 }

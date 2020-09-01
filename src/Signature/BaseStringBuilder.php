@@ -10,7 +10,7 @@ class BaseStringBuilder
     /**
      * Creates a base string for the given Request and additional OAuth parameters.
      *
-     * @link https://tools.ietf.org/html/rfc5849#section-3.4.1 Signature Base String
+     * @link https://tools.ietf.org/html/rfc5849#section-3.4.1 Signer Base String
      */
     public function build(RequestInterface $request, array $oauthParameters = []): string
     {
