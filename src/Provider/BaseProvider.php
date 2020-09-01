@@ -35,14 +35,12 @@ abstract class BaseProvider implements Provider
     /** @var RequestInjector */
     private $requestInjector;
 
-    public function __construct(
-        ClientCredentials $clientCredentials,
-        Signer $signer = null
-    ) {
+    public function __construct(ClientCredentials $clientCredentials)
+    {
         $this->clientCredentials = $clientCredentials;
 
-        $this->resolveSignerUsing(function () use ($signer): Signer {
-            return $signer ?: $this->createSigner();
+        $this->resolveSignerUsing(function (): Signer {
+            return $this->createSigner();
         });
 
         $this->resolveParametersBuilderUsing(function (): ParametersBuilder {
