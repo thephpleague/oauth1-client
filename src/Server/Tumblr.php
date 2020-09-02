@@ -30,7 +30,7 @@ class Tumblr extends Server
     public function userDetails($data, TokenCredentials $tokenCredentials): User
     {
         // If the API has broke, return nothing
-        if (!is_array($data['response']['user'] ?? null)) {
+        if ( ! is_array($data['response']['user'] ?? null)) {
             throw new LogicException('Not possible to get user info');
         }
 
@@ -52,7 +52,7 @@ class Tumblr extends Server
      */
     public function userUid($data, TokenCredentials $tokenCredentials)
     {
-        if (!is_array($data['response']['user'] ?? null)) {
+        if ( ! is_array($data['response']['user'] ?? null)) {
             return null;
         }
 
@@ -68,7 +68,7 @@ class Tumblr extends Server
 
     public function userScreenName($data, TokenCredentials $tokenCredentials):? string
     {
-        if (!is_array($data['response']['user'] ?? null)) {
+        if ( ! is_array($data['response']['user'] ?? null)) {
             return null;
         }
 

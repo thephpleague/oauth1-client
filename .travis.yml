@@ -42,8 +42,9 @@ install:
   - travis_retry composer update --prefer-dist $COMPOSER_OPTS
 
 script:
-  - vendor/bin/phpcs --standard=psr2 src/
-  - vendor/bin/phpunit --exclude-group integration --coverage-text --coverage-clover coverage.xml
+  - composer php-cs-fixer:lint
+  - composer test:unit
+  - composer analyze
 
 after_script:
   - wget https://scrutinizer-ci.com/ocular.phar
