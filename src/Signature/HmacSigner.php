@@ -19,7 +19,7 @@ class HmacSigner extends BaseSigner
      */
     public function sign(RequestInterface $request, array $oauthParameters, Credentials $contextCredentials = null): string
     {
-        $baseString = $this->baseStringBuilder->build($request, $oauthParameters);
+        $baseString = $this->baseStringBuilder->forRequest($request, $oauthParameters);
 
         $key = sprintf(
             '%s&%s',

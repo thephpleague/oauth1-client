@@ -13,6 +13,8 @@ class RequestInjector
     public const LOCATION_BODY   = 'body';
     public const LOCATION_QUERY  = 'query';
 
+    private const FORM_CONTENT_TYPE = 'application/x-www-form-urlencoded';
+
     public function inject(
         RequestInterface $request,
         array $oauthParameters,
@@ -48,7 +50,7 @@ class RequestInjector
 
         // Replace the existing body
         return $request
-            ->withHeader('Content-Type', 'application/x-www-form-urlencoded')
+            ->withHeader('Content-Type', self::FORM_CONTENT_TYPE)
             ->withBody(stream_for($body));
     }
 

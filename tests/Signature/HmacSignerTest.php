@@ -73,7 +73,7 @@ class HmacSignerTest extends MockeryTestCase
         );
 
         // This mock just returns a different string based on the given OAuth parameters
-        $builder->expects('build')->andReturn($oauthParameters ? json_encode($oauthParameters) : '');
+        $builder->expects('forRequest')->andReturn($oauthParameters ? json_encode($oauthParameters) : '');
 
         $request = new Request('GET', $uri);
 

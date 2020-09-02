@@ -30,7 +30,7 @@ class BaseStringBuilderTest extends TestCase
 
         self::assertEquals(
             $expected,
-            (new BaseStringBuilder())->build($request, $oauthParams),
+            (new BaseStringBuilder())->forRequest($request, $oauthParams),
             'Expected base string from the spec in Section 3.4.1.1. String Construction (Page 19) matches the actual base string'
         );
     }
@@ -115,6 +115,6 @@ class BaseStringBuilderTest extends TestCase
                 ->withBody(stream_for(http_build_query($body)));
         }
 
-        self::assertEquals($expected, (new BaseStringBuilder())->build($request, $oauthParameters));
+        self::assertEquals($expected, (new BaseStringBuilder())->forRequest($request, $oauthParameters));
     }
 }
