@@ -21,7 +21,8 @@
     "roave/security-advisories": "dev-master"
   },
   "scripts": {
-    "analyze": "vendor/bin/phpstan analyse -l 6 src"
+    "analyze": "vendor/bin/phpstan analyse -l 6 src",
+    "test:unit": "vendor/bin/phpunit --coverage-text --coverage-clover coverage.xml"
   },
   "suggest": {
     "guzzlehttp/guzzle": "The recommended PSR-18 HTTP client implementation",
