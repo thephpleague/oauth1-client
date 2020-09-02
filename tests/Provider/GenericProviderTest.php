@@ -1,6 +1,6 @@
 <?php
 
-namespace League\OAuth1\Client\Tests;
+namespace League\OAuth1\Client\Tests\Provider;
 
 use GuzzleHttp\Psr7\Response;
 use Http\Factory\Guzzle\RequestFactory;
@@ -10,13 +10,17 @@ use League\OAuth1\Client\Credentials\Credentials;
 use League\OAuth1\Client\ParametersBuilder;
 use League\OAuth1\Client\Provider\GenericProvider;
 use League\OAuth1\Client\RequestInjector;
+use League\OAuth1\Client\Signature\HmacSigner;
 use League\OAuth1\Client\Signature\Signer;
 use League\OAuth1\Client\User;
 use LogicException;
 use Mockery;
+use Mockery\Adapter\Phpunit\MockeryTestCase;
 
-class GenericProviderTest extends Mockery\Adapter\Phpunit\MockeryTestCase
+class GenericProviderTest extends MockeryTestCase
 {
+    use PreparesRequestInjectorMockInIsolation;
+
     /** @var ClientCredentials */
     private $clientCredentials;
 
@@ -81,29 +85,6 @@ class GenericProviderTest extends Mockery\Adapter\Phpunit\MockeryTestCase
             self::assertEquals($config[$type]['method'], $request->getMethod());
             self::assertEquals($config[$type]['uri'], (string)$request->getUri());
         }
-    }
-
-    private function prepareRequestInjectorMockInIsolation(GenericProvider $provider): RequestInjector
-    {
-        $parametersBuilder = Mockery::spy(ParametersBuilder::class);
-
-        $provider->resolveParametersBuilderUsing(static function () use ($parametersBuilder): ParametersBuilder {
-            return $parametersBuilder;
-        });
-
-        $signer = Mockery::spy(Signer::class);
-
-        $provider->resolveSignerUsing(static function () use ($signer): Signer {
-            return $signer;
-        });
-
-        $requestInjector = Mockery::mock(RequestInjector::class);
-
-        $provider->resolveRequestInjectorUsing(static function () use ($requestInjector): RequestInjector {
-            return $requestInjector;
-        });
-
-        return $requestInjector;
     }
 
     /**
@@ -256,5 +237,33 @@ class GenericProviderTest extends Mockery\Adapter\Phpunit\MockeryTestCase
         $this->expectException(InvalidArgumentException::class);
 
         $provider->extractUserDetails(new Response());
+    }
+
+    /** @test */
+    public function it_creates_a_hmac_signer_by_default(): void
+    {
+        $provider = new GenericProvider($this->clientCredentials);
+
+        self::assertInstanceOf(HmacSigner::class, $provider->getSigner());
+    }
+
+    /** @test */
+    public function it_can_create_a_parameters_builder_without_error(): void
+    {
+        $provider = new GenericProvider($this->clientCredentials);
+
+        $provider->getParametersBuilder();
+
+        $this->addToAssertionCount(1);
+    }
+
+    /** @test */
+    public function it_can_create_a_request_injector_without_error(): void
+    {
+        $provider = new GenericProvider($this->clientCredentials);
+
+        $provider->getRequestInjector();
+
+        $this->addToAssertionCount(1);
     }
 }

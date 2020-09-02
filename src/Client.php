@@ -4,6 +4,7 @@ namespace League\OAuth1\Client;
 
 use League\OAuth1\Client\Credentials\Credentials;
 use League\OAuth1\Client\Provider\Provider;
+use League\OAuth1\Client\Exception\CredentialsFetchingFailedException;
 use LogicException;
 use Psr\Http\Client\ClientExceptionInterface;
 use Psr\Http\Client\ClientInterface;
@@ -103,7 +104,7 @@ class Client
             )
         );
 
-        return $this->temporaryCredentials = $this->extractTokenCredentials($response);
+        return $this->tokenCredentials = $this->extractTokenCredentials($response);
     }
 
     /**
@@ -189,9 +190,12 @@ class Client
     {
         $data = parse_query($response->getBody()->getContents());
 
-        if ('true' !== ($data['oauth_callback_confirmed'] ?? '')) {
-            // @todo Add granular exceptions…
-            throw new RuntimeException('Error in retrieving temporary credentials.');
+        if (
+            'true' !== ($data['oauth_callback_confirmed'] ?? null)
+            || empty($data['oauth_token'] ?? null)
+            || empty($data['oauth_token_secret'] ?? null)
+        ) {
+            throw CredentialsFetchingFailedException::forTemporaryCredentials($response);
         }
 
         return new Credentials($data['oauth_token'], $data['oauth_token_secret']);
@@ -201,12 +205,12 @@ class Client
     {
         $data = parse_query($response->getBody()->getContents());
 
-        if ($data['error'] ?? null) {
-            // @todo Add granular exceptions…
-            throw new RuntimeException(sprintf(
-                'Error received while retrieving token credentials: "%s"',
-                $data['error']
-            ));
+        if (
+            ($data['error'] ?? null)
+            || empty($data['oauth_token'] ?? null)
+            || empty($data['oauth_token_secret'] ?? null)
+        ) {
+            throw CredentialsFetchingFailedException::forTokenCredentials($response);
         }
 
         return new Credentials($data['oauth_token'], $data['oauth_token_secret']);

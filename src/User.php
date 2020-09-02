@@ -16,7 +16,7 @@ class User implements ArrayAccess
     private $email;
 
     /** @var array */
-    private $metadata;
+    private $metadata = [];
 
     /**
      * @return int|string|null
@@ -82,12 +82,12 @@ class User implements ArrayAccess
         return $this->metadata[$offset];
     }
 
-    public function offsetSet($offset, $value)
+    public function offsetSet($offset, $value): void
     {
         $this->metadata[$offset] = $value;
     }
 
-    public function offsetUnset($offset)
+    public function offsetUnset($offset): void
     {
         unset($this->metadata[$offset]);
     }

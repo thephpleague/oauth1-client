@@ -73,7 +73,7 @@ abstract class BaseProvider implements Provider
         return $this;
     }
 
-    private function getParametersBuilder(): ParametersBuilder
+    public function getParametersBuilder(): ParametersBuilder
     {
         if (null === $this->parametersBuilder) {
             $this->parametersBuilder = ($this->parametersBuilderResolver)($this);
@@ -82,7 +82,7 @@ abstract class BaseProvider implements Provider
         return $this->parametersBuilder;
     }
 
-    private function getSigner(): Signer
+    public function getSigner(): Signer
     {
         if (null === $this->signer) {
             $this->signer = ($this->signerResolver)($this);
@@ -91,7 +91,7 @@ abstract class BaseProvider implements Provider
         return $this->signer;
     }
 
-    private function getRequestInjector(): RequestInjector
+    public function getRequestInjector(): RequestInjector
     {
         if (null === $this->requestInjector) {
             $this->requestInjector = ($this->requestInjectorResolver)($this);
