@@ -71,14 +71,14 @@ class Magento extends Server
 
     public function userDetails($data, TokenCredentials $tokenCredentials): User
     {
-        if (!is_array($data) || empty($data)) {
+        if ( ! is_array($data) || empty($data)) {
             throw new LogicException('Not possible to get user info');
         }
 
-        $id   = key($data);
+        $id = key($data);
         $data = current($data);
 
-        $user      = new User();
+        $user = new User();
         $user->uid = $id;
 
         $mapping = [
@@ -88,7 +88,7 @@ class Magento extends Server
         ];
 
         foreach ($mapping as $userKey => $dataKey) {
-            if (!isset($data[$dataKey])) {
+            if ( ! isset($data[$dataKey])) {
                 continue;
             }
             $user->{$userKey} = $data[$dataKey];
@@ -154,11 +154,11 @@ class Magento extends Server
      */
     private function parseConfigurationArray(array $configuration = []): void
     {
-        if (!isset($configuration['host'])) {
+        if ( ! isset($configuration['host'])) {
             throw new InvalidArgumentException('Missing Magento Host');
         }
 
-        $url           = parse_url($configuration['host']);
+        $url = parse_url($configuration['host']);
         $this->baseUri = sprintf('%s://%s', $url['scheme'], $url['host']);
 
         if (isset($url['port'])) {
@@ -168,8 +168,8 @@ class Magento extends Server
         if (isset($url['path'])) {
             $this->baseUri .= '/' . trim($url['path'], '/');
         }
-        $this->isAdmin = !empty($configuration['admin']);
-        if (!empty($configuration['adminUrl'])) {
+        $this->isAdmin = ! empty($configuration['admin']);
+        if ( ! empty($configuration['adminUrl'])) {
             $this->adminUrl = $configuration['adminUrl'] . '/oauth_authorize';
         } else {
             $this->adminUrl = $this->baseUri . '/admin/oauth_authorize';

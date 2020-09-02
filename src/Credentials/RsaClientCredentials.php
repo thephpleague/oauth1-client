@@ -51,13 +51,13 @@ class RsaClientCredentials extends ClientCredentials
             return $this->rsaPublicKey;
         }
 
-        if (!file_exists($this->rsaPublicKeyFile) || !is_readable($this->rsaPublicKeyFile)) {
+        if ( ! file_exists($this->rsaPublicKeyFile) || ! is_readable($this->rsaPublicKeyFile)) {
             throw new CredentialsException('Could not read the public key file.');
         }
 
         $this->rsaPublicKey = openssl_get_publickey(file_get_contents($this->rsaPublicKeyFile));
 
-        if (!$this->rsaPublicKey) {
+        if ( ! $this->rsaPublicKey) {
             throw new CredentialsException('Cannot access public key for signing');
         }
 
@@ -77,13 +77,13 @@ class RsaClientCredentials extends ClientCredentials
             return $this->rsaPrivateKey;
         }
 
-        if (!file_exists($this->rsaPrivateKeyFile) || !is_readable($this->rsaPrivateKeyFile)) {
+        if ( ! file_exists($this->rsaPrivateKeyFile) || ! is_readable($this->rsaPrivateKeyFile)) {
             throw new CredentialsException('Could not read the private key file.');
         }
 
         $this->rsaPrivateKey = openssl_pkey_get_private(file_get_contents($this->rsaPrivateKeyFile));
 
-        if (!$this->rsaPrivateKey) {
+        if ( ! $this->rsaPrivateKey) {
             throw new CredentialsException('Cannot access private key for signing');
         }
 

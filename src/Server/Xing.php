@@ -31,27 +31,27 @@ class Xing extends Server
 
     public function userDetails($data, TokenCredentials $tokenCredentials): User
     {
-        if (!isset($data['users'][0])) {
+        if ( ! isset($data['users'][0])) {
             throw new LogicException('Not possible to get user info');
         }
 
         $data = $data['users'][0];
 
-        $user            = new User();
-        $user->uid       = $data['id'];
-        $user->nickname  = $data['display_name'];
-        $user->name      = $data['display_name'];
+        $user = new User();
+        $user->uid = $data['id'];
+        $user->nickname = $data['display_name'];
+        $user->name = $data['display_name'];
         $user->firstName = $data['first_name'];
-        $user->lastName  = $data['last_name'];
-        $user->location  = $data['private_address']['country'];
+        $user->lastName = $data['last_name'];
+        $user->location = $data['private_address']['country'];
 
         if ('' === $user->location) {
             $user->location = $data['business_address']['country'];
         }
 
         $user->description = $data['employment_status'];
-        $user->imageUrl    = $data['photo_urls']['maxi_thumb'];
-        $user->email       = $data['active_email'];
+        $user->imageUrl = $data['photo_urls']['maxi_thumb'];
+        $user->email = $data['active_email'];
 
         $user->urls['permalink'] = $data['permalink'];
 

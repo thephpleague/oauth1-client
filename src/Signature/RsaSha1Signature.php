@@ -23,7 +23,7 @@ class RsaSha1Signature extends Signature
      */
     public function sign(string $uri, array $parameters = [], string $method = 'POST'): string
     {
-        $url        = $this->createUri($uri);
+        $url = $this->createUri($uri);
         $baseString = $this->baseString($url, $method, $parameters);
 
         /** @var RsaClientCredentials $clientCredentials */
