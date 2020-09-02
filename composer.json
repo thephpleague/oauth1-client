@@ -4,8 +4,6 @@
   "license": "MIT",
   "require": {
     "php": ">=7.2",
-    "ext-json": "*",
-    "ext-openssl": "*",
     "guzzlehttp/psr7": "^1.6",
     "psr/http-client": "^1.0",
     "psr/http-client-implementation": "^1.0",
@@ -22,7 +20,6 @@
     "roave/security-advisories": "dev-master"
   },
   "suggest": {
-    "ext-simplexml": "For decoding XML-based responses.",
     "guzzlehttp/guzzle": "The recommended PSR-18 HTTP client implementation",
     "http-interop/http-factory-guzzle": "The recommended PSR-17 HTTP factory implementation"
   },
@@ -44,7 +41,7 @@
     {
       "name": "Ben Corlett",
       "email": "bencorlett@me.com",
-      "homepage": "http://www.webcomm.com.au",
+      "homepage": "https://webcomm.io",
       "role": "Developer"
     }
   ],
@@ -59,7 +56,8 @@
   },
   "extra": {
     "branch-alias": {
-      "dev-master": "2.0-dev"
+      "dev-master": "1.0-dev",
+      "dev-develop": "2.0-dev"
     }
   }
 }
