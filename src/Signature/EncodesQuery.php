@@ -15,11 +15,11 @@ trait EncodesQuery
     {
         $baseString = rawurlencode($method) . '&';
 
-        $schemeHostPath = Uri::fromParts(array(
+        $schemeHostPath = Uri::fromParts([
             'scheme' => $url->getScheme(),
             'host' => $url->getHost(),
             'path' => $url->getPath(),
-        ));
+        ]);
 
         $baseString .= rawurlencode($schemeHostPath) . '&';
 
@@ -28,7 +28,7 @@ trait EncodesQuery
 
         // normalize data key/values
         array_walk_recursive($data, static function (&$key, &$value) {
-            $key   = rawurlencode(rawurldecode($key));
+            $key = rawurlencode(rawurldecode($key));
             $value = rawurlencode(rawurldecode($value));
         });
         ksort($data);

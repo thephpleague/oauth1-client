@@ -41,7 +41,7 @@ class Bitbucket extends Server
 
         foreach ($data as $key => $value) {
             if (strpos($key, 'url') !== false) {
-                if (!in_array($key, $used, true)) {
+                if ( ! in_array($key, $used, true)) {
                     $used[] = $key;
                 }
 

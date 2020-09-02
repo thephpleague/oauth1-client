@@ -7,10 +7,10 @@ use GuzzleHttp\Client as GuzzleHttpClient;
 use GuzzleHttp\Exception\BadResponseException;
 use GuzzleHttp\Exception\GuzzleException;
 use InvalidArgumentException;
-use League\OAuth1\Client\Credentials\ClientCredentialsInterface;
 use League\OAuth1\Client\Credentials\ClientCredentials;
-use League\OAuth1\Client\Credentials\CredentialsInterface;
+use League\OAuth1\Client\Credentials\ClientCredentialsInterface;
 use League\OAuth1\Client\Credentials\CredentialsException;
+use League\OAuth1\Client\Credentials\CredentialsInterface;
 use League\OAuth1\Client\Credentials\RsaClientCredentials;
 use League\OAuth1\Client\Credentials\TemporaryCredentials;
 use League\OAuth1\Client\Credentials\TokenCredentials;
@@ -52,13 +52,13 @@ abstract class Server
         // Pass through an array or client credentials, we don't care
         if (is_array($clientCredentials)) {
             $clientCredentials = $this->createClientCredentials($clientCredentials);
-        } elseif (!$clientCredentials instanceof ClientCredentialsInterface) {
+        } elseif ( ! $clientCredentials instanceof ClientCredentialsInterface) {
             throw new InvalidArgumentException('Client credentials must be an array or valid object.');
         }
 
         $this->clientCredentials = $clientCredentials;
 
-        if (!$signature && $clientCredentials instanceof RsaClientCredentials) {
+        if ( ! $signature && $clientCredentials instanceof RsaClientCredentials) {
             $signature = new RsaSha1Signature($clientCredentials);
         }
         $this->signature = $signature ?: new HmacSha1Signature($clientCredentials);
@@ -77,9 +77,9 @@ abstract class Server
 
         $client = $this->createHttpClient();
 
-        $header              = $this->temporaryCredentialsProtocolHeader($uri);
+        $header = $this->temporaryCredentialsProtocolHeader($uri);
         $authorizationHeader = ['Authorization' => $header];
-        $headers             = $this->buildHttpClientHeaders($authorizationHeader);
+        $headers = $this->buildHttpClientHeaders($authorizationHeader);
 
         try {
             $response = $client->post($uri, [
@@ -89,7 +89,7 @@ abstract class Server
             throw $this->getCredentialsExceptionForBadResponse($e, 'temporary credentials');
         }
 
-        return $this->createTemporaryCredentials((string)$response->getBody());
+        return $this->createTemporaryCredentials((string) $response->getBody());
     }
 
     /**
@@ -108,7 +108,7 @@ abstract class Server
 
         $parameters = ['oauth_token' => $temporaryIdentifier];
 
-        $url         = $this->urlAuthorization();
+        $url = $this->urlAuthorization();
         $queryString = http_build_query($parameters);
 
         return $this->buildUrl($url, $queryString);
@@ -146,7 +146,7 @@ abstract class Server
             );
         }
 
-        $uri            = $this->urlTokenCredentials();
+        $uri = $this->urlTokenCredentials();
         $bodyParameters = ['oauth_verifier' => $verifier];
 
         $client = $this->createHttpClient();
@@ -162,7 +162,7 @@ abstract class Server
             throw $this->getCredentialsExceptionForBadResponse($e, 'token credentials');
         }
 
-        return $this->createTokenCredentials((string)$response->getBody());
+        return $this->createTokenCredentials((string) $response->getBody());
     }
 
     /**
@@ -229,7 +229,7 @@ abstract class Server
      */
     protected function fetchUserDetails(TokenCredentials $tokenCredentials, bool $force = true)
     {
-        if (!$this->cachedUserDetailsResponse || $force) {
+        if ( ! $this->cachedUserDetailsResponse || $force) {
             $url = $this->urlUserDetails();
 
             $client = $this->createHttpClient();
@@ -245,7 +245,7 @@ abstract class Server
             }
             switch ($this->responseType) {
                 case 'json':
-                    return $this->cachedUserDetailsResponse = json_decode((string)$response->getBody(), true);
+                    return $this->cachedUserDetailsResponse = json_decode((string) $response->getBody(), true);
 
                 case 'xml':
                     if (function_exists('simplexml_load_string')) {
@@ -254,7 +254,7 @@ abstract class Server
                     break;
 
                 case 'string':
-                    parse_str((string)$response->getBody(), $this->cachedUserDetailsResponse);
+                    parse_str((string) $response->getBody(), $this->cachedUserDetailsResponse);
                     break;
             }
 
@@ -311,7 +311,7 @@ abstract class Server
         string $url,
         array $bodyParameters = []
     ): array {
-        $header              = $this->protocolHeader(strtoupper($method), $url, $credentials, $bodyParameters);
+        $header = $this->protocolHeader(strtoupper($method), $url, $credentials, $bodyParameters);
         $authorizationHeader = ['Authorization' => $header];
 
         return $this->buildHttpClientHeaders($authorizationHeader);
@@ -323,7 +323,7 @@ abstract class Server
     protected function getHttpClientDefaultHeaders(): array
     {
         $defaultHeaders = [];
-        if (!empty($this->userAgent)) {
+        if ( ! empty($this->userAgent)) {
             $defaultHeaders['User-Agent'] = $this->userAgent;
         }
 
@@ -348,7 +348,7 @@ abstract class Server
         $keys = ['identifier', 'secret'];
 
         foreach ($keys as $key) {
-            if (!isset($options[$key])) {
+            if ( ! isset($options[$key])) {
                 throw new InvalidArgumentException("Missing client credentials key [$key] from options.");
             }
         }
@@ -378,8 +378,8 @@ abstract class Server
         BadResponseException $e,
         string $type
     ): CredentialsException {
-        $response   = $e->getResponse();
-        $body       = $response->getBody();
+        $response = $e->getResponse();
+        $body = $response->getBody();
         $statusCode = $response->getStatusCode();
 
         return new CredentialsException(
@@ -401,7 +401,7 @@ abstract class Server
     {
         parse_str($body, $data);
 
-        if (!$data || !is_array($data)) {
+        if ( ! $data || ! is_array($data)) {
             throw new CredentialsException('Unable to parse temporary credentials response.');
         }
 
@@ -425,7 +425,7 @@ abstract class Server
     {
         parse_str($body, $data);
 
-        if (!$data || !is_array($data)) {
+        if ( ! $data || ! is_array($data)) {
             throw new CredentialsException('Unable to parse token credentials response.');
         }
 
