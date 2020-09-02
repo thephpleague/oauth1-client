@@ -2,12 +2,6 @@ language: php
 
 matrix:
   include:
-    - php: 7.1
-      dist: bionic
-      env: COMPOSER_OPTS=""
-    - php: 7.1
-      dist: bionic
-      env: COMPOSER_OPTS="--prefer-lowest"
     - php: 7.2
       dist: bionic
       env: COMPOSER_OPTS=""
@@ -42,9 +36,7 @@ install:
   - travis_retry composer update --prefer-dist $COMPOSER_OPTS
 
 script:
-  - composer php-cs-fixer:lint
-  - composer test:unit
-  - composer analyze
+  - vendor/bin/phpunit --exclude-group integration --coverage-text --coverage-clover coverage.xml
 
 after_script:
   - wget https://scrutinizer-ci.com/ocular.phar

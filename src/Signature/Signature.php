@@ -2,38 +2,29 @@
 
 namespace League\OAuth1\Client\Signature;
 
-use League\OAuth1\Client\Credentials\ClientCredentialsInterface;
-use League\OAuth1\Client\Credentials\CredentialsInterface;
+use League\OAuth1\Client\Credentials\ClientCredentials;
+use League\OAuth1\Client\Credentials\Credentials;
+use Psr\Http\Message\RequestInterface;
 
-abstract class Signature implements SignatureInterface
+interface Signature
 {
-    /** @var ClientCredentialsInterface */
-    protected $clientCredentials;
+    public static function withTemporaryCredentials(
+        ClientCredentials $clientCredentials,
+        Credentials $temporaryCredentials
+    ): Signature;
 
-    /** @var CredentialsInterface */
-    protected $credentials;
-
-    public function __construct(ClientCredentialsInterface $clientCredentials)
-    {
-        $this->clientCredentials = $clientCredentials;
-    }
-
-    public function setCredentials(CredentialsInterface $credentials): void
-    {
-        $this->credentials = $credentials;
-    }
+    public static function withTokenCredentials(
+        ClientCredentials $clientCredentials,
+        Credentials $tokenCredentials
+    ): Signature;
 
     /**
-     * Generate a signing key.
+     * Returns the OAuth signature method.
      */
-    protected function key(): string
-    {
-        $key = rawurlencode($this->clientCredentials->getSecret()) . '&';
+    public function getMethod(): string;
 
-        if (null !== $this->credentials) {
-            $key .= rawurlencode($this->credentials->getSecret());
-        }
-
-        return $key;
-    }
+    /**
+     * Signs the given Request.
+     */
+    public function sign(RequestInterface $request, string $realm = null): RequestInterface;
 }
