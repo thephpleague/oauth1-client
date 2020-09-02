@@ -17,7 +17,7 @@
     "scripts": {
         "analyze": "vendor/bin/phpstan analyse -l 6 src/",
         "php-cs-fixer:lint": "vendor/bin/php-cs-fixer fix --verbose --dry-run",
-        "php-cs-fixer:format": "./vendor/bin/php-cs-fixer fix",
+        "php-cs-fixer:format": "vendor/bin/php-cs-fixer fix",
         "test:unit": "vendor/bin/phpunit --coverage-text --coverage-clover coverage.xml"
     },
     "suggest": {
