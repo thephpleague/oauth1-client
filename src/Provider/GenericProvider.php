@@ -119,6 +119,8 @@ class GenericProvider extends BaseProvider
     public function extractUserDetailsUsing(callable $callback): GenericProvider
     {
         $this->userDetailsExtractor = $callback;
+
+        return $this;
     }
 
     private function parseConfig(array $config): array
@@ -127,21 +129,29 @@ class GenericProvider extends BaseProvider
             'temporary_credentials' => [
                 'method' => 'GET',
                 'location' => RequestInjector::LOCATION_QUERY,
-                'uri' => '',
+
+                // Required
+                'uri' => null,
             ],
             'authorization' => [
                 'method' => 'GET',
                 'location' => RequestInjector::LOCATION_QUERY,
-                'uri' => '',
+
+                // Required
+                'uri' => null,
             ],
             'token_credentials' => [
                 'method' => 'POST',
                 'location' => RequestInjector::LOCATION_HEADER,
-                'uri' => '',
+
+                // Required
+                'uri' => null,
             ],
             'user_details' => [
                 'method' => 'GET',
-                'uri' => '',
+
+                // Required
+                'uri' => null,
             ],
             'authenticated' => [
                 'location' => RequestInjector::LOCATION_HEADER,
