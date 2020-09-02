@@ -20,7 +20,7 @@ class BaseStringBuilder
             '%s&%s&%s',
             strtoupper($request->getMethod()),
             rawurlencode($uri),
-            $this->normalizeParameters($request, $oauthParameters)
+            rawurlencode($this->normalizeParameters($request, $oauthParameters))
         );
     }
 
