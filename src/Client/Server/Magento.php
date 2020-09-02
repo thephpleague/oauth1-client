@@ -4,6 +4,7 @@ namespace League\OAuth1\Client\Server;
 
 use League\OAuth1\Client\Credentials\TemporaryCredentials;
 use League\OAuth1\Client\Credentials\TokenCredentials;
+use League\OAuth1\Client\Signature\SignatureInterface;
 
 /**
  * Magento OAuth 1.0a.
