@@ -3,18 +3,17 @@
 namespace League\OAuth1\Client\Signature;
 
 use GuzzleHttp\Psr7;
-use GuzzleHttp\Psr7\Uri;
-use League\OAuth1\Client\Signature\Signature;
-use League\OAuth1\Client\Signature\SignatureInterface;
+use League\OAuth1\Client\Credentials\RsaClientCredentials;
+use Psr\Http\Message\UriInterface;
 
-class RsaSha1Signature extends Signature implements SignatureInterface
+class RsaSha1Signature extends Signature
 {
     use EncodesQuery;
 
     /**
      * {@inheritdoc}
      */
-    public function method()
+    public function method(): string
     {
         return 'RSA-SHA1';
     }
@@ -22,12 +21,15 @@ class RsaSha1Signature extends Signature implements SignatureInterface
     /**
      * {@inheritdoc}
      */
-    public function sign($uri, array $parameters = [], $method = 'POST')
+    public function sign(string $uri, array $parameters = [], string $method = 'POST'): string
     {
-        $url        = $this->createUrl($uri);
+        $url        = $this->createUri($uri);
         $baseString = $this->baseString($url, $method, $parameters);
 
-        $privateKey = $this->clientCredentials->getRsaPrivateKey();
+        /** @var RsaClientCredentials $clientCredentials */
+        $clientCredentials = $this->clientCredentials;
+
+        $privateKey = $clientCredentials->getRsaPrivateKey();
 
         openssl_sign($baseString, $signature, $privateKey);
 
@@ -35,13 +37,9 @@ class RsaSha1Signature extends Signature implements SignatureInterface
     }
 
     /**
-     * Create a Guzzle url for the given URI.
-     *
-     * @param string $uri
-     *
-     * @return Url
+     * Create a URI object for the given string URI.
      */
-    protected function createUrl($uri)
+    protected function createUri(string $uri): UriInterface
     {
         return Psr7\uri_for($uri);
     }

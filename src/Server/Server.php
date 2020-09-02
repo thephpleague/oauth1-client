@@ -17,6 +17,7 @@ use League\OAuth1\Client\Credentials\TokenCredentials;
 use League\OAuth1\Client\Signature\HmacSha1Signature;
 use League\OAuth1\Client\Signature\RsaSha1Signature;
 use League\OAuth1\Client\Signature\SignatureInterface;
+use SimpleXMLElement;
 
 abstract class Server
 {
@@ -180,7 +181,7 @@ abstract class Server
     /**
      * Get the user's unique identifier (primary key).
      *
-     * @return string|int
+     * @return string|int|null
      *
      * @throws CredentialsException If a "bad response" is received by the server
      * @throws GuzzleException
@@ -221,10 +222,12 @@ abstract class Server
     /**
      * Fetch user details from the remote service.
      *
+     * @return array|SimpleXMLElement
+     *
      * @throws CredentialsException If a "bad response" is received by the server
      * @throws GuzzleException
      */
-    protected function fetchUserDetails(TokenCredentials $tokenCredentials, bool $force = true): array
+    protected function fetchUserDetails(TokenCredentials $tokenCredentials, bool $force = true)
     {
         if (!$this->cachedUserDetailsResponse || $force) {
             $url = $this->urlUserDetails();
@@ -246,7 +249,7 @@ abstract class Server
 
                 case 'xml':
                     if (function_exists('simplexml_load_string')) {
-                        return $this->cachedUserDetailsResponse = simplexml_load_string((string)$response->getBody());
+                        return $this->cachedUserDetailsResponse = simplexml_load_string((string) $response->getBody());
                     }
                     break;
 
@@ -577,7 +580,7 @@ abstract class Server
      *
      * @param mixed $data
      *
-     * @return string|int
+     * @return string|int|null
      */
     abstract public function userUid($data, TokenCredentials $tokenCredentials);
 

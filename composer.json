@@ -11,7 +11,8 @@
     "require-dev": {
         "phpunit/phpunit": "^7.5",
         "mockery/mockery": "^1.3",
-        "squizlabs/php_codesniffer": "^2.9"
+        "squizlabs/php_codesniffer": "^2.9",
+        "phpstan/phpstan": "^0.12.42"
     },
     "suggest": {
         "ext-simplexml": "For decoding XML-based responses."

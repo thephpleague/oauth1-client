@@ -66,7 +66,7 @@ class User implements IteratorAggregate
     /**
      * The user's image URL.
      *
-     * @var string
+     * @var string|null
      */
     public $imageUrl;
 
@@ -89,6 +89,6 @@ class User implements IteratorAggregate
      */
     public function getIterator()
     {
-        return new ArrayIterator($this);
+        return new ArrayIterator(get_object_vars($this));
     }
 }
