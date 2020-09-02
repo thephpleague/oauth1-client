@@ -3,6 +3,7 @@
 namespace League\OAuth1\Client\Signature;
 
 use GuzzleHttp\Psr7\Uri;
+use Psr\Http\Message\UriInterface;
 
 trait EncodesQuery
 {
@@ -10,7 +11,7 @@ trait EncodesQuery
      * Generate a base string for a RSA-SHA1 signature
      * based on the given a url, method, and any parameters.
      */
-    protected function baseString(Uri $url, $method = 'POST', array $parameters = []): string
+    protected function baseString(UriInterface $url, string $method = 'POST', array $parameters = []): string
     {
         $baseString = rawurlencode($method) . '&';
 

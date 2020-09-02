@@ -29,7 +29,7 @@ class Magento extends Server
     /** @var string */
     protected $baseUri;
 
-    /**@var bool */
+    /** @var bool */
     protected $isAdmin = false;
 
     /** @var string */

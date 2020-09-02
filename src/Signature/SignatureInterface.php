@@ -9,8 +9,6 @@ interface SignatureInterface
 {
     /**
      * Create a new signature instance.
-     *
-     * @param ClientCredentialsInterface $clientCredentials
      */
     public function __construct(ClientCredentialsInterface $clientCredentials);
 
@@ -19,26 +17,16 @@ interface SignatureInterface
      * credentials when getting token credentials during the OAuth
      * authentication process, or token credentials when querying
      * the API.
-     *
-     * @param CredentialsInterface $credentials
      */
-    public function setCredentials(CredentialsInterface $credentials);
+    public function setCredentials(CredentialsInterface $credentials): void;
 
     /**
      * Get the OAuth signature method.
-     *
-     * @return string
      */
-    public function method();
+    public function method(): string;
 
     /**
      * Sign the given request for the client.
-     *
-     * @param string $uri
-     * @param array  $parameters
-     * @param string $method
-     *
-     * @return string
      */
-    public function sign($uri, array $parameters = [], $method = 'POST');
+    public function sign(string $uri, array $parameters = [], string $method = 'POST'): string;
 }
