@@ -9,9 +9,21 @@ class Twitter extends BaseProvider
 {
     public function extractUserDetails(ResponseInterface $response): User
     {
-        // TODO: Implement extractUserDetails() method.
+        $data = json_decode($response->getBody()->getContents(), true);
 
-        return new User();
+        $user = (new User())
+            ->setId($data['id'])
+            ->setUsername($data['screen_name']);
+
+        unset($data['id'], $data['screen_name']);
+
+        if ($data['email'] ?? null) {
+            $user->setEmail($data['email']);
+
+            unset($data['email']);
+        }
+
+        return $user->setMetadata($data);
     }
 
     protected function getTemporaryCredentialsUri(): string

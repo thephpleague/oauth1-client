@@ -2,10 +2,9 @@
 
 namespace League\OAuth1\Client;
 
-/**
- * @todo Implement a generic user class…
- */
-class User
+use ArrayAccess;
+
+class User implements ArrayAccess
 {
     /** @var string|int|null */
     private $id;
@@ -15,6 +14,9 @@ class User
 
     /** @var string|null */
     private $email;
+
+    /** @var array */
+    private $metadata;
 
     /**
      * @return int|string|null
@@ -56,5 +58,37 @@ class User
         $this->email = $email;
 
         return $this;
+    }
+
+    public function getMetadata(): array
+    {
+        return $this->metadata;
+    }
+
+    public function setMetadata(array $metadata): User
+    {
+        $this->metadata = $metadata;
+
+        return $this;
+    }
+
+    public function offsetExists($offset): bool
+    {
+        return isset($this->metadata[$offset]);
+    }
+
+    public function offsetGet($offset)
+    {
+        return $this->metadata[$offset];
+    }
+
+    public function offsetSet($offset, $value)
+    {
+        $this->metadata[$offset] = $value;
+    }
+
+    public function offsetUnset($offset)
+    {
+        unset($this->metadata[$offset]);
     }
 }
