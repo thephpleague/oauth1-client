@@ -232,7 +232,9 @@ abstract class BaseProvider implements Provider
      */
     private function createSigner(): Signer
     {
-        return new ($this->getSignerClass())($this->clientCredentials);
+        $signer = $this->getSignerClass();
+
+        return new $signer($this->clientCredentials);
     }
 
     protected function getTemporaryCredentialsMethod(): string
