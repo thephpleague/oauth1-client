@@ -11,6 +11,7 @@ use Psr\Http\Message\RequestFactoryInterface;
 use Psr\Http\Message\RequestInterface;
 use Psr\Http\Message\ResponseInterface;
 use RuntimeException;
+use function GuzzleHttp\Psr7\parse_query;
 
 class Client
 {
@@ -186,7 +187,7 @@ class Client
 
     private function extractTemporaryCredentials(ResponseInterface $response): Credentials
     {
-        parse_str($response->getBody()->getContents(), $data);
+        $data = parse_query($response->getBody()->getContents());
 
         if ('true' !== ($data['oauth_callback_confirmed'] ?? '')) {
             // @todo Add granular exceptions…
@@ -198,7 +199,7 @@ class Client
 
     private function extractTokenCredentials(ResponseInterface $response): Credentials
     {
-        parse_str($response->getBody()->getContents(), $data);
+        $data = parse_query($response->getBody()->getContents());
 
         if ($data['error'] ?? null) {
             // @todo Add granular exceptions…

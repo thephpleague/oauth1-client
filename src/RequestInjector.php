@@ -4,6 +4,7 @@ namespace League\OAuth1\Client;
 
 use InvalidArgumentException;
 use Psr\Http\Message\RequestInterface;
+use function GuzzleHttp\Psr7\build_query;
 use function GuzzleHttp\Psr7\stream_for;
 
 class RequestInjector
@@ -43,7 +44,7 @@ class RequestInjector
 
     private function injectBody(RequestInterface $request, array $oauthParameters): RequestInterface
     {
-        $body = http_build_query($oauthParameters);
+        $body = build_query($oauthParameters);
 
         // Replace the existing body
         return $request
@@ -53,7 +54,7 @@ class RequestInjector
 
     private function injectQuery(RequestInterface $request, array $oauthParameters): RequestInterface
     {
-        $query = http_build_query($oauthParameters);
+        $query = build_query($oauthParameters);
 
         // Replace existing query string
         return $request->withUri($request->getUri()->withQuery($query));
