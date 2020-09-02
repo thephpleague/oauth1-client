@@ -13,7 +13,7 @@ class Credentials
     public function __construct(string $identifier, string $secret)
     {
         $this->identifier = $identifier;
-        $this->secret = $secret;
+        $this->secret     = $secret;
     }
 
     public function getIdentifier(): string

@@ -17,7 +17,7 @@ class HmacSigner extends BaseSigner
     /**
      * @param array<string, string|int> $oauthParameters
      *
-     * @link https://tools.ietf.org/html/rfc5849#section-3.4.2 HMAC-SHA1
+     * @see https://tools.ietf.org/html/rfc5849#section-3.4.2 HMAC-SHA1
      */
     public function sign(RequestInterface $request, array $oauthParameters, Credentials $contextCredentials = null): string
     {

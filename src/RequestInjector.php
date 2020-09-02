@@ -2,10 +2,10 @@
 
 namespace League\OAuth1\Client;
 
-use InvalidArgumentException;
-use Psr\Http\Message\RequestInterface;
 use function GuzzleHttp\Psr7\build_query;
 use function GuzzleHttp\Psr7\stream_for;
+use InvalidArgumentException;
+use Psr\Http\Message\RequestInterface;
 
 class RequestInjector
 {
@@ -81,7 +81,7 @@ class RequestInjector
      *
      * @return array<int, string>
      *
-     * @link https://tools.ietf.org/html/rfc5849#section-3.5.1 Authorization Header
+     * @see https://tools.ietf.org/html/rfc5849#section-3.5.1 Authorization Header
      */
     private function createAuthorizationHeader(array $oauthParameters): array
     {

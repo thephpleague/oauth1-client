@@ -2,8 +2,8 @@
 
 namespace League\OAuth1\Client\Signature;
 
-use Psr\Http\Message\RequestInterface;
 use function GuzzleHttp\Psr7\parse_query;
+use Psr\Http\Message\RequestInterface;
 
 class BaseStringBuilder
 {
@@ -17,7 +17,7 @@ class BaseStringBuilder
      *
      * @param array<string, string|int> $oauthParameters
      *
-     * @link https://tools.ietf.org/html/rfc5849#section-3.4.1 Signature Base String
+     * @see https://tools.ietf.org/html/rfc5849#section-3.4.1 Signature Base String
      */
     public function forRequest(RequestInterface $request, array $oauthParameters = []): string
     {
@@ -36,8 +36,8 @@ class BaseStringBuilder
      *
      * @param array<string, string|int> $oauthParameters
      *
-     * @link https://tools.ietf.org/html/rfc5849#section-3.4.1.3.1 Parameter Sources
-     * @link https://tools.ietf.org/html/rfc5849#section-3.4.1.3.2 Parameters Normalization
+     * @see https://tools.ietf.org/html/rfc5849#section-3.4.1.3.1 Parameter Sources
+     * @see https://tools.ietf.org/html/rfc5849#section-3.4.1.3.2 Parameters Normalization
      */
     private function normalizeParameters(RequestInterface $request, array $oauthParameters = []): string
     {
@@ -77,7 +77,7 @@ class BaseStringBuilder
         // Parameters now need to be encoded prior to sorting
         $parameters = array_map(static function (array $parameter): array {
             return [
-                'key' => rawurlencode($parameter['key']),
+                'key'   => rawurlencode($parameter['key']),
                 'value' => rawurlencode($parameter['value']),
             ];
         }, $parameters);

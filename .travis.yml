@@ -36,6 +36,7 @@ install:
   - travis_retry composer update --prefer-dist $COMPOSER_OPTS
 
 script:
+  - composer php-cs-fixer:lint
   - composer test:unit
   - composer analyze
 

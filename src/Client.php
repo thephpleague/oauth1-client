@@ -2,9 +2,10 @@
 
 namespace League\OAuth1\Client;
 
+use function GuzzleHttp\Psr7\parse_query;
 use League\OAuth1\Client\Credentials\Credentials;
-use League\OAuth1\Client\Provider\Provider;
 use League\OAuth1\Client\Exception\CredentialsFetchingFailedException;
+use League\OAuth1\Client\Provider\Provider;
 use LogicException;
 use Psr\Http\Client\ClientExceptionInterface;
 use Psr\Http\Client\ClientInterface;
@@ -12,7 +13,6 @@ use Psr\Http\Message\RequestFactoryInterface;
 use Psr\Http\Message\RequestInterface;
 use Psr\Http\Message\ResponseInterface;
 use RuntimeException;
-use function GuzzleHttp\Psr7\parse_query;
 
 class Client
 {

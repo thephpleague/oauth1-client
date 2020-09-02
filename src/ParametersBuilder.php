@@ -28,7 +28,7 @@ class ParametersBuilder
     {
         return array_replace($this->generateBaseParameters(), [
             'oauth_consumer_key' => $clientCredentials->getIdentifier(),
-            'oauth_callback' => (string) $clientCredentials->getCallbackUri(),
+            'oauth_callback'     => (string) $clientCredentials->getCallbackUri(),
         ]);
     }
 
@@ -52,8 +52,8 @@ class ParametersBuilder
     ): array {
         return array_replace($this->generateBaseParameters(), [
             'oauth_consumer_key' => $clientCredentials->getIdentifier(),
-            'oauth_token' => $temporaryCredentials->getIdentifier(),
-            'oauth_verifier' => $verifier,
+            'oauth_token'        => $temporaryCredentials->getIdentifier(),
+            'oauth_verifier'     => $verifier,
         ]);
     }
 
@@ -66,7 +66,7 @@ class ParametersBuilder
     ): array {
         return array_replace($this->generateBaseParameters(), [
             'oauth_consumer_key' => $clientCredentials->getIdentifier(),
-            'oauth_token' => $tokenCredentials->getIdentifier(),
+            'oauth_token'        => $tokenCredentials->getIdentifier(),
         ]);
     }
 
@@ -77,8 +77,8 @@ class ParametersBuilder
     {
         $parameters = [
             'oauth_signature_method' => $this->signer->getMethod(),
-            'oauth_timestamp' => time(),
-            'oauth_nonce' => $this->generateNonce(),
+            'oauth_timestamp'        => time(),
+            'oauth_nonce'            => $this->generateNonce(),
         ];
 
         if ($this->realm) {

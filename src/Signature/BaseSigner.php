@@ -15,7 +15,7 @@ abstract class BaseSigner implements Signer
 
     public function __construct(ClientCredentials $clientCredentials, BaseStringBuilder $baseStringBuilder = null)
     {
-        $this->clientCredentials  = $clientCredentials;
+        $this->clientCredentials = $clientCredentials;
         $this->baseStringBuilder = $baseStringBuilder ?: new BaseStringBuilder();
     }
 }
