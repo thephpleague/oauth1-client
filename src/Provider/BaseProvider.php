@@ -119,7 +119,7 @@ abstract class BaseProvider implements Provider
             ->getSigner()
             ->sign($request, $oauthParameters);
 
-        return (new RequestInjector())->inject(
+        return $this->getRequestInjector()->inject(
             $request,
             $oauthParameters,
             $signature,
