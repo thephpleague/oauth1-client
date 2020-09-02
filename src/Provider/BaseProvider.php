@@ -249,12 +249,12 @@ abstract class BaseProvider implements Provider
 
     protected function getAuthorizationMethod(): string
     {
-        return 'POST';
+        return 'GET';
     }
 
     protected function getAuthorizationLocation(): string
     {
-        return RequestInjector::LOCATION_BODY;
+        return RequestInjector::LOCATION_QUERY;
     }
 
     protected function getTokenCredentialsMethod(): string

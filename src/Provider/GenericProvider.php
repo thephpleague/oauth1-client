@@ -130,8 +130,8 @@ class GenericProvider extends BaseProvider
                 'uri' => '',
             ],
             'authorization' => [
-                'method' => 'POST',
-                'location' => RequestInjector::LOCATION_BODY,
+                'method' => 'GET',
+                'location' => RequestInjector::LOCATION_QUERY,
                 'uri' => '',
             ],
             'token_credentials' => [
