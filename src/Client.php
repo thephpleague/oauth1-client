@@ -149,7 +149,7 @@ class Client
         $this->temporaryCredentials = $temporaryCredentials;
     }
 
-    public function getVerifier(): string
+    public function getVerifier(): ?string
     {
         return $this->verifier;
     }
