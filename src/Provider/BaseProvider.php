@@ -142,7 +142,7 @@ abstract class BaseProvider implements Provider
     ): RequestInterface {
         $oauthParameters = $this
             ->getParametersBuilder()
-            ->forAuthorizationRequest($this->clientCredentials);
+            ->forAuthorizationRequest($temporaryCredentials);
 
         $signature = $this
             ->getSigner()
