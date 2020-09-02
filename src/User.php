@@ -4,6 +4,9 @@ namespace League\OAuth1\Client;
 
 use ArrayAccess;
 
+/**
+ * @implements ArrayAccess<string, string|int|array|null>
+ */
 class User implements ArrayAccess
 {
     /** @var string|int|null */
@@ -15,7 +18,7 @@ class User implements ArrayAccess
     /** @var string|null */
     private $email;
 
-    /** @var array */
+    /** @var array<mixed> */
     private $metadata = [];
 
     /**
@@ -60,11 +63,17 @@ class User implements ArrayAccess
         return $this;
     }
 
+    /**
+     * @return array<mixed>
+     */
     public function getMetadata(): array
     {
         return $this->metadata;
     }
 
+    /**
+     * @param array<mixed> $metadata
+     */
     public function setMetadata(array $metadata): User
     {
         $this->metadata = $metadata;
@@ -77,16 +86,28 @@ class User implements ArrayAccess
         return isset($this->metadata[$offset]);
     }
 
+    /**
+     * @param string|int $offset
+     *
+     * @return mixed
+     */
     public function offsetGet($offset)
     {
         return $this->metadata[$offset];
     }
 
+    /**
+     * @param string|int $offset
+     * @param mixed      $value
+     */
     public function offsetSet($offset, $value): void
     {
         $this->metadata[$offset] = $value;
     }
 
+    /**
+     * @param string|int $offset
+     */
     public function offsetUnset($offset): void
     {
         unset($this->metadata[$offset]);

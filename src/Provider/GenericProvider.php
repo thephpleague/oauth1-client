@@ -11,12 +11,15 @@ use Psr\Http\Message\ResponseInterface;
 
 class GenericProvider extends BaseProvider
 {
-    /** @var array */
+    /** @var array<string, array<string|null>> */
     private $config;
 
     /** @var callable */
     private $userDetailsExtractor;
 
+    /**
+     * @param array<string, array<string|null>> $config
+     */
     public function __construct(ClientCredentials $clientCredentials, array $config = [])
     {
         parent::__construct($clientCredentials);
@@ -123,6 +126,11 @@ class GenericProvider extends BaseProvider
         return $this;
     }
 
+    /**
+     * @param array<string, array<string|null>> $config
+     *
+     * @return array<string, array<string|null>>
+     */
     private function parseConfig(array $config): array
     {
         $defaults = [

@@ -14,7 +14,9 @@ interface Signer
     public function getMethod(): string;
 
     /**
-     * Returns a signature for hte given request.
+     * @param array<string, string|int> $oauthParameters
+     *
+     * Returns a signature for the given request.
      */
     public function sign(RequestInterface $request, array $oauthParameters, Credentials $contextCredentials = null): string;
 }

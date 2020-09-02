@@ -21,6 +21,9 @@ class ParametersBuilder
         $this->realm  = $realm;
     }
 
+    /**
+     * @return array<string>
+     */
     public function forTemporaryCredentialsRequest(ClientCredentials $clientCredentials): array
     {
         return array_replace($this->generateBaseParameters(), [
@@ -29,6 +32,9 @@ class ParametersBuilder
         ]);
     }
 
+    /**
+     * @return array<string>
+     */
     public function forAuthorizationRequest(Credentials $temporaryCredentials): array
     {
         return array_replace($this->generateBaseParameters(), [
@@ -36,6 +42,9 @@ class ParametersBuilder
         ]);
     }
 
+    /**
+     * @return array<string>
+     */
     public function forTokenCredentialsRequest(
         ClientCredentials $clientCredentials,
         Credentials $temporaryCredentials,
@@ -48,6 +57,9 @@ class ParametersBuilder
         ]);
     }
 
+    /**
+     * @return array<string>
+     */
     public function forAuthenticatedRequest(
         ClientCredentials $clientCredentials,
         Credentials $tokenCredentials
@@ -58,6 +70,9 @@ class ParametersBuilder
         ]);
     }
 
+    /**
+     * @return array<string, int|string>
+     */
     private function generateBaseParameters(): array
     {
         $parameters = [

@@ -15,7 +15,7 @@ class CredentialsFetchingFailedException extends RuntimeException
 
     public static function forTemporaryCredentials(ResponseInterface $response): CredentialsFetchingFailedException
     {
-        $instance = new static(self::TEMPORARY_CREDENTIALS_MESSAGE);
+        $instance = new self(self::TEMPORARY_CREDENTIALS_MESSAGE);
 
         $instance->response = $response;
 
@@ -24,7 +24,7 @@ class CredentialsFetchingFailedException extends RuntimeException
 
     public static function forTokenCredentials(ResponseInterface $response): CredentialsFetchingFailedException
     {
-        $instance = new static(self::TOKEN_CREDENTIALS_MESSAGE);
+        $instance = new self(self::TOKEN_CREDENTIALS_MESSAGE);
 
         $instance->response = $response;
 

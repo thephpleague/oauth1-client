@@ -37,6 +37,7 @@ install:
 
 script:
   - vendor/bin/phpunit --exclude-group integration --coverage-text --coverage-clover coverage.xml
+  - composer analyze
 
 after_script:
   - wget https://scrutinizer-ci.com/ocular.phar

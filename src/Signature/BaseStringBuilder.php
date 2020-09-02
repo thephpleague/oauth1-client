@@ -15,6 +15,8 @@ class BaseStringBuilder
     /**
      * Creates a base string for the given Request and additional OAuth parameters.
      *
+     * @param array<string, string|int> $oauthParameters
+     *
      * @link https://tools.ietf.org/html/rfc5849#section-3.4.1 Signature Base String
      */
     public function forRequest(RequestInterface $request, array $oauthParameters = []): string
@@ -31,6 +33,8 @@ class BaseStringBuilder
 
     /**
      * Normalizes parameters according to the RFC-5849 OAuth 1 spec.
+     *
+     * @param array<string, string|int> $oauthParameters
      *
      * @link https://tools.ietf.org/html/rfc5849#section-3.4.1.3.1 Parameter Sources
      * @link https://tools.ietf.org/html/rfc5849#section-3.4.1.3.2 Parameters Normalization

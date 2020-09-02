@@ -15,6 +15,9 @@ class RequestInjector
 
     private const FORM_CONTENT_TYPE = 'application/x-www-form-urlencoded';
 
+    /**
+     * @param array<string, string|int> $oauthParameters
+     */
     public function inject(
         RequestInterface $request,
         array $oauthParameters,
@@ -38,12 +41,18 @@ class RequestInjector
         ));
     }
 
+    /**
+     * @param array<string, string|int> $oauthParameters
+     */
     private function injectHeader(RequestInterface $request, array $oauthParameters): RequestInterface
     {
         // Replace the authorization header
         return $request->withHeader(...$this->createAuthorizationHeader($oauthParameters));
     }
 
+    /**
+     * @param array<string, string|int> $oauthParameters
+     */
     private function injectBody(RequestInterface $request, array $oauthParameters): RequestInterface
     {
         $body = build_query($oauthParameters);
@@ -54,6 +63,9 @@ class RequestInjector
             ->withBody(stream_for($body));
     }
 
+    /**
+     * @param array<string, string|int> $oauthParameters
+     */
     private function injectQuery(RequestInterface $request, array $oauthParameters): RequestInterface
     {
         $query = build_query($oauthParameters);
@@ -64,6 +76,10 @@ class RequestInjector
 
     /**
      * Creates an authorization header from the given OAuth parameters.
+     *
+     * @param array<string, string|int> $oauthParameters
+     *
+     * @return array<int, string>
      *
      * @link https://tools.ietf.org/html/rfc5849#section-3.5.1 Authorization Header
      */

@@ -16,8 +16,12 @@
     "guzzlehttp/guzzle": "^6.0|^7.0",
     "http-interop/http-factory-guzzle": "^1.0",
     "mockery/mockery": "^1.3",
+    "phpstan/phpstan": "^0.12.42",
     "phpunit/phpunit": "^8.5",
     "roave/security-advisories": "dev-master"
+  },
+  "scripts": {
+    "analyze": "vendor/bin/phpstan analyse -l 6 src"
   },
   "suggest": {
     "guzzlehttp/guzzle": "The recommended PSR-18 HTTP client implementation",
