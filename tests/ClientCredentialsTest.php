@@ -19,11 +19,16 @@ class ClientCredentialsTest extends TestCase
     public function manipulation(): void
     {
         $credentials = new ClientCredentials;
-        self::assertNull($credentials->getIdentifier());
+
+        static::assertNull($credentials->getIdentifier());
+
         $credentials->setIdentifier('foo');
-        self::assertEquals('foo', $credentials->getIdentifier());
-        self::assertNull($credentials->getSecret());
+
+        static::assertEquals('foo', $credentials->getIdentifier());
+        static::assertNull($credentials->getSecret());
+
         $credentials->setSecret('foo');
-        self::assertEquals('foo', $credentials->getSecret());
+
+        static::assertEquals('foo', $credentials->getSecret());
     }
 }

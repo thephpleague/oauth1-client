@@ -2,10 +2,10 @@
 
 namespace League\OAuth1\Client\Tests;
 
+use League\OAuth1\Client\Credentials\ClientCredentialsInterface;
 use League\OAuth1\Client\Signature\PlainTextSignature;
 use Mockery as m;
 use PHPUnit\Framework\TestCase;
-use PHPUnit_Framework_TestCase;
 
 class PlainTextSignatureTest extends TestCase
 {
@@ -19,17 +19,20 @@ class PlainTextSignatureTest extends TestCase
     public function testSigningRequest()
     {
         $signature = new PlainTextSignature($this->getMockClientCredentials());
-        $this->assertEquals('clientsecret&', $signature->sign($uri = 'http://www.example.com/'));
+
+        static::assertEquals('clientsecret&', $signature->sign($uri = 'http://www.example.com/'));
 
         $signature->setCredentials($this->getMockCredentials());
-        $this->assertEquals('clientsecret&tokensecret', $signature->sign($uri));
-        $this->assertEquals('PLAINTEXT', $signature->method());
+
+        static::assertEquals('clientsecret&tokensecret', $signature->sign($uri));
+        static::assertEquals('PLAINTEXT', $signature->method());
     }
 
     protected function getMockClientCredentials()
     {
-        $clientCredentials = m::mock('League\OAuth1\Client\Credentials\ClientCredentialsInterface');
+        $clientCredentials = m::mock(ClientCredentialsInterface::class);
         $clientCredentials->shouldReceive('getSecret')->andReturn('clientsecret');
+
         return $clientCredentials;
     }
 

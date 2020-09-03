@@ -1,6 +1,6 @@
 <?php
 
-namespace League\OAuth1\Client\Tests;
+namespace League\OAuth1\Client\Tests\Stubs;
 
 use League\OAuth1\Client\Credentials\TokenCredentials;
 use League\OAuth1\Client\Server\Server;

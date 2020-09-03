@@ -5,7 +5,6 @@ namespace League\OAuth1\Client\Tests;
 use League\OAuth1\Client\Credentials\CredentialsException;
 use League\OAuth1\Client\Credentials\RsaClientCredentials;
 use PHPUnit\Framework\TestCase;
-use PHPUnit_Framework_TestCase;
 
 class RsaClientCredentialsTest extends TestCase
 {
@@ -15,29 +14,27 @@ class RsaClientCredentialsTest extends TestCase
         $credentials->setRsaPublicKey(__DIR__.'/test_rsa_publickey.pem');
 
         $key = $credentials->getRsaPublicKey();
-        $this->assertTrue(is_resource($key));
 
-        $this->assertEquals($key, $credentials->getRsaPublicKey());
+        static::assertTrue(is_resource($key));
+        static::assertEquals($key, $credentials->getRsaPublicKey());
     }
 
     public function testGetRsaPublicKeyNotExists()
     {
         $this->expectException(CredentialsException::class);
 
-        $credentials = new RsaClientCredentials();
-        $credentials->setRsaPublicKey('fail');
-
-        $credentials->getRsaPublicKey();
+        (new RsaClientCredentials)
+            ->setRsaPublicKey('fail')
+            ->getRsaPublicKey();
     }
 
     public function testGetRsaPublicKeyInvalid()
     {
         $this->expectException(CredentialsException::class);
 
-        $credentials = new RsaClientCredentials();
-        $credentials->setRsaPublicKey(__DIR__.'/test_rsa_invalidkey.pem');
-
-        $credentials->getRsaPublicKey();
+        (new RsaClientCredentials)
+            ->setRsaPublicKey(__DIR__.'/test_rsa_invalidkey.pem')
+            ->getRsaPublicKey();
     }
 
     public function testGetRsaPrivateKey()
@@ -46,28 +43,26 @@ class RsaClientCredentialsTest extends TestCase
         $credentials->setRsaPrivateKey(__DIR__.'/test_rsa_privatekey.pem');
 
         $key = $credentials->getRsaPrivateKey();
-        $this->assertTrue(is_resource($key));
 
-        $this->assertEquals($key, $credentials->getRsaPrivateKey());
+        static::assertTrue(is_resource($key));
+        static::assertEquals($key, $credentials->getRsaPrivateKey());
     }
 
     public function testGetRsaPrivateKeyNotExists()
     {
         $this->expectException(CredentialsException::class);
 
-        $credentials = new RsaClientCredentials();
-        $credentials->setRsaPrivateKey('fail');
-
-        $credentials->getRsaPrivateKey();
+        (new RsaClientCredentials)
+            ->setRsaPrivateKey('fail')
+            ->getRsaPrivateKey();
     }
 
     public function testGetRsaPrivateKeyInvalid()
     {
         $this->expectException(CredentialsException::class);
 
-        $credentials = new RsaClientCredentials();
-        $credentials->setRsaPrivateKey(__DIR__.'/test_rsa_invalidkey.pem');
-
-        $credentials->getRsaPrivateKey();
+        (new RsaClientCredentials)
+            ->setRsaPrivateKey(__DIR__.'/test_rsa_invalidkey.pem')
+            ->getRsaPrivateKey();
     }
 }
