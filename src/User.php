@@ -88,8 +88,6 @@ class User implements ArrayAccess
 
     /**
      * @param string|int $offset
-     *
-     * @return mixed
      */
     public function offsetGet($offset)
     {
@@ -98,7 +96,6 @@ class User implements ArrayAccess
 
     /**
      * @param string|int $offset
-     * @param mixed      $value
      */
     public function offsetSet($offset, $value): void
     {
