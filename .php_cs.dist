@@ -26,5 +26,4 @@ return PhpCsFixer\Config::create()
         'single_blank_line_at_eof' => true,
         'ternary_operator_spaces' => true,
     ])
-    ->setFinder($finder)
-;
+    ->setFinder($finder);
