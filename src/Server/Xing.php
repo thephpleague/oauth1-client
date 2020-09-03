@@ -11,22 +11,22 @@ class Xing extends Server
 
     public function urlTemporaryCredentials(): string
     {
-        return self::XING_API_ENDPOINT.'/v1/request_token';
+        return self::XING_API_ENDPOINT . '/v1/request_token';
     }
 
     public function urlAuthorization(): string
     {
-        return self::XING_API_ENDPOINT.'/v1/authorize';
+        return self::XING_API_ENDPOINT . '/v1/authorize';
     }
 
     public function urlTokenCredentials(): string
     {
-        return self::XING_API_ENDPOINT.'/v1/access_token';
+        return self::XING_API_ENDPOINT . '/v1/access_token';
     }
 
     public function urlUserDetails(): string
     {
-        return self::XING_API_ENDPOINT.'/v1/users/me';
+        return self::XING_API_ENDPOINT . '/v1/users/me';
     }
 
     public function userDetails($data, TokenCredentials $tokenCredentials): User

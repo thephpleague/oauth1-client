@@ -122,7 +122,7 @@ abstract class Server
     {
         $url = $this->getAuthorizationUrl($temporaryIdentifier);
 
-        header('Location: '.$url);
+        header('Location: ' . $url);
     }
 
     /**
@@ -611,7 +611,7 @@ abstract class Server
      */
     protected function buildUrl(string $host, string $queryString): string
     {
-        return $host.(strpos($host, '?') !== false ? '&' : '?').$queryString;
+        return $host . (strpos($host, '?') !== false ? '&' : '?') . $queryString;
     }
 
     /**

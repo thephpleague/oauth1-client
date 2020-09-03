@@ -49,24 +49,24 @@ class Magento extends Server
 
     public function urlTemporaryCredentials(): string
     {
-        return $this->baseUri.'/oauth/initiate';
+        return $this->baseUri . '/oauth/initiate';
     }
 
     public function urlAuthorization(): string
     {
         return $this->isAdmin
             ? $this->adminUrl
-            : $this->baseUri.'/oauth/authorize';
+            : $this->baseUri . '/oauth/authorize';
     }
 
     public function urlTokenCredentials(): string
     {
-        return $this->baseUri.'/oauth/token';
+        return $this->baseUri . '/oauth/token';
     }
 
     public function urlUserDetails(): string
     {
-        return $this->baseUri.'/api/rest/customers';
+        return $this->baseUri . '/api/rest/customers';
     }
 
     public function userDetails($data, TokenCredentials $tokenCredentials): User
@@ -164,17 +164,17 @@ class Magento extends Server
         $this->baseUri = sprintf('%s://%s', $url['scheme'], $url['host']);
 
         if (isset($url['port'])) {
-            $this->baseUri .= ':'.$url['port'];
+            $this->baseUri .= ':' . $url['port'];
         }
 
         if (isset($url['path'])) {
-            $this->baseUri .= '/'.trim($url['path'], '/');
+            $this->baseUri .= '/' . trim($url['path'], '/');
         }
         $this->isAdmin = ! empty($configuration['admin']);
         if ( ! empty($configuration['adminUrl'])) {
-            $this->adminUrl = $configuration['adminUrl'].'/oauth_authorize';
+            $this->adminUrl = $configuration['adminUrl'] . '/oauth_authorize';
         } else {
-            $this->adminUrl = $this->baseUri.'/admin/oauth_authorize';
+            $this->adminUrl = $this->baseUri . '/admin/oauth_authorize';
         }
     }
 }

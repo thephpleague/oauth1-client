@@ -11,7 +11,7 @@ class RsaClientCredentialsTest extends TestCase
     public function testGetRsaPublicKey()
     {
         $credentials = (new RsaClientCredentials)
-            ->setRsaPublicKey(__DIR__.'/test_rsa_publickey.pem');
+            ->setRsaPublicKey(__DIR__ . '/test_rsa_publickey.pem');
 
         $key = $credentials->getRsaPublicKey();
 
@@ -33,14 +33,14 @@ class RsaClientCredentialsTest extends TestCase
         $this->expectException(CredentialsException::class);
 
         (new RsaClientCredentials)
-            ->setRsaPublicKey(__DIR__.'/test_rsa_invalidkey.pem')
+            ->setRsaPublicKey(__DIR__ . '/test_rsa_invalidkey.pem')
             ->getRsaPublicKey();
     }
 
     public function testGetRsaPrivateKey()
     {
         $credentials = (new RsaClientCredentials)
-            ->setRsaPrivateKey(__DIR__.'/test_rsa_privatekey.pem');
+            ->setRsaPrivateKey(__DIR__ . '/test_rsa_privatekey.pem');
 
         $key = $credentials->getRsaPrivateKey();
 
@@ -62,7 +62,7 @@ class RsaClientCredentialsTest extends TestCase
         $this->expectException(CredentialsException::class);
 
         (new RsaClientCredentials)
-            ->setRsaPrivateKey(__DIR__.'/test_rsa_invalidkey.pem')
+            ->setRsaPrivateKey(__DIR__ . '/test_rsa_invalidkey.pem')
             ->getRsaPrivateKey();
     }
 }

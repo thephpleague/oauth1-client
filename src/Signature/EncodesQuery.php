@@ -13,7 +13,7 @@ trait EncodesQuery
      */
     protected function baseString(UriInterface $url, string $method = 'POST', array $parameters = []): string
     {
-        $baseString = rawurlencode($method).'&';
+        $baseString = rawurlencode($method) . '&';
 
         $schemeHostPath = Uri::fromParts([
             'scheme' => $url->getScheme(),
@@ -21,7 +21,7 @@ trait EncodesQuery
             'path' => $url->getPath(),
         ]);
 
-        $baseString .= rawurlencode($schemeHostPath).'&';
+        $baseString .= rawurlencode($schemeHostPath) . '&';
 
         parse_str($url->getQuery(), $query);
         $data = array_merge($query, $parameters);
@@ -56,13 +56,13 @@ trait EncodesQuery
 
         foreach ($data as $key => $value) {
             if ($parentKey) {
-                $key = $parentKey.'['.$key.']'; // Handle multi-dimensional array
+                $key = $parentKey . '[' . $key . ']'; // Handle multi-dimensional array
             }
 
             if (is_array($value)) {
                 $queryParams = $this->queryStringFromData($value, $queryParams, $key);
             } else {
-                $queryParams[] = rawurlencode($key.'='.$value); // join with equals sign
+                $queryParams[] = rawurlencode($key . '=' . $value); // join with equals sign
             }
         }
 

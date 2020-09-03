@@ -28,7 +28,7 @@ abstract class Signature implements SignatureInterface
      */
     protected function key(): string
     {
-        $key = rawurlencode($this->clientCredentials->getSecret()).'&';
+        $key = rawurlencode($this->clientCredentials->getSecret()) . '&';
 
         if (null !== $this->credentials) {
             $key .= rawurlencode($this->credentials->getSecret());

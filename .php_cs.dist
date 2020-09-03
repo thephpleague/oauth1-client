@@ -9,7 +9,7 @@ return PhpCsFixer\Config::create()
         'binary_operator_spaces' => true,
         'blank_line_before_return' => true,
         'cast_spaces' => true,
-        'concat_space' => ['spacing' => 'none'],
+        'concat_space' => ['spacing' => 'one'],
         'no_singleline_whitespace_before_semicolons' => true,
         'not_operator_with_space' => true,
         'ordered_imports' => true,

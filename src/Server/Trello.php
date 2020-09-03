@@ -125,7 +125,7 @@ class Trello extends Server
 
     public function urlAuthorization(): string
     {
-        return 'https://trello.com/1/OAuthAuthorizeToken?'.$this->buildAuthorizationQueryParameters();
+        return 'https://trello.com/1/OAuthAuthorizeToken?' . $this->buildAuthorizationQueryParameters();
     }
 
     public function urlTokenCredentials(): string
@@ -135,7 +135,7 @@ class Trello extends Server
 
     public function urlUserDetails(): string
     {
-        return 'https://trello.com/1/members/me?key='.$this->applicationKey.'&token='.$this->accessToken;
+        return 'https://trello.com/1/members/me?key=' . $this->applicationKey . '&token=' . $this->accessToken;
     }
 
     public function userDetails($data, TokenCredentials $tokenCredentials): User
