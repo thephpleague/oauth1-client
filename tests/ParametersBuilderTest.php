@@ -43,10 +43,10 @@ class ParametersBuilderTest extends MockeryTestCase
         $builder = new ParametersBuilder($this->signer, self::REALM);
 
         $expected = [
-            'realm' => self::REALM,
+            'realm'                  => self::REALM,
             'oauth_signature_method' => self::SIGNATURE_METHOD,
-            'oauth_consumer_key' => self::CLIENT_IDENTIFIER,
-            'oauth_callback' => self::CALLBACK_URI,
+            'oauth_consumer_key'     => self::CLIENT_IDENTIFIER,
+            'oauth_callback'         => self::CALLBACK_URI,
         ];
 
         $this->assertParameters($expected, $builder->forTemporaryCredentialsRequest($this->clientCredentials));
@@ -60,9 +60,9 @@ class ParametersBuilderTest extends MockeryTestCase
         $temporaryCredentials = new Credentials('temporary-identifier', 'temporary-secret');
 
         $expected = [
-            'realm' => self::REALM,
+            'realm'                  => self::REALM,
             'oauth_signature_method' => self::SIGNATURE_METHOD,
-            'oauth_token' => 'temporary-identifier',
+            'oauth_token'            => 'temporary-identifier',
         ];
 
         $this->assertParameters(
@@ -79,11 +79,11 @@ class ParametersBuilderTest extends MockeryTestCase
         $temporaryCredentials = new Credentials('temporary-identifier', 'temporary-secret');
 
         $expected = [
-            'realm' => self::REALM,
+            'realm'                  => self::REALM,
             'oauth_signature_method' => self::SIGNATURE_METHOD,
-            'oauth_consumer_key' => self::CLIENT_IDENTIFIER,
-            'oauth_token' => 'temporary-identifier',
-            'oauth_verifier' => 'my-verifier',
+            'oauth_consumer_key'     => self::CLIENT_IDENTIFIER,
+            'oauth_token'            => 'temporary-identifier',
+            'oauth_verifier'         => 'my-verifier',
         ];
 
         $this->assertParameters(
@@ -104,10 +104,10 @@ class ParametersBuilderTest extends MockeryTestCase
         $tokenCredentials = new Credentials('token-identifier', 'token-secret');
 
         $expected = [
-            'realm' => self::REALM,
+            'realm'                  => self::REALM,
             'oauth_signature_method' => self::SIGNATURE_METHOD,
-            'oauth_consumer_key' => self::CLIENT_IDENTIFIER,
-            'oauth_token' => 'token-identifier',
+            'oauth_consumer_key'     => self::CLIENT_IDENTIFIER,
+            'oauth_token'            => 'token-identifier',
         ];
 
         $this->assertParameters(

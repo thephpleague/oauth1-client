@@ -45,23 +45,23 @@ class GenericProviderTest extends MockeryTestCase
     {
         return [
             'temporary_credentials' => [
-                'method' => 'POST',
+                'method'   => 'POST',
                 'location' => RequestInjector::LOCATION_HEADER,
-                'uri' => 'https://api.example.com/request-temporary-credentials',
+                'uri'      => 'https://api.example.com/request-temporary-credentials',
             ],
             'authorization' => [
-                'method' => 'POST',
+                'method'   => 'POST',
                 'location' => RequestInjector::LOCATION_HEADER,
-                'uri' => 'https://api.example.com/authorize',
+                'uri'      => 'https://api.example.com/authorize',
             ],
             'token_credentials' => [
-                'method' => 'GET',
+                'method'   => 'GET',
                 'location' => RequestInjector::LOCATION_QUERY,
-                'uri' => 'https://api.example.com/request-token-credentials',
+                'uri'      => 'https://api.example.com/request-token-credentials',
             ],
             'user_details' => [
                 'method' => 'POST',
-                'uri' => 'https://api.example.com/me',
+                'uri'    => 'https://api.example.com/me',
             ],
             'authenticated' => [
                 'location' => RequestInjector::LOCATION_BODY,
@@ -76,14 +76,14 @@ class GenericProviderTest extends MockeryTestCase
 
         $requests = [
             'temporary_credentials' => $provider->createTemporaryCredentialsRequest($this->requestFactory),
-            'authorization' => $provider->createAuthorizationRequest($this->requestFactory),
-            'token_credentials' => $provider->createTokenCredentialsRequest($this->requestFactory),
-            'user_details' => $provider->createUserDetailsRequest($this->requestFactory),
+            'authorization'         => $provider->createAuthorizationRequest($this->requestFactory),
+            'token_credentials'     => $provider->createTokenCredentialsRequest($this->requestFactory),
+            'user_details'          => $provider->createUserDetailsRequest($this->requestFactory),
         ];
 
         foreach ($requests as $type => $request) {
             self::assertEquals($config[$type]['method'], $request->getMethod());
-            self::assertEquals($config[$type]['uri'], (string)$request->getUri());
+            self::assertEquals($config[$type]['uri'], (string) $request->getUri());
         }
     }
 
@@ -103,7 +103,6 @@ class GenericProviderTest extends MockeryTestCase
 
         $request = $provider->createTemporaryCredentialsRequest($this->requestFactory);
         $provider->prepareTemporaryCredentialsRequest($request);
-
     }
 
     /**

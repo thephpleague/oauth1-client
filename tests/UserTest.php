@@ -34,7 +34,7 @@ class UserTest extends TestCase
     {
         $user = (new User())->setMetadata([
             'arbitrary' => 'value',
-            'nullable' => null,
+            'nullable'  => null,
         ]);
 
         self::assertTrue(isset($user['arbitrary']));

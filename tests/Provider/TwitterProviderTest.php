@@ -3,6 +3,7 @@
 namespace League\OAuth1\Client\Tests\Provider;
 
 use GuzzleHttp\Psr7\Response;
+use function GuzzleHttp\Psr7\stream_for;
 use Http\Factory\Guzzle\RequestFactory;
 use League\OAuth1\Client\Credentials\ClientCredentials;
 use League\OAuth1\Client\Credentials\Credentials;
@@ -10,7 +11,6 @@ use League\OAuth1\Client\Provider\Twitter;
 use League\OAuth1\Client\RequestInjector;
 use Mockery;
 use Mockery\Adapter\Phpunit\MockeryTestCase;
-use function GuzzleHttp\Psr7\stream_for;
 
 class TwitterProviderTest extends MockeryTestCase
 {
@@ -43,7 +43,7 @@ class TwitterProviderTest extends MockeryTestCase
         $request = $provider->createTemporaryCredentialsRequest($this->requestFactory);
 
         self::assertEquals('GET', $request->getMethod());
-        self::assertEquals('https://api.twitter.com/oauth/request_token', (string)$request->getUri());
+        self::assertEquals('https://api.twitter.com/oauth/request_token', (string) $request->getUri());
     }
 
     /** @test */
@@ -54,7 +54,7 @@ class TwitterProviderTest extends MockeryTestCase
         $request = $provider->createAuthorizationRequest($this->requestFactory);
 
         self::assertEquals('GET', $request->getMethod());
-        self::assertEquals('https://api.twitter.com/oauth/authenticate', (string)$request->getUri());
+        self::assertEquals('https://api.twitter.com/oauth/authenticate', (string) $request->getUri());
     }
 
     /** @test */
@@ -65,7 +65,7 @@ class TwitterProviderTest extends MockeryTestCase
         $request = $provider->createTokenCredentialsRequest($this->requestFactory);
 
         self::assertEquals('POST', $request->getMethod());
-        self::assertEquals('https://api.twitter.com/oauth/access_token', (string)$request->getUri());
+        self::assertEquals('https://api.twitter.com/oauth/access_token', (string) $request->getUri());
     }
 
     /** @test */
@@ -78,7 +78,7 @@ class TwitterProviderTest extends MockeryTestCase
         self::assertEquals('GET', $request->getMethod());
         self::assertEquals(
             'https://api.twitter.com/1.1/account/verify_credentials.json?include_email=true',
-            (string)$request->getUri()
+            (string) $request->getUri()
         );
     }
 
@@ -94,7 +94,6 @@ class TwitterProviderTest extends MockeryTestCase
 
         $request = $provider->createTemporaryCredentialsRequest($this->requestFactory);
         $provider->prepareTemporaryCredentialsRequest($request);
-
     }
 
     /** @test */
@@ -156,9 +155,9 @@ class TwitterProviderTest extends MockeryTestCase
     public function it_can_extract_a_user_without_an_email(): void
     {
         $response = (new Response())->withBody(stream_for(json_encode([
-            'id' => $id = 1932485893,
+            'id'          => $id = 1932485893,
             'screen_name' => $username = 'thephpleague',
-            'arbitrary' => 'value',
+            'arbitrary'   => 'value',
         ])));
 
         $user = (new Twitter($this->clientCredentials))->extractUserDetails($response);
@@ -173,9 +172,9 @@ class TwitterProviderTest extends MockeryTestCase
     public function it_can_extract_a_user_with_an_email(): void
     {
         $response = (new Response())->withBody(stream_for(json_encode([
-            'id' => 1932485893,
+            'id'          => 1932485893,
             'screen_name' => 'thephpleague',
-            'email' => $email = 'bencorlett@thephpleague.com',
+            'email'       => $email = 'bencorlett@thephpleague.com',
         ])));
 
         $user = (new Twitter($this->clientCredentials))->extractUserDetails($response);

@@ -3,19 +3,19 @@
 namespace League\OAuth1\Client\Tests;
 
 use GuzzleHttp\Client as HttpClient;
+use function GuzzleHttp\Psr7\build_query;
 use GuzzleHttp\Psr7\Request;
 use GuzzleHttp\Psr7\Response;
+use function GuzzleHttp\Psr7\stream_for;
 use Http\Factory\Guzzle\RequestFactory;
 use League\OAuth1\Client\Client;
 use League\OAuth1\Client\Credentials\Credentials;
+use League\OAuth1\Client\Exception\CredentialsFetchingFailedException;
 use League\OAuth1\Client\Provider\Provider;
 use League\OAuth1\Client\User;
-use League\OAuth1\Client\Exception\CredentialsFetchingFailedException;
 use LogicException;
 use Mockery;
 use Mockery\Adapter\Phpunit\MockeryTestCase;
-use function GuzzleHttp\Psr7\build_query;
-use function GuzzleHttp\Psr7\stream_for;
 
 class ClientTest extends MockeryTestCase
 {
@@ -97,8 +97,8 @@ class ClientTest extends MockeryTestCase
 
         $body = [
             'oauth_callback_confirmed' => 'true',
-            'oauth_token' => 'temporary-id',
-            'oauth_token_secret' => 'temporary-secret',
+            'oauth_token'              => 'temporary-id',
+            'oauth_token_secret'       => 'temporary-secret',
         ];
 
         $this->httpClient->expects('sendRequest')->with($request)->andReturn(
@@ -224,7 +224,7 @@ class ClientTest extends MockeryTestCase
         [$client, $request, $temporaryCredentials, $verifier] = $this->prepareTokenCredentialsRequest();
 
         $body = [
-            'oauth_token' => 'token-id',
+            'oauth_token'        => 'token-id',
             'oauth_token_secret' => 'token-secret',
         ];
 

@@ -3,10 +3,10 @@
 namespace League\OAuth1\Client\Tests;
 
 use GuzzleHttp\Psr7\Request;
+use function GuzzleHttp\Psr7\stream_for;
 use InvalidArgumentException;
 use League\OAuth1\Client\RequestInjector;
 use PHPUnit\Framework\TestCase;
-use function GuzzleHttp\Psr7\stream_for;
 
 class RequestInjectorTest extends TestCase
 {
@@ -32,9 +32,9 @@ class RequestInjectorTest extends TestCase
             ->withHeader('Authorization', 'Existing authorization header');
 
         $oauthParameters = [
-            'realm' => self::REALM,
+            'realm'              => self::REALM,
             'oauth_consumer_key' => self::CLIENT_IDENTIFIER,
-            'oauth_callback' => self::CALLBACK_URI,
+            'oauth_callback'     => self::CALLBACK_URI,
         ];
 
         $request = $this->injector->inject(
@@ -61,9 +61,9 @@ class RequestInjectorTest extends TestCase
         $request = new Request('GET', 'https://api.example.com/request-temporary-credentials?existing=string');
 
         $oauthParameters = [
-            'realm' => self::REALM,
+            'realm'              => self::REALM,
             'oauth_consumer_key' => self::CLIENT_IDENTIFIER,
-            'oauth_callback' => self::CALLBACK_URI,
+            'oauth_callback'     => self::CALLBACK_URI,
         ];
 
         $request = $this->injector->inject(
@@ -90,9 +90,9 @@ class RequestInjectorTest extends TestCase
             ->withBody(stream_for('{"some":"json"}'));
 
         $oauthParameters = [
-            'realm' => self::REALM,
+            'realm'              => self::REALM,
             'oauth_consumer_key' => self::CLIENT_IDENTIFIER,
-            'oauth_callback' => self::CALLBACK_URI,
+            'oauth_callback'     => self::CALLBACK_URI,
         ];
 
         $request = $this->injector->inject(
