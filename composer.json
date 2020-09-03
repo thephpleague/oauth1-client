@@ -13,6 +13,7 @@
     "psr/http-message-implementation": "^1.0|^7.0"
   },
   "require-dev": {
+    "ext-openssl": "*",
     "friendsofphp/php-cs-fixer": "^2.16",
     "guzzlehttp/guzzle": "^6.0|^7.0",
     "http-interop/http-factory-guzzle": "^1.0",
@@ -28,6 +29,7 @@
     "test:unit": "vendor/bin/phpunit --coverage-text --coverage-clover coverage.xml"
   },
   "suggest": {
+    "ext-openssl": "The RSA signing method requires this extension to function",
     "guzzlehttp/guzzle": "The recommended PSR-18 HTTP client implementation",
     "http-interop/http-factory-guzzle": "The recommended PSR-17 HTTP factory implementation"
   },
