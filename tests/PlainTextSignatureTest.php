@@ -40,6 +40,7 @@ class PlainTextSignatureTest extends TestCase
     {
         $credentials = m::mock('League\OAuth1\Client\Credentials\CredentialsInterface');
         $credentials->shouldReceive('getSecret')->andReturn('tokensecret');
+
         return $credentials;
     }
 }

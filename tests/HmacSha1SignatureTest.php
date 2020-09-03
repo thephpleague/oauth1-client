@@ -22,19 +22,18 @@ class HmacSha1SignatureTest extends TestCase
     {
         $signature = new HmacSha1Signature($this->getMockClientCredentials());
 
-        $uri = 'http://www.example.com/?qux=corge';
+        $actual = $signature->sign('http://www.example.com/?qux=corge', [
+            'foo' => 'bar',
+            'baz' => null,
+        ]);
 
-        $parameters = ['foo' => 'bar', 'baz' => null];
-
-        static::assertEquals('A3Y7C1SUHXR1EBYIUlT3d6QT1cQ=', $signature->sign($uri, $parameters));
+        static::assertEquals('A3Y7C1SUHXR1EBYIUlT3d6QT1cQ=', $actual);
     }
 
     /** @test */
     public function it_should_create_a_query_string_from_an_array(): void
     {
-        $array = ['a' => 'b'];
-
-        $queryString = $this->invokeQueryStringFromData($array);
+        $queryString = $this->invokeQueryStringFromData(['a' => 'b']);
 
         static::assertSame('a%3Db', $queryString);
     }
@@ -42,9 +41,7 @@ class HmacSha1SignatureTest extends TestCase
     /** @test */
     public function it_should_create_a_query_string_from_a_dictionary(): void
     {
-        $array = ['a', 'b'];
-
-        $queryString = $this->invokeQueryStringFromData($array);
+        $queryString = $this->invokeQueryStringFromData(['a', 'b']);
 
         static::assertSame('0%3Da%261%3Db', $queryString);
     }
@@ -52,7 +49,7 @@ class HmacSha1SignatureTest extends TestCase
     /** @test */
     public function it_should_creat_a_query_string_from_a_multidimensional_array(): void
     {
-        $array = [
+        $queryString = $this->invokeQueryStringFromData([
             'a' => [
                 'b' => [
                     'c' => 'd',
@@ -65,9 +62,7 @@ class HmacSha1SignatureTest extends TestCase
             'empty' => '',
             'null' => null,
             'false' => false,
-        ];
-
-        $queryString = $this->invokeQueryStringFromData($array);
+        ]);
 
         static::assertSame(
             'a%5Bb%5D%5Bc%5D%3Dd%26a%5Be%5D%5Bf%5D%3Dg%26h%3Di%26empty%3D%26null%3D%26false%3D',
@@ -88,8 +83,7 @@ class HmacSha1SignatureTest extends TestCase
     {
         $signature = new HmacSha1Signature($this->getMockClientCredentials());
 
-        $uri = 'http://www.example.com/';
-        $parameters = [
+        $actual = $signature->sign('http://www.example.com/', [
             'a' => [
                 'b' => [
                     'c' => 'd',
@@ -102,14 +96,11 @@ class HmacSha1SignatureTest extends TestCase
             'empty' => '',
             'null' => null,
             'false' => false,
-        ];
+        ]);
 
-        static::assertEquals('ZUxiJKugeEplaZm9e4hshN0I70U=', $signature->sign($uri, $parameters));
+        static::assertEquals('ZUxiJKugeEplaZm9e4hshN0I70U=', $actual);
     }
 
-    /**
-     * @throws \ReflectionException If the reflected property could not be made accessible
-     */
     private function invokeQueryStringFromData(array $args)
     {
         $signature = new HmacSha1Signature(m::mock(ClientCredentialsInterface::class));
@@ -122,7 +113,7 @@ class HmacSha1SignatureTest extends TestCase
     }
 
     /**
-     * @return ClientCredentialsInterface|m\MockInterface
+     * @return \League\OAuth1\Client\Credentials\ClientCredentialsInterface|m\MockInterface
      */
     private function getMockClientCredentials(): ClientCredentialsInterface
     {
