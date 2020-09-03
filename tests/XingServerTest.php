@@ -14,7 +14,7 @@ use Mockery as m;
 use PHPUnit\Framework\TestCase;
 use Psr\Http\Message\ResponseInterface;
 
-class XingTest extends TestCase
+class XingServerTest extends TestCase
 {
     protected function tearDown(): void
     {
