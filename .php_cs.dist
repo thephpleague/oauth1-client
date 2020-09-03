@@ -10,6 +10,7 @@ return PhpCsFixer\Config::create()
         'blank_line_before_return' => true,
         'cast_spaces' => true,
         'concat_space' => ['spacing' => 'one'],
+        'no_superfluous_phpdoc_tags' => true,
         'no_singleline_whitespace_before_semicolons' => true,
         'not_operator_with_space' => true,
         'ordered_imports' => true,

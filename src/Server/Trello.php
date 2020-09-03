@@ -167,8 +167,6 @@ class Trello extends Server
 
     /**
      * Parse configuration array to set attributes.
-     *
-     * @param array $configuration
      */
     private function parseConfiguration(array $configuration = []): void
     {

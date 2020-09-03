@@ -9,22 +9,16 @@ class User implements IteratorAggregate
 {
     /**
      * The user's unique ID.
-     *
-     * @var mixed
      */
     public $uid;
 
     /**
      * The user's nickname (screen name, username etc).
-     *
-     * @var mixed
      */
     public $nickname;
 
     /**
      * The user's name.
-     *
-     * @var mixed
      */
     public $name;
 

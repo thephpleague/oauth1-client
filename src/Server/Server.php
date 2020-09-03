@@ -569,8 +569,6 @@ abstract class Server
     /**
      * Take the decoded data from the user details URL and convert
      * it to a User object.
-     *
-     * @param mixed $data
      */
     abstract public function userDetails($data, TokenCredentials $tokenCredentials): User;
 
@@ -578,7 +576,6 @@ abstract class Server
      * Take the decoded data from the user details URL and extract
      * the user's UID.
      *
-     * @param mixed $data
      *
      * @return string|int|null
      */
@@ -587,17 +584,12 @@ abstract class Server
     /**
      * Take the decoded data from the user details URL and extract
      * the user's email.
-     *
-     * @param mixed $data
      */
     abstract public function userEmail($data, TokenCredentials $tokenCredentials): ?string;
 
     /**
      * Take the decoded data from the user details URL and extract
      * the user's screen name.
-     *
-     * @param mixed            $data
-     * @param TokenCredentials $tokenCredentials
      */
     abstract public function userScreenName($data, TokenCredentials $tokenCredentials): ?string;
 }
