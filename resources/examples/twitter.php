@@ -3,11 +3,11 @@
 require_once __DIR__.'/../../vendor/autoload.php';
 
 // Create server
-$server = new League\OAuth1\Client\Server\Twitter(array(
+$server = new League\OAuth1\Client\Server\Twitter([
     'identifier' => 'your-identifier',
     'secret' => 'your-secret',
     'callback_uri' => "http://your-callback-uri/",
-));
+]);
 
 // Start session
 session_start();
