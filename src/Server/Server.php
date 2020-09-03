@@ -5,7 +5,6 @@ namespace League\OAuth1\Client\Server;
 use DateTime;
 use GuzzleHttp\Client as GuzzleHttpClient;
 use GuzzleHttp\Exception\BadResponseException;
-use GuzzleHttp\Exception\GuzzleException;
 use InvalidArgumentException;
 use League\OAuth1\Client\Credentials\ClientCredentials;
 use League\OAuth1\Client\Credentials\ClientCredentialsInterface;
@@ -17,14 +16,13 @@ use League\OAuth1\Client\Credentials\TokenCredentials;
 use League\OAuth1\Client\Signature\HmacSha1Signature;
 use League\OAuth1\Client\Signature\RsaSha1Signature;
 use League\OAuth1\Client\Signature\SignatureInterface;
-use SimpleXMLElement;
 
 abstract class Server
 {
-    /** @var ClientCredentials */
+    /** @var \League\OAuth1\Client\Credentials\ClientCredentials */
     protected $clientCredentials;
 
-    /** @var SignatureInterface */
+    /** @var \League\OAuth1\Client\Signature\SignatureInterface */
     protected $signature;
 
     /**
@@ -45,7 +43,8 @@ abstract class Server
     protected $userAgent;
 
     /**
-     * @param ClientCredentials|array $clientCredentials
+     * @param \League\OAuth1\Client\Credentials\ClientCredentials|array $clientCredentials
+     * @param \League\OAuth1\Client\Signature\SignatureInterface|null   $signature
      */
     public function __construct($clientCredentials, SignatureInterface $signature = null)
     {
@@ -65,11 +64,9 @@ abstract class Server
     }
 
     /**
-     * Gets temporary credentials by performing a request to
-     * the server.
+     * Gets temporary credentials by performing a request to the server.
      *
-     * @throws CredentialsException If a "bad response" is received by the server
-     * @throws GuzzleException
+     * @throws \League\OAuth1\Client\Credentials\CredentialsException If a "bad response" is received by the server
      */
     public function getTemporaryCredentials(): TemporaryCredentials
     {
@@ -96,7 +93,9 @@ abstract class Server
      * Get the authorization URL by passing in the temporary credentials
      * identifier or an object instance.
      *
-     * @param TemporaryCredentials|string $temporaryIdentifier
+     * @param \League\OAuth1\Client\Credentials\TemporaryCredentials|string $temporaryIdentifier
+     *
+     * @return string
      */
     public function getAuthorizationUrl($temporaryIdentifier): string
     {
@@ -117,13 +116,13 @@ abstract class Server
     /**
      * Redirect the client to the authorization URL.
      *
-     * @param TemporaryCredentials|string $temporaryIdentifier
+     * @param \League\OAuth1\Client\Credentials\TemporaryCredentials|string $temporaryIdentifier
      */
     public function authorize($temporaryIdentifier): void
     {
         $url = $this->getAuthorizationUrl($temporaryIdentifier);
 
-        header('Location: ' . $url);
+        header('Location: '.$url);
     }
 
     /**
@@ -131,8 +130,13 @@ abstract class Server
      * the temporary credentials identifier as passed back by the server
      * and finally the verifier code.
      *
-     * @throws CredentialsException If a "bad response" is received by the server
-     * @throws GuzzleException
+     * @param \League\OAuth1\Client\Credentials\TemporaryCredentials $temporaryCredentials
+     * @param string                                                 $temporaryIdentifier
+     * @param string                                                 $verifier
+     *
+     * @return \League\OAuth1\Client\Credentials\TokenCredentials
+     *
+     * @throws \League\OAuth1\Client\Credentials\CredentialsException If a "bad response" is received by the server
      */
     public function getTokenCredentials(
         TemporaryCredentials $temporaryCredentials,
@@ -168,8 +172,10 @@ abstract class Server
     /**
      * Get user details by providing valid token credentials.
      *
-     * @throws CredentialsException If a "bad response" is received by the server
-     * @throws GuzzleException
+     * @param \League\OAuth1\Client\Credentials\TokenCredentials $tokenCredentials
+     * @param bool                                               $force
+     *
+     * @return \League\OAuth1\Client\Server\User
      */
     public function getUserDetails(TokenCredentials $tokenCredentials, bool $force = false): User
     {
@@ -181,10 +187,10 @@ abstract class Server
     /**
      * Get the user's unique identifier (primary key).
      *
-     * @return string|int|null
+     * @param \League\OAuth1\Client\Credentials\TokenCredentials $tokenCredentials
+     * @param bool                                               $force
      *
-     * @throws CredentialsException If a "bad response" is received by the server
-     * @throws GuzzleException
+     * @return string|int|null
      */
     public function getUserUid(TokenCredentials $tokenCredentials, bool $force = false)
     {
@@ -196,8 +202,10 @@ abstract class Server
     /**
      * Get the user's email, if available.
      *
-     * @throws CredentialsException If a "bad response" is received by the server
-     * @throws GuzzleException
+     * @param \League\OAuth1\Client\Credentials\TokenCredentials $tokenCredentials
+     * @param bool                                               $force
+     *
+     * @return string|null
      */
     public function getUserEmail(TokenCredentials $tokenCredentials, bool $force = false): ?string
     {
@@ -209,8 +217,10 @@ abstract class Server
     /**
      * Get the user's screen name (username), if available.
      *
-     * @throws CredentialsException If a "bad response" is received by the server
-     * @throws GuzzleException
+     * @param \League\OAuth1\Client\Credentials\TokenCredentials $tokenCredentials
+     * @param bool                                               $force
+     *
+     * @return string
      */
     public function getUserScreenName(TokenCredentials $tokenCredentials, bool $force = false): string
     {
@@ -222,10 +232,12 @@ abstract class Server
     /**
      * Fetch user details from the remote service.
      *
-     * @return array|SimpleXMLElement
+     * @param \League\OAuth1\Client\Credentials\TokenCredentials $tokenCredentials
+     * @param bool                                               $force
      *
-     * @throws CredentialsException If a "bad response" is received by the server
-     * @throws GuzzleException
+     * @return array|\SimpleXMLElement
+     *
+     * @throws \League\OAuth1\Client\Credentials\CredentialsException If a "bad response" is received by the server
      */
     protected function fetchUserDetails(TokenCredentials $tokenCredentials, bool $force = true)
     {
@@ -277,7 +289,7 @@ abstract class Server
     /**
      * Get the signature associated with the server.
      *
-     * @return SignatureInterface
+     * @return \League\OAuth1\Client\Signature\SignatureInterface
      */
     public function getSignature()
     {
@@ -294,6 +306,10 @@ abstract class Server
 
     /**
      * Set the user agent value.
+     *
+     * @param string|null $userAgent
+     *
+     * @return \League\OAuth1\Client\Server\Server
      */
     public function setUserAgent(string $userAgent = null): self
     {
@@ -304,6 +320,13 @@ abstract class Server
 
     /**
      * Get all headers required to created an authenticated request.
+     *
+     * @param \League\OAuth1\Client\Credentials\CredentialsInterface $credentials
+     * @param string                                                 $method
+     * @param string                                                 $url
+     * @param array                                                  $bodyParameters
+     *
+     * @return array
      */
     public function getHeaders(
         CredentialsInterface $credentials,
@@ -332,6 +355,10 @@ abstract class Server
 
     /**
      * Build Guzzle HTTP client headers.
+     *
+     * @param array $headers
+     *
+     * @return array
      */
     protected function buildHttpClientHeaders(array $headers = []): array
     {
@@ -342,6 +369,10 @@ abstract class Server
 
     /**
      * Creates a client credentials instance from an array of credentials.
+     *
+     * @param array $options
+     *
+     * @return \League\OAuth1\Client\Credentials\ClientCredentials
      */
     protected function createClientCredentials(array $options): ClientCredentials
     {
@@ -373,6 +404,11 @@ abstract class Server
 
     /**
      * Handle a bad response coming back when getting temporary credentials.
+     *
+     * @param \GuzzleHttp\Exception\BadResponseException $e
+     * @param string                                     $type
+     *
+     * @return \League\OAuth1\Client\Credentials\CredentialsException
      */
     protected function getCredentialsExceptionForBadResponse(
         BadResponseException $e,
@@ -395,7 +431,11 @@ abstract class Server
     /**
      * Creates temporary credentials from the body response.
      *
-     * @throws CredentialsException If an error ocurred while parsing the given body for temporary credentials
+     * @param string $body
+     *
+     * @return \League\OAuth1\Client\Credentials\TemporaryCredentials
+     *
+     * @throws \League\OAuth1\Client\Credentials\CredentialsException If an error ocurred while parsing the given body for temporary credentials
      */
     protected function createTemporaryCredentials(string $body): TemporaryCredentials
     {
@@ -419,7 +459,11 @@ abstract class Server
     /**
      * Creates token credentials from the body response.
      *
-     * @throws CredentialsException If an error occurred parsing the given body for token credentials
+     * @param string $body
+     *
+     * @return \League\OAuth1\Client\Credentials\TokenCredentials
+     *
+     * @throws \League\OAuth1\Client\Credentials\CredentialsException If an error occurred parsing the given body for token credentials
      */
     protected function createTokenCredentials(string $body): TokenCredentials
     {
@@ -470,6 +514,10 @@ abstract class Server
     /**
      * Generate the OAuth protocol header for a temporary credentials
      * request, based on the URI.
+     *
+     * @param string $uri
+     *
+     * @return string
      */
     protected function temporaryCredentialsProtocolHeader(string $uri): string
     {
@@ -486,6 +534,13 @@ abstract class Server
      * Generate the OAuth protocol header for requests other than temporary
      * credentials, based on the URI, method, given credentials & body query
      * string.
+     *
+     * @param string                                                 $method
+     * @param string                                                 $uri
+     * @param \League\OAuth1\Client\Credentials\CredentialsInterface $credentials
+     * @param array                                                  $bodyParameters
+     *
+     * @return string
      */
     protected function protocolHeader(
         string $method,
@@ -515,6 +570,10 @@ abstract class Server
     /**
      * Takes an array of protocol parameters and normalizes them
      * to be used as a HTTP header.
+     *
+     * @param array $parameters
+     *
+     * @return string
      */
     protected function normalizeProtocolParameters(array $parameters): string
     {
@@ -529,6 +588,10 @@ abstract class Server
      * Generate a random string.
      *
      * @see OAuth 1.0 RFC 5849 Section 3.3
+     *
+     * @param int $length
+     *
+     * @return string
      */
     protected function nonce(int $length = 32): string
     {
@@ -540,10 +603,15 @@ abstract class Server
     /**
      * Build a url by combining hostname and query string after checking for
      * existing '?' character in host.
+     *
+     * @param string $host
+     * @param string $queryString
+     *
+     * @return string
      */
     protected function buildUrl(string $host, string $queryString): string
     {
-        return $host . (strpos($host, '?') !== false ? '&' : '?') . $queryString;
+        return $host.(strpos($host, '?') !== false ? '&' : '?').$queryString;
     }
 
     /**
@@ -570,7 +638,10 @@ abstract class Server
      * Take the decoded data from the user details URL and convert
      * it to a User object.
      *
-     * @param mixed $data
+     * @param mixed                                              $data
+     * @param \League\OAuth1\Client\Credentials\TokenCredentials $tokenCredentials
+     *
+     * @return \League\OAuth1\Client\Server\User
      */
     abstract public function userDetails($data, TokenCredentials $tokenCredentials): User;
 
@@ -578,7 +649,8 @@ abstract class Server
      * Take the decoded data from the user details URL and extract
      * the user's UID.
      *
-     * @param mixed $data
+     * @param mixed                                              $data
+     * @param \League\OAuth1\Client\Credentials\TokenCredentials $tokenCredentials
      *
      * @return string|int|null
      */
@@ -588,7 +660,10 @@ abstract class Server
      * Take the decoded data from the user details URL and extract
      * the user's email.
      *
-     * @param mixed $data
+     * @param mixed                                              $data
+     * @param \League\OAuth1\Client\Credentials\TokenCredentials $tokenCredentials
+     *
+     * @return string|null
      */
     abstract public function userEmail($data, TokenCredentials $tokenCredentials): ?string;
 
@@ -596,8 +671,10 @@ abstract class Server
      * Take the decoded data from the user details URL and extract
      * the user's screen name.
      *
-     * @param mixed            $data
-     * @param TokenCredentials $tokenCredentials
+     * @param mixed                                              $data
+     * @param \League\OAuth1\Client\Credentials\TokenCredentials $tokenCredentials
+     *
+     * @return string|null
      */
     abstract public function userScreenName($data, TokenCredentials $tokenCredentials): ?string;
 }

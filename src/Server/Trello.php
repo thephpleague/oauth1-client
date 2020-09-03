@@ -36,8 +36,12 @@ class Trello extends Server
 
     /**
      * Set the access token.
+     *
+     * @param string $accessToken
+     *
+     * @return \League\OAuth1\Client\Server\Trello
      */
-    public function setAccessToken(string $accessToken): Trello
+    public function setAccessToken(string $accessToken): self
     {
         $this->accessToken = $accessToken;
 
@@ -46,8 +50,12 @@ class Trello extends Server
 
     /**
      * Set the application expiration.
+     *
+     * @param string $applicationExpiration
+     *
+     * @return \League\OAuth1\Client\Server\Trello
      */
-    public function setApplicationExpiration(string $applicationExpiration): Trello
+    public function setApplicationExpiration(string $applicationExpiration): self
     {
         $this->applicationExpiration = $applicationExpiration;
 
@@ -64,8 +72,12 @@ class Trello extends Server
 
     /**
      * Set the application name.
+     *
+     * @param string $applicationName
+     *
+     * @return \League\OAuth1\Client\Server\Trello
      */
-    public function setApplicationName(string $applicationName): Trello
+    public function setApplicationName(string $applicationName): self
     {
         $this->applicationName = $applicationName;
 
@@ -74,6 +86,8 @@ class Trello extends Server
 
     /**
      * Get application name.
+     *
+     * @return string|null
      */
     public function getApplicationName():? String
     {
@@ -82,8 +96,12 @@ class Trello extends Server
 
     /**
      * Set the application scope.
+     *
+     * @param string $applicationScope
+     *
+     * @return \League\OAuth1\Client\Server\Trello
      */
-    public function setApplicationScope(string $applicationScope): Trello
+    public function setApplicationScope(string $applicationScope): self
     {
         $this->applicationScope = $applicationScope;
 
@@ -92,6 +110,8 @@ class Trello extends Server
 
     /**
      * Get application scope.
+     *
+     * @return string
      */
     public function getApplicationScope(): string
     {
@@ -105,8 +125,7 @@ class Trello extends Server
 
     public function urlAuthorization(): string
     {
-        return 'https://trello.com/1/OAuthAuthorizeToken?' .
-            $this->buildAuthorizationQueryParameters();
+        return 'https://trello.com/1/OAuthAuthorizeToken?'.$this->buildAuthorizationQueryParameters();
     }
 
     public function urlTokenCredentials(): string
@@ -116,7 +135,7 @@ class Trello extends Server
 
     public function urlUserDetails(): string
     {
-        return 'https://trello.com/1/members/me?key=' . $this->applicationKey . '&token=' . $this->accessToken;
+        return 'https://trello.com/1/members/me?key='.$this->applicationKey.'&token='.$this->accessToken;
     }
 
     public function userDetails($data, TokenCredentials $tokenCredentials): User

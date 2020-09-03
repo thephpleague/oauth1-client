@@ -3,7 +3,6 @@
 namespace League\OAuth1\Client\Server;
 
 use InvalidArgumentException;
-use League\OAuth1\Client\Credentials\ClientCredentials;
 use League\OAuth1\Client\Credentials\TemporaryCredentials;
 use League\OAuth1\Client\Credentials\TokenCredentials;
 use League\OAuth1\Client\Signature\SignatureInterface;
@@ -36,7 +35,8 @@ class Magento extends Server
     private $verifier;
 
     /**
-     * @param ClientCredentials|array $clientCredentials
+     * @param \League\OAuth1\Client\Credentials\ClientCredentials|array $clientCredentials
+     * @param \League\OAuth1\Client\Signature\SignatureInterface|null   $signature
      */
     public function __construct($clientCredentials, SignatureInterface $signature = null)
     {
@@ -49,24 +49,24 @@ class Magento extends Server
 
     public function urlTemporaryCredentials(): string
     {
-        return $this->baseUri . '/oauth/initiate';
+        return $this->baseUri.'/oauth/initiate';
     }
 
     public function urlAuthorization(): string
     {
         return $this->isAdmin
             ? $this->adminUrl
-            : $this->baseUri . '/oauth/authorize';
+            : $this->baseUri.'/oauth/authorize';
     }
 
     public function urlTokenCredentials(): string
     {
-        return $this->baseUri . '/oauth/token';
+        return $this->baseUri.'/oauth/token';
     }
 
     public function urlUserDetails(): string
     {
-        return $this->baseUri . '/api/rest/customers';
+        return $this->baseUri.'/api/rest/customers';
     }
 
     public function userDetails($data, TokenCredentials $tokenCredentials): User
@@ -150,7 +150,9 @@ class Magento extends Server
     /**
      * Parse configuration array to set attributes.
      *
-     * @throws InvalidArgumentException If invalid credentials are passed
+     * @param array $configuration
+     *
+     * @throws \InvalidArgumentException If invalid credentials are passed
      */
     private function parseConfigurationArray(array $configuration = []): void
     {
@@ -162,17 +164,17 @@ class Magento extends Server
         $this->baseUri = sprintf('%s://%s', $url['scheme'], $url['host']);
 
         if (isset($url['port'])) {
-            $this->baseUri .= ':' . $url['port'];
+            $this->baseUri .= ':'.$url['port'];
         }
 
         if (isset($url['path'])) {
-            $this->baseUri .= '/' . trim($url['path'], '/');
+            $this->baseUri .= '/'.trim($url['path'], '/');
         }
         $this->isAdmin = ! empty($configuration['admin']);
         if ( ! empty($configuration['adminUrl'])) {
-            $this->adminUrl = $configuration['adminUrl'] . '/oauth_authorize';
+            $this->adminUrl = $configuration['adminUrl'].'/oauth_authorize';
         } else {
-            $this->adminUrl = $this->baseUri . '/admin/oauth_authorize';
+            $this->adminUrl = $this->baseUri.'/admin/oauth_authorize';
         }
     }
 }
