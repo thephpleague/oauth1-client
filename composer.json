@@ -15,10 +15,10 @@
         "friendsofphp/php-cs-fixer": "^2.16"
     },
     "scripts": {
-        "analyze": "vendor/bin/phpstan analyse -l 6 src/",
-        "php-cs-fixer:lint": "vendor/bin/php-cs-fixer fix --verbose --dry-run",
-        "php-cs-fixer:format": "vendor/bin/php-cs-fixer fix",
-        "test:unit": "vendor/bin/phpunit --coverage-text --coverage-clover coverage.xml"
+        "analyze": "phpstan analyse -l 6 src/",
+        "php-cs-fixer:lint": "php-cs-fixer fix --verbose --dry-run",
+        "php-cs-fixer:format": "php-cs-fixer fix",
+        "test:unit": "phpunit --coverage-text --coverage-clover coverage.xml"
     },
     "suggest": {
         "ext-simplexml": "For decoding XML-based responses."
