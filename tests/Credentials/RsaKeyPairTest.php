@@ -12,8 +12,8 @@ class RsaKeyPairTest extends TestCase
     public function it_can_open_a_public_key(): void
     {
         $keyPair = new RsaKeyPair(
-            __DIR__ . '/files/public.pem',
-            __DIR__ . '/files/private.pem',
+            __DIR__ . '/../files/public.pem',
+            __DIR__ . '/../files/private.pem',
             'a-passphrase'
         );
 
@@ -37,8 +37,8 @@ class RsaKeyPairTest extends TestCase
     public function it_can_open_a_private_key(): void
     {
         $keyPair = new RsaKeyPair(
-            __DIR__ . '/files/public.pem',
-            __DIR__ . '/files/private.pem',
+            __DIR__ . '/../files/public.pem',
+            __DIR__ . '/../files/private.pem',
             'a-passphrase'
         );
 
@@ -62,8 +62,8 @@ class RsaKeyPairTest extends TestCase
     public function it_throws_an_exception_when_the_passphrase_is_incorrect(): void
     {
         $keyPair = new RsaKeyPair(
-            __DIR__ . '/files/public.pem',
-            __DIR__ . '/files/private.pem',
+            __DIR__ . '/../files/public.pem',
+            __DIR__ . '/../files/private.pem',
             'incorrect passphrase'
         );
 
