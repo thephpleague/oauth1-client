@@ -2,12 +2,11 @@
 
 namespace League\OAuth1\Client\Tests;
 
+use League\OAuth1\Client\Credentials\ClientCredentialsInterface;
 use League\OAuth1\Client\Signature\HmacSha1Signature;
 use Mockery as m;
 use PHPUnit\Framework\TestCase;
-use League\OAuth1\Client\Credentials\ClientCredentialsInterface;
 use ReflectionException;
-use ReflectionObject;
 
 class HmacSha1SignatureTest extends TestCase
 {
@@ -135,6 +134,7 @@ class HmacSha1SignatureTest extends TestCase
     {
         $clientCredentials = m::mock(ClientCredentialsInterface::class);
         $clientCredentials->shouldReceive('getSecret')->andReturn('clientsecret');
+
         return $clientCredentials;
     }
 }

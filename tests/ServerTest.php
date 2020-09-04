@@ -3,15 +3,14 @@
 use GuzzleHttp\Client;
 use InvalidArgumentException;
 use League\OAuth1\Client\Credentials\ClientCredentials;
+use League\OAuth1\Client\Credentials\ClientCredentialsInterface;
 use League\OAuth1\Client\Credentials\RsaClientCredentials;
 use League\OAuth1\Client\Credentials\TemporaryCredentials;
+use League\OAuth1\Client\Credentials\TokenCredentials;
 use League\OAuth1\Client\Signature\RsaSha1Signature;
 use Mockery as m;
 use PHPUnit\Framework\TestCase;
 use Psr\Http\Message\ResponseInterface;
-use League\OAuth1\Client\Credentials\TokenCredentials;
-use League\OAuth1\Client\Server\User;
-use League\OAuth1\Client\Credentials\ClientCredentialsInterface;
 
 class ServerTest extends TestCase
 {
@@ -22,7 +21,7 @@ class ServerTest extends TestCase
     {
         parent::setUpBeforeClass();
 
-        require_once __DIR__.'/stubs/ServerStub.php';
+        require_once __DIR__ . '/stubs/ServerStub.php';
     }
 
     protected function tearDown(): void
@@ -49,8 +48,8 @@ class ServerTest extends TestCase
             'identifier' => 'app_key',
             'secret' => 'secret',
             'callback_uri' => 'https://example.com/callback',
-            'rsa_public_key' => __DIR__.'/test_rsa_publickey.pem',
-            'rsa_private_key' => __DIR__.'/test_rsa_privatekey.pem',
+            'rsa_public_key' => __DIR__ . '/test_rsa_publickey.pem',
+            'rsa_private_key' => __DIR__ . '/test_rsa_privatekey.pem',
         ];
         $server = new ServerStub($config);
 
@@ -87,7 +86,7 @@ class ServerTest extends TestCase
 
         $server->shouldReceive('createHttpClient')->andReturn($client = m::mock(Client::class));
 
-        $client->shouldReceive('post')->with('http://www.example.com/temporary', m::on(function($options) {
+        $client->shouldReceive('post')->with('http://www.example.com/temporary', m::on(function ($options) {
             $headers = $options['headers'];
 
             $this->assertTrue(isset($headers['Authorization']));
@@ -95,14 +94,17 @@ class ServerTest extends TestCase
             // OAuth protocol specifies a strict number of
             // headers should be sent, in the correct order.
             // We'll validate that here.
-            $pattern = '/OAuth oauth_consumer_key=".*?", oauth_nonce="[a-zA-Z0-9]+", oauth_signature_method="HMAC-SHA1", oauth_timestamp="\d{10}", oauth_version="1.0", oauth_callback="'.preg_quote('http%3A%2F%2Fapp.dev%2F', '/').'", oauth_signature=".*?"/';
+            $pattern
+                = '/OAuth oauth_consumer_key=".*?", oauth_nonce="[a-zA-Z0-9]+", oauth_signature_method="HMAC-SHA1", oauth_timestamp="\d{10}", oauth_version="1.0", oauth_callback="'
+                . preg_quote('http%3A%2F%2Fapp.dev%2F', '/') . '", oauth_signature=".*?"/';
 
             $matches = preg_match($pattern, $headers['Authorization']);
             $this->assertEquals(1, $matches, 'Asserting that the authorization header contains the correct expression.');
 
             return true;
         }))->once()->andReturn($response = m::mock(ResponseInterface::class));
-        $response->shouldReceive('getBody')->andReturn('oauth_token=temporarycredentialsidentifier&oauth_token_secret=temporarycredentialssecret&oauth_callback_confirmed=true');
+        $response->shouldReceive('getBody')
+            ->andReturn('oauth_token=temporarycredentialsidentifier&oauth_token_secret=temporarycredentialssecret&oauth_callback_confirmed=true');
 
         $credentials = $server->getTemporaryCredentials();
 
@@ -146,7 +148,7 @@ class ServerTest extends TestCase
 
         $server->shouldReceive('createHttpClient')->andReturn($client = m::mock(Client::class));
 
-        $client->shouldReceive('post')->with('http://www.example.com/token', m::on(function($options) {
+        $client->shouldReceive('post')->with('http://www.example.com/token', m::on(function ($options) {
             $headers = $options['headers'];
             $body = $options['form_params'];
 
@@ -156,7 +158,8 @@ class ServerTest extends TestCase
             // OAuth protocol specifies a strict number of
             // headers should be sent, in the correct order.
             // We'll validate that here.
-            $pattern = '/OAuth oauth_consumer_key=".*?", oauth_nonce="[a-zA-Z0-9]+", oauth_signature_method="HMAC-SHA1", oauth_timestamp="\d{10}", oauth_version="1.0", oauth_token="temporarycredentialsidentifier", oauth_signature=".*?"/';
+            $pattern
+                = '/OAuth oauth_consumer_key=".*?", oauth_nonce="[a-zA-Z0-9]+", oauth_signature_method="HMAC-SHA1", oauth_timestamp="\d{10}", oauth_version="1.0", oauth_token="temporarycredentialsidentifier", oauth_signature=".*?"/';
 
             $matches = preg_match($pattern, $headers['Authorization']);
             $this->assertEquals(1, $matches, 'Asserting that the authorization header contains the correct expression.');
@@ -165,7 +168,8 @@ class ServerTest extends TestCase
 
             return true;
         }))->once()->andReturn($response = m::mock(ResponseInterface::class));
-        $response->shouldReceive('getBody')->andReturn('oauth_token=tokencredentialsidentifier&oauth_token_secret=tokencredentialssecret');
+        $response->shouldReceive('getBody')
+            ->andReturn('oauth_token=tokencredentialsidentifier&oauth_token_secret=tokencredentialssecret');
 
         $credentials = $server->getTokenCredentials($temporaryCredentials, 'temporarycredentialsidentifier', 'myverifiercode');
         self::assertInstanceOf(TokenCredentials::class, $credentials);
@@ -186,7 +190,7 @@ class ServerTest extends TestCase
 
         $server->shouldReceive('createHttpClient')->andReturn($client = m::mock(Client::class));
 
-        $client->shouldReceive('post')->with('http://www.example.com/token', m::on(function($options) use ($userAgent) {
+        $client->shouldReceive('post')->with('http://www.example.com/token', m::on(function ($options) use ($userAgent) {
             $headers = $options['headers'];
             $body = $options['form_params'];
 
@@ -197,7 +201,8 @@ class ServerTest extends TestCase
             // OAuth protocol specifies a strict number of
             // headers should be sent, in the correct order.
             // We'll validate that here.
-            $pattern = '/OAuth oauth_consumer_key=".*?", oauth_nonce="[a-zA-Z0-9]+", oauth_signature_method="HMAC-SHA1", oauth_timestamp="\d{10}", oauth_version="1.0", oauth_token="temporarycredentialsidentifier", oauth_signature=".*?"/';
+            $pattern
+                = '/OAuth oauth_consumer_key=".*?", oauth_nonce="[a-zA-Z0-9]+", oauth_signature_method="HMAC-SHA1", oauth_timestamp="\d{10}", oauth_version="1.0", oauth_token="temporarycredentialsidentifier", oauth_signature=".*?"/';
 
             $matches = preg_match($pattern, $headers['Authorization']);
             $this->assertEquals(1, $matches, 'Asserting that the authorization header contains the correct expression.');
@@ -206,9 +211,11 @@ class ServerTest extends TestCase
 
             return true;
         }))->once()->andReturn($response = m::mock(ResponseInterface::class));
-        $response->shouldReceive('getBody')->andReturn('oauth_token=tokencredentialsidentifier&oauth_token_secret=tokencredentialssecret');
+        $response->shouldReceive('getBody')
+            ->andReturn('oauth_token=tokencredentialsidentifier&oauth_token_secret=tokencredentialssecret');
 
-        $credentials = $server->setUserAgent($userAgent)->getTokenCredentials($temporaryCredentials, 'temporarycredentialsidentifier', 'myverifiercode');
+        $credentials = $server->setUserAgent($userAgent)
+            ->getTokenCredentials($temporaryCredentials, 'temporarycredentialsidentifier', 'myverifiercode');
 
         self::assertEquals('tokencredentialsidentifier', $credentials->getIdentifier());
         self::assertEquals('tokencredentialssecret', $credentials->getSecret());
@@ -217,7 +224,10 @@ class ServerTest extends TestCase
     public function testGettingUserDetails(): void
     {
         /** @var ServerStub|m\MockInterface $server */
-        $server = m::mock('League\OAuth1\Client\Tests\ServerStub[createHttpClient,protocolHeader]', [$this->getMockClientCredentials()]);
+        $server = m::mock(
+            'League\OAuth1\Client\Tests\ServerStub[createHttpClient,protocolHeader]',
+            [$this->getMockClientCredentials()]
+        );
 
         $temporaryCredentials = m::mock(TokenCredentials::class);
         $temporaryCredentials->shouldReceive('getIdentifier')->andReturn('tokencredentialsidentifier');
@@ -225,7 +235,7 @@ class ServerTest extends TestCase
 
         $server->shouldReceive('createHttpClient')->andReturn($client = m::mock(Client::class));
 
-        $client->shouldReceive('get')->with('http://www.example.com/user', m::on(function($options) {
+        $client->shouldReceive('get')->with('http://www.example.com/user', m::on(function ($options) {
             $headers = $options['headers'];
 
             $this->assertTrue(isset($headers['Authorization']));
@@ -233,14 +243,20 @@ class ServerTest extends TestCase
             // OAuth protocol specifies a strict number of
             // headers should be sent, in the correct order.
             // We'll validate that here.
-            $pattern = '/OAuth oauth_consumer_key=".*?", oauth_nonce="[a-zA-Z0-9]+", oauth_signature_method="HMAC-SHA1", oauth_timestamp="\d{10}", oauth_version="1.0", oauth_token="tokencredentialsidentifier", oauth_signature=".*?"/';
+            $pattern
+                = '/OAuth oauth_consumer_key=".*?", oauth_nonce="[a-zA-Z0-9]+", oauth_signature_method="HMAC-SHA1", oauth_timestamp="\d{10}", oauth_version="1.0", oauth_token="tokencredentialsidentifier", oauth_signature=".*?"/';
 
             $matches = preg_match($pattern, $headers['Authorization']);
             $this->assertEquals(1, $matches, 'Asserting that the authorization header contains the correct expression.');
 
             return true;
         }))->once()->andReturn($response = m::mock(ResponseInterface::class));
-        $response->shouldReceive('getBody')->once()->andReturn(json_encode(['foo' => 'bar', 'id' => 123, 'contact_email' => 'baz@qux.com', 'username' => 'fred']));
+        $response->shouldReceive('getBody')->once()->andReturn(json_encode([
+            'foo' => 'bar',
+            'id' => 123,
+            'contact_email' => 'baz@qux.com',
+            'username' => 'fred',
+        ]));
 
         $user = $server->getUserDetails($temporaryCredentials);
 
@@ -261,7 +277,8 @@ class ServerTest extends TestCase
         // OAuth protocol specifies a strict number of
         // headers should be sent, in the correct order.
         // We'll validate that here.
-        $pattern = '/OAuth oauth_consumer_key=".*?", oauth_nonce="[a-zA-Z0-9]+", oauth_signature_method="HMAC-SHA1", oauth_timestamp="\d{10}", oauth_version="1.0", oauth_token="mock_identifier", oauth_signature=".*?"/';
+        $pattern
+            = '/OAuth oauth_consumer_key=".*?", oauth_nonce="[a-zA-Z0-9]+", oauth_signature_method="HMAC-SHA1", oauth_timestamp="\d{10}", oauth_version="1.0", oauth_token="mock_identifier", oauth_signature=".*?"/';
 
         // With a GET request
         $headers = $server->getHeaders($tokenCredentials, 'GET', 'http://example.com/');

@@ -4,8 +4,8 @@ namespace League\OAuth1\Client\Tests;
 
 use GuzzleHttp\Client;
 use InvalidArgumentException;
-use League\OAuth1\Client\Server\Trello;
 use League\OAuth1\Client\Credentials\ClientCredentials;
+use League\OAuth1\Client\Server\Trello;
 use Mockery as m;
 use PHPUnit\Framework\TestCase;
 use PHPUnit_Framework_TestCase;
@@ -45,12 +45,12 @@ class TrelloTest extends TestCase
 
     public function testGettingTemporaryCredentials()
     {
-        $server = m::mock('League\OAuth1\Client\Server\Trello[createHttpClient]', array($this->getMockClientCredentials()));
+        $server = m::mock('League\OAuth1\Client\Server\Trello[createHttpClient]', [$this->getMockClientCredentials()]);
 
         $server->shouldReceive('createHttpClient')->andReturn($client = m::mock(Client::class));
 
         $me = $this;
-        $client->shouldReceive('post')->with('https://trello.com/1/OAuthGetRequestToken', m::on(function($options) use ($me) {
+        $client->shouldReceive('post')->with('https://trello.com/1/OAuthGetRequestToken', m::on(function ($options) use ($me) {
             $headers = $options['headers'];
 
             $me->assertTrue(isset($headers['Authorization']));
@@ -58,7 +58,7 @@ class TrelloTest extends TestCase
             // OAuth protocol specifies a strict number of
             // headers should be sent, in the correct order.
             // We'll validate that here.
-            $pattern = '/OAuth oauth_consumer_key=".*?", oauth_nonce="[a-zA-Z0-9]+", oauth_signature_method="HMAC-SHA1", oauth_timestamp="\d{10}", oauth_version="1.0", oauth_callback="'.preg_quote('http%3A%2F%2Fapp.dev%2F', '/').'", oauth_signature=".*?"/';
+            $pattern = '/OAuth oauth_consumer_key=".*?", oauth_nonce="[a-zA-Z0-9]+", oauth_signature_method="HMAC-SHA1", oauth_timestamp="\d{10}", oauth_version="1.0", oauth_callback="' . preg_quote('http%3A%2F%2Fapp.dev%2F', '/') . '", oauth_signature=".*?"/';
 
             $matches = preg_match($pattern, $headers['Authorization']);
             $me->assertEquals(1, $matches, 'Asserting that the authorization header contains the correct expression.');
@@ -93,7 +93,7 @@ class TrelloTest extends TestCase
         $credentials['expiration'] = $expiration;
         $server = new Trello($credentials);
 
-        $expected = 'https://trello.com/1/OAuthAuthorizeToken?response_type=fragment&scope=read&expiration='.urlencode($expiration).'&oauth_token=foo';
+        $expected = 'https://trello.com/1/OAuthAuthorizeToken?response_type=fragment&scope=read&expiration=' . urlencode($expiration) . '&oauth_token=foo';
 
         $this->assertEquals($expected, $server->getAuthorizationUrl('foo'));
 
@@ -108,7 +108,7 @@ class TrelloTest extends TestCase
         $server = new Trello($this->getMockClientCredentials());
         $server->setApplicationExpiration($expiration);
 
-        $expected = 'https://trello.com/1/OAuthAuthorizeToken?response_type=fragment&scope=read&expiration='.urlencode($expiration).'&oauth_token=foo';
+        $expected = 'https://trello.com/1/OAuthAuthorizeToken?response_type=fragment&scope=read&expiration=' . urlencode($expiration) . '&oauth_token=foo';
 
         $this->assertEquals($expected, $server->getAuthorizationUrl('foo'));
 
@@ -124,7 +124,7 @@ class TrelloTest extends TestCase
         $credentials['name'] = $name;
         $server = new Trello($credentials);
 
-        $expected = 'https://trello.com/1/OAuthAuthorizeToken?response_type=fragment&scope=read&expiration=1day&name='.urlencode($name).'&oauth_token=foo';
+        $expected = 'https://trello.com/1/OAuthAuthorizeToken?response_type=fragment&scope=read&expiration=1day&name=' . urlencode($name) . '&oauth_token=foo';
 
         $this->assertEquals($expected, $server->getAuthorizationUrl('foo'));
 
@@ -139,7 +139,7 @@ class TrelloTest extends TestCase
         $server = new Trello($this->getMockClientCredentials());
         $server->setApplicationName($name);
 
-        $expected = 'https://trello.com/1/OAuthAuthorizeToken?response_type=fragment&scope=read&expiration=1day&name='.urlencode($name).'&oauth_token=foo';
+        $expected = 'https://trello.com/1/OAuthAuthorizeToken?response_type=fragment&scope=read&expiration=1day&name=' . urlencode($name) . '&oauth_token=foo';
 
         $this->assertEquals($expected, $server->getAuthorizationUrl('foo'));
 
@@ -155,7 +155,7 @@ class TrelloTest extends TestCase
         $credentials['scope'] = $scope;
         $server = new Trello($credentials);
 
-        $expected = 'https://trello.com/1/OAuthAuthorizeToken?response_type=fragment&scope='.urlencode($scope).'&expiration=1day&oauth_token=foo';
+        $expected = 'https://trello.com/1/OAuthAuthorizeToken?response_type=fragment&scope=' . urlencode($scope) . '&expiration=1day&oauth_token=foo';
 
         $this->assertEquals($expected, $server->getAuthorizationUrl('foo'));
 
@@ -170,7 +170,7 @@ class TrelloTest extends TestCase
         $server = new Trello($this->getMockClientCredentials());
         $server->setApplicationScope($scope);
 
-        $expected = 'https://trello.com/1/OAuthAuthorizeToken?response_type=fragment&scope='.urlencode($scope).'&expiration=1day&oauth_token=foo';
+        $expected = 'https://trello.com/1/OAuthAuthorizeToken?response_type=fragment&scope=' . urlencode($scope) . '&expiration=1day&oauth_token=foo';
 
         $this->assertEquals($expected, $server->getAuthorizationUrl('foo'));
 
@@ -193,7 +193,7 @@ class TrelloTest extends TestCase
 
     public function testGettingTokenCredentials()
     {
-        $server = m::mock('League\OAuth1\Client\Server\Trello[createHttpClient]', array($this->getMockClientCredentials()));
+        $server = m::mock('League\OAuth1\Client\Server\Trello[createHttpClient]', [$this->getMockClientCredentials()]);
 
         $temporaryCredentials = m::mock('League\OAuth1\Client\Credentials\TemporaryCredentials');
         $temporaryCredentials->shouldReceive('getIdentifier')->andReturn('temporarycredentialsidentifier');
@@ -202,7 +202,7 @@ class TrelloTest extends TestCase
         $server->shouldReceive('createHttpClient')->andReturn($client = m::mock(Client::class));
 
         $me = $this;
-        $client->shouldReceive('post')->with('https://trello.com/1/OAuthGetAccessToken', m::on(function($options) use ($me) {
+        $client->shouldReceive('post')->with('https://trello.com/1/OAuthGetAccessToken', m::on(function ($options) use ($me) {
             $headers = $options['headers'];
             $body = $options['form_params'];
 
@@ -216,7 +216,7 @@ class TrelloTest extends TestCase
             $matches = preg_match($pattern, $headers['Authorization']);
             $me->assertEquals(1, $matches, 'Asserting that the authorization header contains the correct expression.');
 
-            $me->assertSame($body, array('oauth_verifier' => 'myverifiercode'));
+            $me->assertSame($body, ['oauth_verifier' => 'myverifiercode']);
 
             return true;
         }))->once()->andReturn($response = m::mock(ResponseInterface::class));
@@ -230,7 +230,7 @@ class TrelloTest extends TestCase
 
     public function testGettingUserDetails()
     {
-        $server = m::mock('League\OAuth1\Client\Server\Trello[createHttpClient,protocolHeader]', array($this->getMockClientCredentials()));
+        $server = m::mock('League\OAuth1\Client\Server\Trello[createHttpClient,protocolHeader]', [$this->getMockClientCredentials()]);
 
         $temporaryCredentials = m::mock('League\OAuth1\Client\Credentials\TokenCredentials');
         $temporaryCredentials->shouldReceive('getIdentifier')->andReturn('tokencredentialsidentifier');
@@ -239,7 +239,7 @@ class TrelloTest extends TestCase
         $server->shouldReceive('createHttpClient')->andReturn($client = m::mock(Client::class));
 
         $me = $this;
-        $client->shouldReceive('get')->with('https://trello.com/1/members/me?key='.$this->getApplicationKey().'&token='.$this->getAccessToken(), m::on(function($options) use ($me) {
+        $client->shouldReceive('get')->with('https://trello.com/1/members/me?key=' . $this->getApplicationKey() . '&token=' . $this->getAccessToken(), m::on(function ($options) use ($me) {
             $headers = $options['headers'];
 
             $me->assertTrue(isset($headers['Authorization']));
@@ -268,11 +268,11 @@ class TrelloTest extends TestCase
 
     protected function getMockClientCredentials()
     {
-        return array(
+        return [
             'identifier' => $this->getApplicationKey(),
             'secret' => 'mysecret',
             'callback_uri' => 'http://app.dev/',
-        );
+        ];
     }
 
     protected function getAccessToken()
@@ -287,7 +287,7 @@ class TrelloTest extends TestCase
 
     protected function getApplicationExpiration($days = 0)
     {
-        return is_numeric($days) && $days > 0 ? $days.'day'.($days == 1 ? '' : 's') : 'never';
+        return is_numeric($days) && $days > 0 ? $days . 'day' . ($days == 1 ? '' : 's') : 'never';
     }
 
     protected function getApplicationName()

@@ -4,8 +4,8 @@ namespace League\OAuth1\Client\Tests;
 
 use GuzzleHttp\Client;
 use InvalidArgumentException;
-use League\OAuth1\Client\Server\Xing;
 use League\OAuth1\Client\Credentials\ClientCredentials;
+use League\OAuth1\Client\Server\Xing;
 use Mockery as m;
 use PHPUnit\Framework\TestCase;
 use PHPUnit_Framework_TestCase;
@@ -45,7 +45,7 @@ class XingTest extends TestCase
 
     public function testGettingTemporaryCredentials()
     {
-        $server = m::mock('League\OAuth1\Client\Server\Xing[createHttpClient]', array($this->getMockClientCredentials()));
+        $server = m::mock('League\OAuth1\Client\Server\Xing[createHttpClient]', [$this->getMockClientCredentials()]);
 
         $server->shouldReceive('createHttpClient')->andReturn($client = m::mock(Client::class));
 
@@ -57,7 +57,7 @@ class XingTest extends TestCase
             // OAuth protocol specifies a strict number of
             // headers should be sent, in the correct order.
             // We'll validate that here.
-            $pattern = '/OAuth oauth_consumer_key=".*?", oauth_nonce="[a-zA-Z0-9]+", oauth_signature_method="HMAC-SHA1", oauth_timestamp="\d{10}", oauth_version="1.0", oauth_callback="'.preg_quote('http%3A%2F%2Fapp.dev%2F', '/').'", oauth_signature=".*?"/';
+            $pattern = '/OAuth oauth_consumer_key=".*?", oauth_nonce="[a-zA-Z0-9]+", oauth_signature_method="HMAC-SHA1", oauth_timestamp="\d{10}", oauth_version="1.0", oauth_callback="' . preg_quote('http%3A%2F%2Fapp.dev%2F', '/') . '", oauth_signature=".*?"/';
 
             $matches = preg_match($pattern, $headers['Authorization']);
             $me->assertEquals(1, $matches, 'Asserting that the authorization header contains the correct expression.');
@@ -99,7 +99,7 @@ class XingTest extends TestCase
 
     public function testGettingTokenCredentials()
     {
-        $server = m::mock('League\OAuth1\Client\Server\Xing[createHttpClient]', array($this->getMockClientCredentials()));
+        $server = m::mock('League\OAuth1\Client\Server\Xing[createHttpClient]', [$this->getMockClientCredentials()]);
 
         $temporaryCredentials = m::mock('League\OAuth1\Client\Credentials\TemporaryCredentials');
         $temporaryCredentials->shouldReceive('getIdentifier')->andReturn('temporarycredentialsidentifier');
@@ -122,7 +122,7 @@ class XingTest extends TestCase
             $matches = preg_match($pattern, $headers['Authorization']);
             $me->assertEquals(1, $matches, 'Asserting that the authorization header contains the correct expression.');
 
-            $me->assertSame($body, array('oauth_verifier' => 'myverifiercode'));
+            $me->assertSame($body, ['oauth_verifier' => 'myverifiercode']);
 
             return true;
         }))->once()->andReturn($response = m::mock(ResponseInterface::class));
@@ -136,7 +136,7 @@ class XingTest extends TestCase
 
     public function testGettingUserDetails()
     {
-        $server = m::mock('League\OAuth1\Client\Server\Xing[createHttpClient,protocolHeader]', array($this->getMockClientCredentials()));
+        $server = m::mock('League\OAuth1\Client\Server\Xing[createHttpClient,protocolHeader]', [$this->getMockClientCredentials()]);
 
         $temporaryCredentials = m::mock('League\OAuth1\Client\Credentials\TokenCredentials');
         $temporaryCredentials->shouldReceive('getIdentifier')->andReturn('tokencredentialsidentifier');
@@ -172,11 +172,11 @@ class XingTest extends TestCase
 
     protected function getMockClientCredentials()
     {
-        return array(
+        return [
             'identifier' => $this->getApplicationKey(),
             'secret' => 'mysecret',
             'callback_uri' => 'http://app.dev/',
-        );
+        ];
     }
 
     protected function getApplicationKey()
@@ -186,7 +186,7 @@ class XingTest extends TestCase
 
     protected function getApplicationExpiration($days = 0)
     {
-        return is_numeric($days) && $days > 0 ? $days.'day'.($days == 1 ? '' : 's') : 'never';
+        return is_numeric($days) && $days > 0 ? $days . 'day' . ($days == 1 ? '' : 's') : 'never';
     }
 
     protected function getApplicationName()
