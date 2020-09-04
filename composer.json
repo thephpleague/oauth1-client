@@ -15,7 +15,7 @@
   "require-dev": {
     "ext-json": "*",
     "ext-openssl": "*",
-    "friendsofphp/php-cs-fixer": "^2.16",
+    "friendsofphp/php-cs-fixer": "^2.16.1",
     "guzzlehttp/guzzle": "^6.0|^7.0",
     "http-interop/http-factory-guzzle": "^1.0",
     "mockery/mockery": "^1.3",
