@@ -3,9 +3,8 @@
 namespace League\OAuth1\Client\Server;
 
 use ArrayIterator;
-use IteratorAggregate;
 
-class User implements IteratorAggregate
+class User implements \IteratorAggregate
 {
     /**
      * The user's unique ID.
@@ -66,14 +65,14 @@ class User implements IteratorAggregate
     /**
      * The user's image URL.
      *
-     * @var string|null
+     * @var string
      */
     public $imageUrl;
 
     /**
      * The users' URLs.
      *
-     * @var string[]
+     * @var string|array
      */
     public $urls = [];
 
@@ -85,7 +84,48 @@ class User implements IteratorAggregate
     public $extra = [];
 
     /**
-     * {@inheritDoc}
+     * Set a property on the user.
+     *
+     * @param string $key
+     * @param mixed  $value
+     *
+     * @return void
+     */
+    public function __set($key, $value)
+    {
+        if (isset($this->{$key})) {
+            $this->{$key} = $value;
+        }
+    }
+
+    /**
+     * Tells if a property is set.
+     *
+     * @param string $key
+     *
+     * @return bool
+     */
+    public function __isset($key)
+    {
+        return isset($this->{$key});
+    }
+
+    /**
+     * Get a property from the user.
+     *
+     * @param string $key
+     *
+     * @return mixed
+     */
+    public function __get($key)
+    {
+        if (isset($this->{$key})) {
+            return $this->{$key};
+        }
+    }
+
+    /**
+     * @inheritDoc
      */
     public function getIterator()
     {

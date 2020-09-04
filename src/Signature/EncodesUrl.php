@@ -2,16 +2,35 @@
 
 namespace League\OAuth1\Client\Signature;
 
+use GuzzleHttp\Psr7;
 use GuzzleHttp\Psr7\Uri;
 use Psr\Http\Message\UriInterface;
 
-trait EncodesQuery
+trait EncodesUrl
 {
+    /**
+     * Create a Guzzle url for the given URI.
+     *
+     * @param string $uri
+     *
+     * @return UriInterface
+     */
+    protected function createUrl($uri)
+    {
+        return Psr7\uri_for($uri);
+    }
+
     /**
      * Generate a base string for a RSA-SHA1 signature
      * based on the given a url, method, and any parameters.
+     *
+     * @param UriInterface $url
+     * @param string       $method
+     * @param array        $parameters
+     *
+     * @return string
      */
-    protected function baseString(UriInterface $url, string $method = 'POST', array $parameters = []): string
+    protected function baseString(UriInterface $url, $method = 'POST', array $parameters = [])
     {
         $baseString = rawurlencode($method) . '&';
 
@@ -23,11 +42,12 @@ trait EncodesQuery
 
         $baseString .= rawurlencode($schemeHostPath) . '&';
 
+        $data = [];
         parse_str($url->getQuery(), $query);
         $data = array_merge($query, $parameters);
 
         // normalize data key/values
-        array_walk_recursive($data, static function (&$key, &$value) {
+        array_walk_recursive($data, function (&$key, &$value) {
             $key = rawurlencode(rawurldecode($key));
             $value = rawurlencode(rawurldecode($value));
         });
@@ -44,21 +64,20 @@ trait EncodesQuery
      *
      * @param array      $data        Array of parameters to convert.
      * @param array|null $queryParams Array to extend. False by default.
-     * @param string     $parentKey   Optional Array key to append
+     * @param string     $prevKey     Optional Array key to append
      *
-     * @return string|array A `rawurlencoded` string version of data or an array of nested values when used recursively
+     * @return string rawurlencoded string version of data
      */
-    protected function queryStringFromData(array $data, array $queryParams = null, string $parentKey = '')
+    protected function queryStringFromData($data, $queryParams = null, $prevKey = '')
     {
         if ($initial = (null === $queryParams)) {
             $queryParams = [];
         }
 
         foreach ($data as $key => $value) {
-            if ($parentKey) {
-                $key = $parentKey . '[' . $key . ']'; // Handle multi-dimensional array
+            if ($prevKey) {
+                $key = $prevKey . '[' . $key . ']'; // Handle multi-dimensional array
             }
-
             if (is_array($value)) {
                 $queryParams = $this->queryStringFromData($value, $queryParams, $key);
             } else {

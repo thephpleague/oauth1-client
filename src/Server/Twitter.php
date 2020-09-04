@@ -6,27 +6,42 @@ use League\OAuth1\Client\Credentials\TokenCredentials;
 
 class Twitter extends Server
 {
-    public function urlTemporaryCredentials(): string
+    /**
+     * @inheritDoc
+     */
+    public function urlTemporaryCredentials()
     {
         return 'https://api.twitter.com/oauth/request_token';
     }
 
-    public function urlAuthorization(): string
+    /**
+     * @inheritDoc
+     */
+    public function urlAuthorization()
     {
         return 'https://api.twitter.com/oauth/authenticate';
     }
 
-    public function urlTokenCredentials(): string
+    /**
+     * @inheritDoc
+     */
+    public function urlTokenCredentials()
     {
         return 'https://api.twitter.com/oauth/access_token';
     }
 
-    public function urlUserDetails(): string
+    /**
+     * @inheritDoc
+     */
+    public function urlUserDetails()
     {
         return 'https://api.twitter.com/1.1/account/verify_credentials.json?include_email=true';
     }
 
-    public function userDetails($data, TokenCredentials $tokenCredentials): User
+    /**
+     * @inheritDoc
+     */
+    public function userDetails($data, TokenCredentials $tokenCredentials)
     {
         $user = new User();
 
@@ -36,13 +51,16 @@ class Twitter extends Server
         $user->location = $data['location'];
         $user->description = $data['description'];
         $user->imageUrl = $data['profile_image_url'];
-        $user->email = $data['email'] ?? null;
+
+        if (isset($data['email'])) {
+            $user->email = $data['email'];
+        }
 
         $used = ['id', 'screen_name', 'name', 'location', 'description', 'profile_image_url', 'email'];
 
         foreach ($data as $key => $value) {
             if (strpos($key, 'url') !== false) {
-                if ( ! in_array($key, $used, true)) {
+                if ( ! in_array($key, $used)) {
                     $used[] = $key;
                 }
 
@@ -64,12 +82,18 @@ class Twitter extends Server
         return $data['id'];
     }
 
-    public function userEmail($data, TokenCredentials $tokenCredentials):? string
+    /**
+     * @inheritDoc
+     */
+    public function userEmail($data, TokenCredentials $tokenCredentials)
     {
         return null;
     }
 
-    public function userScreenName($data, TokenCredentials $tokenCredentials):? string
+    /**
+     * @inheritDoc
+     */
+    public function userScreenName($data, TokenCredentials $tokenCredentials)
     {
         return $data['name'];
     }

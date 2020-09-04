@@ -5,17 +5,17 @@ namespace League\OAuth1\Client\Signature;
 class PlainTextSignature extends Signature implements SignatureInterface
 {
     /**
-     * {@inheritDoc}
+     * @inheritDoc
      */
-    public function method(): string
+    public function method()
     {
         return 'PLAINTEXT';
     }
 
     /**
-     * {@inheritDoc}
+     * @inheritDoc
      */
-    public function sign(string $uri, array $parameters = [], string $method = 'POST'): string
+    public function sign($uri, array $parameters = [], $method = 'POST')
     {
         return $this->key();
     }
