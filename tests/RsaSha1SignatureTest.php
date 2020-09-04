@@ -7,7 +7,6 @@ use League\OAuth1\Client\Credentials\RsaClientCredentials;
 use League\OAuth1\Client\Signature\RsaSha1Signature;
 use Mockery;
 use PHPUnit\Framework\TestCase;
-use PHPUnit_Framework_TestCase;
 
 class RsaSha1SignatureTest extends TestCase
 {

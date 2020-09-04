@@ -15,15 +15,14 @@ class ClientCredentialsTest extends TestCase
         parent::tearDown();
     }
 
-    /** @test */
-    public function manipulation(): void
+    public function testManipulating()
     {
         $credentials = new ClientCredentials;
-        self::assertNull($credentials->getIdentifier());
+        $this->assertNull($credentials->getIdentifier());
         $credentials->setIdentifier('foo');
-        self::assertEquals('foo', $credentials->getIdentifier());
-        self::assertNull($credentials->getSecret());
+        $this->assertEquals('foo', $credentials->getIdentifier());
+        $this->assertNull($credentials->getSecret());
         $credentials->setSecret('foo');
-        self::assertEquals('foo', $credentials->getSecret());
+        $this->assertEquals('foo', $credentials->getSecret());
     }
 }

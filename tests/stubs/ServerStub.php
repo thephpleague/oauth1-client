@@ -8,27 +8,42 @@ use League\OAuth1\Client\Server\User;
 
 class ServerStub extends Server
 {
-    public function urlTemporaryCredentials(): string
+    /**
+     * @inheritDoc
+     */
+    public function urlTemporaryCredentials()
     {
         return 'http://www.example.com/temporary';
     }
 
-    public function urlAuthorization(): string
+    /**
+     * @inheritDoc
+     */
+    public function urlAuthorization()
     {
         return 'http://www.example.com/authorize';
     }
 
-    public function urlTokenCredentials(): string
+    /**
+     * @inheritDoc
+     */
+    public function urlTokenCredentials()
     {
         return 'http://www.example.com/token';
     }
 
-    public function urlUserDetails(): string
+    /**
+     * @inheritDoc
+     */
+    public function urlUserDetails()
     {
         return 'http://www.example.com/user';
     }
 
-    public function userDetails($data, TokenCredentials $tokenCredentials): User
+    /**
+     * @inheritDoc
+     */
+    public function userDetails($data, TokenCredentials $tokenCredentials)
     {
         $user = new User;
         $user->firstName = $data['foo'];
@@ -41,16 +56,22 @@ class ServerStub extends Server
      */
     public function userUid($data, TokenCredentials $tokenCredentials)
     {
-        return $data['id'] ?? null;
+        return isset($data['id']) ? $data['id'] : null;
     }
 
-    public function userEmail($data, TokenCredentials $tokenCredentials):? string
+    /**
+     * @inheritDoc
+     */
+    public function userEmail($data, TokenCredentials $tokenCredentials)
     {
-        return $data['contact_email'] ?? null;
+        return isset($data['contact_email']) ? $data['contact_email'] : null;
     }
 
-    public function userScreenName($data, TokenCredentials $tokenCredentials):? string
+    /**
+     * @inheritDoc
+     */
+    public function userScreenName($data, TokenCredentials $tokenCredentials)
     {
-        return $data['username'] ?? null;
+        return isset($data['username']) ? $data['username'] : null;
     }
 }

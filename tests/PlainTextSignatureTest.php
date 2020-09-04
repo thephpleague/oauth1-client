@@ -5,7 +5,6 @@ namespace League\OAuth1\Client\Tests;
 use League\OAuth1\Client\Signature\PlainTextSignature;
 use Mockery as m;
 use PHPUnit\Framework\TestCase;
-use PHPUnit_Framework_TestCase;
 
 class PlainTextSignatureTest extends TestCase
 {

@@ -5,7 +5,6 @@ namespace League\OAuth1\Client\Tests;
 use League\OAuth1\Client\Credentials\CredentialsException;
 use League\OAuth1\Client\Credentials\RsaClientCredentials;
 use PHPUnit\Framework\TestCase;
-use PHPUnit_Framework_TestCase;
 
 class RsaClientCredentialsTest extends TestCase
 {

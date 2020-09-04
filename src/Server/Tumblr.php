@@ -4,33 +4,49 @@ namespace League\OAuth1\Client\Server;
 
 use League\OAuth1\Client\Credentials\TokenCredentials;
 use LogicException;
+use RuntimeException;
 
 class Tumblr extends Server
 {
-    public function urlTemporaryCredentials(): string
+    /**
+     * @inheritDoc
+     */
+    public function urlTemporaryCredentials()
     {
         return 'https://www.tumblr.com/oauth/request_token';
     }
 
-    public function urlAuthorization(): string
+    /**
+     * @inheritDoc
+     */
+    public function urlAuthorization()
     {
         return 'https://www.tumblr.com/oauth/authorize';
     }
 
-    public function urlTokenCredentials(): string
+    /**
+     * @inheritDoc
+     */
+    public function urlTokenCredentials()
     {
         return 'https://www.tumblr.com/oauth/access_token';
     }
 
-    public function urlUserDetails(): string
+    /**
+     * @inheritDoc
+     */
+    public function urlUserDetails()
     {
         return 'https://api.tumblr.com/v2/user/info';
     }
 
-    public function userDetails($data, TokenCredentials $tokenCredentials): User
+    /**
+     * @inheritDoc
+     */
+    public function userDetails($data, TokenCredentials $tokenCredentials)
     {
         // If the API has broke, return nothing
-        if ( ! is_array($data['response']['user'] ?? null)) {
+        if ( ! isset($data['response']['user']) || ! is_array($data['response']['user'])) {
             throw new LogicException('Not possible to get user info');
         }
 
@@ -52,8 +68,8 @@ class Tumblr extends Server
      */
     public function userUid($data, TokenCredentials $tokenCredentials)
     {
-        if ( ! is_array($data['response']['user'] ?? null)) {
-            return null;
+        if ( ! isset($data['response']['user']) || ! is_array($data['response']['user'])) {
+            throw new LogicException('Not possible to get user UUID');
         }
 
         $data = $data['response']['user'];
@@ -61,15 +77,21 @@ class Tumblr extends Server
         return $data['name'];
     }
 
-    public function userEmail($data, TokenCredentials $tokenCredentials):? string
+    /**
+     * @inheritDoc
+     */
+    public function userEmail($data, TokenCredentials $tokenCredentials)
     {
         return null;
     }
 
-    public function userScreenName($data, TokenCredentials $tokenCredentials):? string
+    /**
+     * @inheritDoc
+     */
+    public function userScreenName($data, TokenCredentials $tokenCredentials)
     {
-        if ( ! is_array($data['response']['user'] ?? null)) {
-            return null;
+        if ( ! isset($data['response']['user']) || ! is_array($data['response']['user'])) {
+            throw new LogicException('Not possible to get user screen name');
         }
 
         $data = $data['response']['user'];

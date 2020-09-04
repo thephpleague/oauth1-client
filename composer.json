@@ -9,6 +9,7 @@
         "guzzlehttp/guzzle": "^6.0|^7.0"
     },
     "require-dev": {
+        "ext-simplexml": "*",
         "phpunit/phpunit": "^7.5",
         "mockery/mockery": "^1.3",
         "phpstan/phpstan": "^0.12.42",
@@ -52,7 +53,7 @@
     },
     "autoload-dev": {
         "psr-4": {
-            "League\\OAuth1\\Client\\": "src/"
+            "League\\OAuth1\\Client\\Tests\\": "tests/"
         }
     },
     "extra": {
