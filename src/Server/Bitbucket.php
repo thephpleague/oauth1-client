@@ -6,27 +6,42 @@ use League\OAuth1\Client\Credentials\TokenCredentials;
 
 class Bitbucket extends Server
 {
-    public function urlTemporaryCredentials(): string
+    /**
+     * @inheritDoc
+     */
+    public function urlTemporaryCredentials()
     {
         return 'https://bitbucket.org/api/1.0/oauth/request_token';
     }
 
-    public function urlAuthorization(): string
+    /**
+     * @inheritDoc
+     */
+    public function urlAuthorization()
     {
         return 'https://bitbucket.org/api/1.0/oauth/authenticate';
     }
 
-    public function urlTokenCredentials(): string
+    /**
+     * @inheritDoc
+     */
+    public function urlTokenCredentials()
     {
         return 'https://bitbucket.org/api/1.0/oauth/access_token';
     }
 
-    public function urlUserDetails(): string
+    /**
+     * @inheritDoc
+     */
+    public function urlUserDetails()
     {
         return 'https://bitbucket.org/api/1.0/user';
     }
 
-    public function userDetails($data, TokenCredentials $tokenCredentials): User
+    /**
+     * @inheritDoc
+     */
+    public function userDetails($data, TokenCredentials $tokenCredentials)
     {
         $user = new User();
 
@@ -41,7 +56,7 @@ class Bitbucket extends Server
 
         foreach ($data as $key => $value) {
             if (strpos($key, 'url') !== false) {
-                if ( ! in_array($key, $used, true)) {
+                if ( ! in_array($key, $used)) {
                     $used[] = $key;
                 }
 
@@ -55,17 +70,26 @@ class Bitbucket extends Server
         return $user;
     }
 
-    public function userUid($data, TokenCredentials $tokenCredentials): string
+    /**
+     * @inheritDoc
+     */
+    public function userUid($data, TokenCredentials $tokenCredentials)
     {
         return $data['user']['username'];
     }
 
-    public function userEmail($data, TokenCredentials $tokenCredentials):? string
+    /**
+     * @inheritDoc
+     */
+    public function userEmail($data, TokenCredentials $tokenCredentials)
     {
         return null;
     }
 
-    public function userScreenName($data, TokenCredentials $tokenCredentials):? string
+    /**
+     * @inheritDoc
+     */
+    public function userScreenName($data, TokenCredentials $tokenCredentials)
     {
         return $data['user']['display_name'];
     }

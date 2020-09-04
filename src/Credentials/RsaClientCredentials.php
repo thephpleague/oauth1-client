@@ -4,22 +4,34 @@ namespace League\OAuth1\Client\Credentials;
 
 class RsaClientCredentials extends ClientCredentials
 {
-    /** @var string */
+    /**
+     * @var string
+     */
     protected $rsaPublicKeyFile;
 
-    /** @var string */
+    /**
+     * @var string
+     */
     protected $rsaPrivateKeyFile;
 
-    /** @var resource|null */
+    /**
+     * @var resource|null
+     */
     protected $rsaPublicKey;
 
-    /** @var resource|null */
+    /**
+     * @var resource|null
+     */
     protected $rsaPrivateKey;
 
     /**
      * Sets the path to the RSA public key.
+     *
+     * @param string $filename
+     *
+     * @return self
      */
-    public function setRsaPublicKey(string $filename): self
+    public function setRsaPublicKey($filename)
     {
         $this->rsaPublicKeyFile = $filename;
         $this->rsaPublicKey = null;
@@ -29,8 +41,12 @@ class RsaClientCredentials extends ClientCredentials
 
     /**
      * Sets the path to the RSA private key.
+     *
+     * @param string $filename
+     *
+     * @return self
      */
-    public function setRsaPrivateKey(string $filename): self
+    public function setRsaPrivateKey($filename)
     {
         $this->rsaPrivateKeyFile = $filename;
         $this->rsaPrivateKey = null;
@@ -41,9 +57,9 @@ class RsaClientCredentials extends ClientCredentials
     /**
      * Gets the RSA public key.
      *
-     * @return resource
+     * @throws CredentialsException when the key could not be loaded.
      *
-     * @throws CredentialsException If the public key file could not be read
+     * @return resource
      */
     public function getRsaPublicKey()
     {
@@ -51,7 +67,7 @@ class RsaClientCredentials extends ClientCredentials
             return $this->rsaPublicKey;
         }
 
-        if ( ! file_exists($this->rsaPublicKeyFile) || ! is_readable($this->rsaPublicKeyFile)) {
+        if ( ! file_exists($this->rsaPublicKeyFile)) {
             throw new CredentialsException('Could not read the public key file.');
         }
 
@@ -67,9 +83,9 @@ class RsaClientCredentials extends ClientCredentials
     /**
      * Gets the RSA private key.
      *
-     * @return resource
+     * @throws CredentialsException when the key could not be loaded.
      *
-     * @throws CredentialsException If the private key file could not be read
+     * @return resource
      */
     public function getRsaPrivateKey()
     {
@@ -77,7 +93,7 @@ class RsaClientCredentials extends ClientCredentials
             return $this->rsaPrivateKey;
         }
 
-        if ( ! file_exists($this->rsaPrivateKeyFile) || ! is_readable($this->rsaPrivateKeyFile)) {
+        if ( ! file_exists($this->rsaPrivateKeyFile)) {
             throw new CredentialsException('Could not read the private key file.');
         }
 
