@@ -48,7 +48,11 @@
     ],
     "autoload": {
         "psr-4": {
-            "League\\OAuth1\\Client\\": "src/",
+            "League\\OAuth1\\Client\\": "src/"
+        }
+    },
+    "autoload-dev": {
+        "psr-4": {
             "League\\OAuth1\\Client\\Tests\\": "tests/"
         }
     },

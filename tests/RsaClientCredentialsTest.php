@@ -5,14 +5,13 @@ namespace League\OAuth1\Client\Tests;
 use League\OAuth1\Client\Credentials\CredentialsException;
 use League\OAuth1\Client\Credentials\RsaClientCredentials;
 use PHPUnit\Framework\TestCase;
-use PHPUnit_Framework_TestCase;
 
 class RsaClientCredentialsTest extends TestCase
 {
     public function testGetRsaPublicKey()
     {
         $credentials = new RsaClientCredentials();
-        $credentials->setRsaPublicKey(__DIR__.'/test_rsa_publickey.pem');
+        $credentials->setRsaPublicKey(__DIR__ . '/test_rsa_publickey.pem');
 
         $key = $credentials->getRsaPublicKey();
         $this->assertTrue(is_resource($key));
@@ -35,7 +34,7 @@ class RsaClientCredentialsTest extends TestCase
         $this->expectException(CredentialsException::class);
 
         $credentials = new RsaClientCredentials();
-        $credentials->setRsaPublicKey(__DIR__.'/test_rsa_invalidkey.pem');
+        $credentials->setRsaPublicKey(__DIR__ . '/test_rsa_invalidkey.pem');
 
         $credentials->getRsaPublicKey();
     }
@@ -43,7 +42,7 @@ class RsaClientCredentialsTest extends TestCase
     public function testGetRsaPrivateKey()
     {
         $credentials = new RsaClientCredentials();
-        $credentials->setRsaPrivateKey(__DIR__.'/test_rsa_privatekey.pem');
+        $credentials->setRsaPrivateKey(__DIR__ . '/test_rsa_privatekey.pem');
 
         $key = $credentials->getRsaPrivateKey();
         $this->assertTrue(is_resource($key));
@@ -66,7 +65,7 @@ class RsaClientCredentialsTest extends TestCase
         $this->expectException(CredentialsException::class);
 
         $credentials = new RsaClientCredentials();
-        $credentials->setRsaPrivateKey(__DIR__.'/test_rsa_invalidkey.pem');
+        $credentials->setRsaPrivateKey(__DIR__ . '/test_rsa_invalidkey.pem');
 
         $credentials->getRsaPrivateKey();
     }

@@ -47,6 +47,7 @@ class ServerStub extends Server
     {
         $user = new User;
         $user->firstName = $data['foo'];
+
         return $user;
     }
 

@@ -1,6 +1,6 @@
 <?php
 
-$finder = PhpCsFixer\Finder::create()->in(__DIR__ . '/src');
+$finder = PhpCsFixer\Finder::create()->in([__DIR__ . '/src', __DIR__ . '/tests']);
 
 return PhpCsFixer\Config::create()
     ->setRules([
@@ -26,5 +26,4 @@ return PhpCsFixer\Config::create()
         'single_blank_line_at_eof' => true,
         'ternary_operator_spaces' => true,
     ])
-    ->setFinder($finder)
-    ;
+    ->setFinder($finder);
