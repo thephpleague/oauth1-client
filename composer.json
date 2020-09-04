@@ -32,8 +32,9 @@
   "suggest": {
     "ext-json": "Most providers require the JSON extension to parse user detail responses",
     "ext-openssl": "The RSA signing method requires this extension to function",
-    "guzzlehttp/guzzle": "The recommended PSR-18 HTTP client implementation",
-    "http-interop/http-factory-guzzle": "The recommended PSR-17 HTTP factory implementation"
+    "guzzlehttp/guzzle": "The recommended PSR-18 HTTP client implementation for PHP 7.2+",
+    "http-interop/http-factory-guzzle": "The recommended PSR-17 HTTP factory implementation",
+    "php-http/guzzle6-adapter": "The recommended PSR-18 HTTP client implementation for PHP 7.1"
   },
   "keywords": [
     "oauth",
