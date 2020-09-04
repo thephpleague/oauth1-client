@@ -2,6 +2,12 @@ language: php
 
 matrix:
   include:
+    - php: 7.1
+      dist: bionic
+      env: COMPOSER_OPTS=""
+    - php: 7.1
+      dist: bionic
+      env: COMPOSER_OPTS="--prefer-lowest"
     - php: 7.2
       dist: bionic
       env: COMPOSER_OPTS=""

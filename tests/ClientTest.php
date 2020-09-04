@@ -2,7 +2,6 @@
 
 namespace League\OAuth1\Client\Tests;
 
-use GuzzleHttp\Client as HttpClient;
 use function GuzzleHttp\Psr7\build_query;
 use GuzzleHttp\Psr7\Request;
 use GuzzleHttp\Psr7\Response;
@@ -16,6 +15,7 @@ use League\OAuth1\Client\User;
 use LogicException;
 use Mockery;
 use Mockery\Adapter\Phpunit\MockeryTestCase;
+use Psr\Http\Client\ClientInterface;
 
 class ClientTest extends MockeryTestCase
 {
@@ -25,7 +25,7 @@ class ClientTest extends MockeryTestCase
     /** @var RequestFactory */
     private $requestFactory;
 
-    /** @var HttpClient|Mockery\LegacyMockInterface|Mockery\MockInterface */
+    /** @var ClientInterface|Mockery\LegacyMockInterface|Mockery\MockInterface */
     private $httpClient;
 
     protected function setUp(): void
@@ -34,7 +34,7 @@ class ClientTest extends MockeryTestCase
 
         $this->requestFactory = new RequestFactory();
 
-        $this->httpClient = Mockery::mock(HttpClient::class);
+        $this->httpClient = Mockery::mock(ClientInterface::class);
     }
 
     /** @test */
