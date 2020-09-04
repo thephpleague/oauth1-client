@@ -2,22 +2,34 @@
 
 namespace League\OAuth1\Client\Credentials;
 
-class ClientCredentials extends Credentials implements ClientCredentialsInterface
-{
-    /**
-     * The credentials callback URI.
-     *
-     * @var string
-     */
-    protected $callbackUri;
+use GuzzleHttp\Psr7\Uri;
 
-    public function getCallbackUri(): string
+class ClientCredentials extends Credentials
+{
+    /** @var Uri|string */
+    private $callbackUri;
+
+    /** @var string|null */
+    private $realm;
+
+    /**
+     * @param Uri|string $callbackUri
+     */
+    public function __construct(string $identifier, string $secret, $callbackUri, string $realm = null)
     {
-        return $this->callbackUri;
+        parent::__construct($identifier, $secret);
+
+        $this->callbackUri = $callbackUri;
+        $this->realm       = $realm;
     }
 
-    public function setCallbackUri(string $callbackUri): void
+    public function getCallbackUri(): Uri
     {
-        $this->callbackUri = $callbackUri;
+        return new Uri($this->callbackUri);
+    }
+
+    public function getRealm(): ?string
+    {
+        return $this->realm;
     }
 }

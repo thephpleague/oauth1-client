@@ -1,13 +1,26 @@
 <?php
 
-require_once __DIR__.'/../../vendor/autoload.php';
+use GuzzleHttp\Client as HttpClient;
+use Http\Factory\Guzzle\RequestFactory;
+use League\OAuth1\Client\Client;
+use League\OAuth1\Client\Credentials\ClientCredentials;
+use League\OAuth1\Client\Credentials\Credentials;
+use League\OAuth1\Client\Provider\Twitter;
+use Psr\Http\Client\ClientExceptionInterface;
 
-// Create server
-$server = new League\OAuth1\Client\Server\Twitter(array(
-    'identifier' => 'your-identifier',
-    'secret' => 'your-secret',
-    'callback_uri' => "http://your-callback-uri/",
+require_once __DIR__ . '/../../vendor/autoload.php';
+
+$provider = new Twitter(new ClientCredentials(
+    'your identifier',
+    'your secret',
+    'http://your-callback-uri/'
 ));
+
+$client = new Client(
+    $provider,
+    new RequestFactory(),
+    new HttpClient(['timeout' => 30])
+);
 
 // Start session
 session_start();
@@ -18,13 +31,15 @@ if (isset($_GET['user'])) {
     // Check somebody hasn't manually entered this URL in,
     // by checking that we have the token credentials in
     // the session.
-    if ( ! isset($_SESSION['token_credentials'])) {
+    if (!isset($_SESSION['token_credentials'])) {
         echo 'No token credentials.';
         exit(1);
     }
 
     // Retrieve our token credentials. From here, it's play time!
-    $tokenCredentials = unserialize($_SESSION['token_credentials']);
+
+    /** @var Credentials $tokenCredentials */
+    $tokenCredentials = unserialize($_SESSION['token_credentials'], [Credentials::class]);
 
     // // Below is an example of retrieving the identifier & secret
     // // (formally known as access token key & secret in earlier
@@ -40,19 +55,24 @@ if (isset($_GET['user'])) {
     // the identifier & secret that this package was
     // designed to retrieve for you. But, for fun,
     // here's basic user information.
-    $user = $server->getUserDetails($tokenCredentials);
+    $user = $client->fetchUserDetails($tokenCredentials);
+
     var_dump($user);
 
 // Step 3
-} elseif (isset($_GET['oauth_token']) && isset($_GET['oauth_verifier'])) {
+} elseif (isset($_GET['oauth_token'], $_GET['oauth_verifier'])) {
 
     // Retrieve the temporary credentials from step 2
-    $temporaryCredentials = unserialize($_SESSION['temporary_credentials']);
+    $temporaryCredentials = unserialize($_SESSION['temporary_credentials'], [Credentials::class]);
 
     // Third and final part to OAuth 1.0 authentication is to retrieve token
     // credentials (formally known as access tokens in earlier OAuth 1.0
     // specs).
-    $tokenCredentials = $server->getTokenCredentials($temporaryCredentials, $_GET['oauth_token'], $_GET['oauth_verifier']);
+    try {
+        $tokenCredentials = $client->fetchTokenCredentials($temporaryCredentials, $_GET['oauth_verifier']);
+    } catch (ClientExceptionInterface $e) {
+        throw $e;
+    }
 
     // Now, we'll store the token credentials and discard the temporary
     // ones - they're irrelevant at this stage.
@@ -73,15 +93,22 @@ if (isset($_GET['user'])) {
 
     // First part of OAuth 1.0 authentication is retrieving temporary credentials.
     // These identify you as a client to the server.
-    $temporaryCredentials = $server->getTemporaryCredentials();
+    try {
+        $temporaryCredentials = $client->fetchTemporaryCredentials();
+    } catch (ClientExceptionInterface $e) {
+        throw $e;
+    }
+
+    // Second part of OAuth 1.0 authentication is to redirect the
+    // resource owner to the login screen on the server.
+    $request = $client->prepareAuthorizationRequest($temporaryCredentials);
 
     // Store the credentials in the session.
     $_SESSION['temporary_credentials'] = serialize($temporaryCredentials);
     session_write_close();
 
-    // Second part of OAuth 1.0 authentication is to redirect the
-    // resource owner to the login screen on the server.
-    $server->authorize($temporaryCredentials);
+    // Redirect to the authorization request
+    header(sprintf('Location: %s', $request->getUri()));
 
 // Step 1
 } else {
