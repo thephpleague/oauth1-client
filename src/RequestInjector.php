@@ -5,6 +5,7 @@ namespace League\OAuth1\Client;
 use function GuzzleHttp\Psr7\build_query;
 use function GuzzleHttp\Psr7\stream_for;
 use InvalidArgumentException;
+use Psr\Http\Message\MessageInterface;
 use Psr\Http\Message\RequestInterface;
 
 class RequestInjector
@@ -47,7 +48,9 @@ class RequestInjector
     private function injectHeader(RequestInterface $request, array $oauthParameters): RequestInterface
     {
         // Replace the authorization header
-        return $request->withHeader(...$this->createAuthorizationHeader($oauthParameters));
+        $request = $request->withHeader(...$this->createAuthorizationHeader($oauthParameters));
+
+        return $this->fixGuzzleCasting($request);
     }
 
     /**
@@ -58,9 +61,11 @@ class RequestInjector
         $body = build_query($oauthParameters);
 
         // Replace the existing body
-        return $request
+        $request = $request
             ->withHeader('Content-Type', self::FORM_CONTENT_TYPE)
             ->withBody(stream_for($body));
+
+        return $this->fixGuzzleCasting($request);
     }
 
     /**
@@ -99,5 +104,22 @@ class RequestInjector
         $value = sprintf('OAuth %s', implode(', ', $parts));
 
         return ['Authorization', $value];
+    }
+
+    /**
+     * There's an issue where Guzzle type declares the return type of modifying
+     * a `RequestInterface` as a `MessageInterface` due to the use of a shared
+     * trait (as the former extends the latter). This is incorrect according
+     * to PSR-7 and this upsets both PHPStorm and PHPStan. A workaround here
+     * is to change the casting to keep the static analysis tool happy.
+     *
+     * @todo Remove this if/when Guzzle fix their castings
+     */
+    private function fixGuzzleCasting(MessageInterface $request): RequestInterface
+    {
+        /* @var RequestInterface $request */
+
+        // @phpstan-ignore-next-line
+        return $request;
     }
 }
