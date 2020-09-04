@@ -65,14 +65,13 @@ class HmacSignerTest extends MockeryTestCase
      *
      * @dataProvider sampleSigningCombinations
      */
-    public function it_signs_with_client_credentials_only(string $uri, array $oauthParameters, ?array $contextCredentials, string $expectedSignature): void
+    public function it_signs_correctly_with_varying_combinations(string $uri, array $oauthParameters, ?array $contextCredentials, string $expectedSignature): void
     {
         $signer = new HmacSigner(
             $this->clientCredentials,
             $builder = Mockery::mock(BaseStringBuilder::class)
         );
 
-        // This mock just returns a different string based on the given OAuth parameters
         $builder->expects('forRequest')->andReturn($oauthParameters ? json_encode($oauthParameters) : '');
 
         $request = new Request('GET', $uri);
@@ -86,7 +85,7 @@ class HmacSignerTest extends MockeryTestCase
         self::assertEquals(
             $expectedSignature,
             $actualSignature,
-            'The expected signature is generated given the preconditions passed'
+            'The expected HMAC-SHA1 signature is generated given the preconditions passed'
         );
     }
 }

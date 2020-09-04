@@ -2,12 +2,25 @@
 
 namespace League\OAuth1\Client\Signature;
 
+use League\OAuth1\Client\Credentials\ClientCredentials;
 use League\OAuth1\Client\Credentials\Credentials;
 use Psr\Http\Message\RequestInterface;
 
-class HmacSigner extends BaseSigner
+class HmacSigner implements Signer
 {
     private const METHOD = 'HMAC-SHA1';
+
+    /** @var ClientCredentials */
+    protected $clientCredentials;
+
+    /** @var BaseStringBuilder */
+    protected $baseStringBuilder;
+
+    public function __construct(ClientCredentials $clientCredentials, BaseStringBuilder $baseStringBuilder = null)
+    {
+        $this->clientCredentials = $clientCredentials;
+        $this->baseStringBuilder = $baseStringBuilder ?: new BaseStringBuilder();
+    }
 
     public function getMethod(): string
     {
@@ -21,14 +34,22 @@ class HmacSigner extends BaseSigner
      */
     public function sign(RequestInterface $request, array $oauthParameters, Credentials $contextCredentials = null): string
     {
-        $baseString = $this->baseStringBuilder->forRequest($request, $oauthParameters);
+        $signature = hash_hmac(
+            'sha1',
+            $this->baseStringBuilder->forRequest($request, $oauthParameters),
+            $this->getKey($contextCredentials),
+            true
+        );
 
-        $key = sprintf(
+        return base64_encode($signature);
+    }
+
+    private function getKey(?Credentials $contextCredentials): string
+    {
+        return sprintf(
             '%s&%s',
             rawurlencode($this->clientCredentials->getSecret()),
             $contextCredentials ? rawurlencode($contextCredentials->getSecret()) : ''
         );
-
-        return base64_encode(hash_hmac('sha1', $baseString, $key, true));
     }
 }
