@@ -1,8 +1,5 @@
-<?php
+<?php namespace League\OAuth1\Client\Tests;
 
-namespace League\OAuth1\Client\Tests;
-
-use GuzzleHttp\Client;
 use InvalidArgumentException;
 use League\OAuth1\Client\Server\Xing;
 use League\OAuth1\Client\Credentials\ClientCredentials;
@@ -47,7 +44,7 @@ class XingTest extends TestCase
     {
         $server = m::mock('League\OAuth1\Client\Server\Xing[createHttpClient]', array($this->getMockClientCredentials()));
 
-        $server->shouldReceive('createHttpClient')->andReturn($client = m::mock(Client::class));
+        $server->shouldReceive('createHttpClient')->andReturn($client = m::mock('stdClass'));
 
         $me = $this;
         $client->shouldReceive('post')->with('https://api.xing.com/v1/request_token', m::on(function ($options) use ($me) {
@@ -105,7 +102,7 @@ class XingTest extends TestCase
         $temporaryCredentials->shouldReceive('getIdentifier')->andReturn('temporarycredentialsidentifier');
         $temporaryCredentials->shouldReceive('getSecret')->andReturn('temporarycredentialssecret');
 
-        $server->shouldReceive('createHttpClient')->andReturn($client = m::mock(Client::class));
+        $server->shouldReceive('createHttpClient')->andReturn($client = m::mock('stdClass'));
 
         $me = $this;
         $client->shouldReceive('post')->with('https://api.xing.com/v1/access_token', m::on(function ($options) use ($me) {
@@ -142,7 +139,7 @@ class XingTest extends TestCase
         $temporaryCredentials->shouldReceive('getIdentifier')->andReturn('tokencredentialsidentifier');
         $temporaryCredentials->shouldReceive('getSecret')->andReturn('tokencredentialssecret');
 
-        $server->shouldReceive('createHttpClient')->andReturn($client = m::mock(Client::class));
+        $server->shouldReceive('createHttpClient')->andReturn($client = m::mock('stdClass'));
 
         $me = $this;
         $client->shouldReceive('get')->with('https://api.xing.com/v1/users/me', m::on(function ($options) use ($me) {

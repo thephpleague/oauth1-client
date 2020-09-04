@@ -8,11 +8,15 @@ use League\OAuth1\Client\Signature\SignatureInterface;
 
 class Uservoice extends Server
 {
-    /** @var string*/
+    /**
+     * The base URL, used to generate the auth endpoints.
+     *
+     * @var string
+     */
     protected $base;
 
     /**
-     * {@inheritDoc}
+     * @inheritDoc
      */
     public function __construct($clientCredentials, SignatureInterface $signature = null)
     {
@@ -23,27 +27,42 @@ class Uservoice extends Server
         }
     }
 
-    public function urlTemporaryCredentials(): string
+    /**
+     * @inheritDoc
+     */
+    public function urlTemporaryCredentials()
     {
         return $this->base . '/oauth/request_token';
     }
 
-    public function urlAuthorization(): string
+    /**
+     * @inheritDoc
+     */
+    public function urlAuthorization()
     {
         return $this->base . '/oauth/authorize';
     }
 
-    public function urlTokenCredentials(): string
+    /**
+     * @inheritDoc
+     */
+    public function urlTokenCredentials()
     {
         return $this->base . '/oauth/access_token';
     }
 
-    public function urlUserDetails(): string
+    /**
+     * @inheritDoc
+     */
+    public function urlUserDetails()
     {
         return $this->base . '/api/v1/users/current.json';
     }
 
-    public function userDetails($data, TokenCredentials $tokenCredentials): User
+    /**
+     * @inheritDoc
+     */
+    public function userDetails($data, TokenCredentials $tokenCredentials)
     {
         $user = new User();
 
@@ -77,12 +96,18 @@ class Uservoice extends Server
         return $data['user']['id'];
     }
 
-    public function userEmail($data, TokenCredentials $tokenCredentials):? string
+    /**
+     * @inheritDoc
+     */
+    public function userEmail($data, TokenCredentials $tokenCredentials)
     {
         return $data['user']['email'];
     }
 
-    public function userScreenName($data, TokenCredentials $tokenCredentials):? string
+    /**
+     * @inheritDoc
+     */
+    public function userScreenName($data, TokenCredentials $tokenCredentials)
     {
         return $data['user']['name'];
     }
@@ -90,9 +115,13 @@ class Uservoice extends Server
     /**
      * Parse configuration array to set attributes.
      *
-     * @throws InvalidArgumentException If the configuration is missing a host
+     * @param array $configuration
+     *
+     * @return void
+     *
+     * @throws InvalidArgumentException
      */
-    private function parseConfigurationArray(array $configuration = []): void
+    private function parseConfigurationArray(array $configuration = [])
     {
         if (isset($configuration['host'])) {
             throw new InvalidArgumentException('Missing host');
