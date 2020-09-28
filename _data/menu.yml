@@ -1,0 +1,15 @@
+Getting Started:
+    Introduction: '/'
+    Terminology: '/terminology'
+    Requirements: '/requirements'
+    Installation: '/installation'
+    PSR-first: '/psr-first'
+
+OAuth 1 Authentication:
+    Authentication Flow: '/authentication-flow'
+
+Providers:
+    Included Providers: '/providers'
+
+Advanced:
+    Customization: '/customization'
