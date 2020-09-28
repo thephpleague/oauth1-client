@@ -71,6 +71,42 @@ class BaseStringBuilderTest extends TestCase
             'POST&https%3A%2F%2Fapi.example.com%2Frequest-temporary-credentials&oauth_callback%3Dhttps%253A%252F%252Fapi.client.com%252Fcallback%26oauth_consumer_key%3D9djdj82h48djs9d2%26oauth_signature_method%3DHMAC-SHA1',
         ];
 
+        /* @link https://tools.ietf.org/html/rfc5849#section-3.4.1.2 Item (3) */
+        yield 'Basic temporary credentials call with non standard ports' => [
+            'POST',
+            'https://api.example.com:8080/request-temporary-credentials?oauth_callback=https%3A%2F%2Fapi.client.com%2Fcallback',
+            null,
+            [
+                'oauth_consumer_key'     => '9djdj82h48djs9d2',
+                'oauth_signature_method' => 'HMAC-SHA1',
+            ],
+            'POST&https%3A%2F%2Fapi.example.com%3A8080%2Frequest-temporary-credentials&oauth_callback%3Dhttps%253A%252F%252Fapi.client.com%252Fcallback%26oauth_consumer_key%3D9djdj82h48djs9d2%26oauth_signature_method%3DHMAC-SHA1',
+        ];
+
+        /* @link https://tools.ietf.org/html/rfc5849#section-3.4.1.2 Item (3) */
+        yield 'Basic temporary credentials call with standard HTTPS port specified should not be included' => [
+            'POST',
+            'https://api.example.com:443/request-temporary-credentials?oauth_callback=https%3A%2F%2Fapi.client.com%2Fcallback',
+            null,
+            [
+                'oauth_consumer_key'     => '9djdj82h48djs9d2',
+                'oauth_signature_method' => 'HMAC-SHA1',
+            ],
+            'POST&https%3A%2F%2Fapi.example.com%2Frequest-temporary-credentials&oauth_callback%3Dhttps%253A%252F%252Fapi.client.com%252Fcallback%26oauth_consumer_key%3D9djdj82h48djs9d2%26oauth_signature_method%3DHMAC-SHA1',
+        ];
+
+        /* @link https://tools.ietf.org/html/rfc5849#section-3.4.1.2 Item (3) */
+        yield 'Basic temporary credentials call with standard HTTP port specified should not be included' => [
+            'POST',
+            'http://api.example.com:80/request-temporary-credentials?oauth_callback=https%3A%2F%2Fapi.client.com%2Fcallback',
+            null,
+            [
+                'oauth_consumer_key'     => '9djdj82h48djs9d2',
+                'oauth_signature_method' => 'HMAC-SHA1',
+            ],
+            'POST&http%3A%2F%2Fapi.example.com%2Frequest-temporary-credentials&oauth_callback%3Dhttps%253A%252F%252Fapi.client.com%252Fcallback%26oauth_consumer_key%3D9djdj82h48djs9d2%26oauth_signature_method%3DHMAC-SHA1',
+        ];
+
         yield 'Realm OAuth parameter is ignored' => [
             'POST',
             'https://api.example.com/request-temporary-credentials',
