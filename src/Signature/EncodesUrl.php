@@ -37,6 +37,7 @@ trait EncodesUrl
         $schemeHostPath = Uri::fromParts([
             'scheme' => $url->getScheme(),
             'host' => $url->getHost(),
+            'port' => $url->getPort(),
             'path' => $url->getPath(),
         ]);
 
