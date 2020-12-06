@@ -48,7 +48,7 @@ trait EncodesUrl
         $data = array_merge($query, $parameters);
 
         // normalize data key/values
-        array_walk_recursive($data, function (&$key, &$value) {
+        array_walk_recursive($data, function (&$key, $value) {
             $key = rawurlencode(rawurldecode($key));
             $value = rawurlencode(rawurldecode($value));
         });
