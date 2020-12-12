@@ -74,12 +74,9 @@ class Uservoice extends Server
         if ($data['user']['name']) {
             $parts = explode(' ', $data['user']['name']);
 
-            if (count($parts) > 0) {
-                $user->firstName = $parts[0];
-            }
-
+            $user->firstName = $parts[0];
             if (count($parts) > 1) {
-                $user->lastName = $parts[1];
+                $user->lastName = array_pop($parts);
             }
         }
 
