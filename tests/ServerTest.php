@@ -123,6 +123,16 @@ class ServerTest extends TestCase
         $this->assertEquals($expected, $server->getAuthorizationUrl($credentials));
     }
 
+    public function testGettingAuthorizationUrlWithOptions()
+    {
+        $server = new ServerStub($this->getMockClientCredentials());
+        $expected = 'http://www.example.com/authorize?oauth_token=foo';
+        $this->assertEquals($expected, $server->getAuthorizationUrl('foo', ['oauth_token' => 'bar']));
+
+        $expected = 'http://www.example.com/authorize?test=bar&oauth_token=foo';
+        $this->assertEquals($expected, $server->getAuthorizationUrl('foo', ['test' => 'bar']));
+    }
+
     public function testGettingTokenCredentialsFailsWithManInTheMiddle()
     {
         $server = new ServerStub($this->getMockClientCredentials());
