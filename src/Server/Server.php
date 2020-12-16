@@ -113,10 +113,11 @@ abstract class Server
      * identifier or an object instance.
      *
      * @param TemporaryCredentials|string $temporaryIdentifier
+     * @param array                       $options
      *
      * @return string
      */
-    public function getAuthorizationUrl($temporaryIdentifier)
+    public function getAuthorizationUrl($temporaryIdentifier, array $options = [])
     {
         // Somebody can pass through an instance of temporary
         // credentials and we'll extract the identifier from there.
@@ -124,7 +125,7 @@ abstract class Server
             $temporaryIdentifier = $temporaryIdentifier->getIdentifier();
         }
 
-        $parameters = ['oauth_token' => $temporaryIdentifier];
+        $parameters = array_merge($options, ['oauth_token' => $temporaryIdentifier]);
 
         $url = $this->urlAuthorization();
         $queryString = http_build_query($parameters);
