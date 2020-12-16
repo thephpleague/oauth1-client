@@ -3,6 +3,7 @@
 namespace Credentials;
 
 use League\OAuth1\Client\Credentials\RsaKeyPair;
+use OpenSSLAsymmetricKey;
 use PHPStan\Testing\TestCase;
 use RuntimeException;
 
@@ -17,7 +18,14 @@ class RsaKeyPairTest extends TestCase
             'a-passphrase'
         );
 
-        self::assertIsResource($keyPair->getPublicKey());
+        /** @var resource|OpenSSLAsymmetricKey $key */
+        $key = $keyPair->getPublicKey();
+
+        if ($this->isPhp8OrNewer()) {
+            self::assertInstanceOf(OpenSSLAsymmetricKey::class, $key);
+        } else {
+            self::assertIsResource($key);
+        }
     }
 
     /** @test */
@@ -42,7 +50,14 @@ class RsaKeyPairTest extends TestCase
             'a-passphrase'
         );
 
-        self::assertIsResource($keyPair->getPrivateKey());
+        /** @var resource|OpenSSLAsymmetricKey $key */
+        $key = $keyPair->getPrivateKey();
+
+        if ($this->isPhp8OrNewer()) {
+            self::assertInstanceOf(OpenSSLAsymmetricKey::class, $key);
+        } else {
+            self::assertIsResource($key);
+        }
     }
 
     /** @test */
@@ -70,5 +85,10 @@ class RsaKeyPairTest extends TestCase
         $this->expectException(RuntimeException::class);
 
         $keyPair->getPrivateKey();
+    }
+
+    private function isPhp8OrNewer(): bool
+    {
+        return PHP_MAJOR_VERSION >= 8;
     }
 }

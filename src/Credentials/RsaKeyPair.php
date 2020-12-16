@@ -2,6 +2,7 @@
 
 namespace League\OAuth1\Client\Credentials;
 
+use OpenSSLAsymmetricKey;
 use RuntimeException;
 
 class RsaKeyPair
@@ -15,10 +16,10 @@ class RsaKeyPair
     /** @var string|null */
     private $passphrase;
 
-    /** @var resource|null */
+    /** @var resource|OpenSSLAsymmetricKey|null */
     private $publicKey;
 
-    /** @var resource|null */
+    /** @var resource|OpenSSLAsymmetricKey|null */
     private $privateKey;
 
     public function __construct(string $publicKeyPath, string $privateKeyPath, string $passphrase = null)
@@ -29,7 +30,7 @@ class RsaKeyPair
     }
 
     /**
-     * @return resource|null
+     * @return resource|OpenSSLAsymmetricKey
      */
     public function getPublicKey()
     {
@@ -50,7 +51,7 @@ class RsaKeyPair
     }
 
     /**
-     * @return resource|null
+     * @return resource|OpenSSLAsymmetricKey
      */
     public function getPrivateKey()
     {
@@ -75,11 +76,11 @@ class RsaKeyPair
 
     public function __destruct()
     {
-        if (is_resource($this->publicKey)) {
+        if ( ! is_null($this->publicKey)) {
             openssl_free_key($this->publicKey);
         }
 
-        if (is_resource($this->privateKey)) {
+        if ( ! is_null($this->privateKey)) {
             openssl_free_key($this->privateKey);
         }
     }
