@@ -11,7 +11,7 @@
     "require-dev": {
         "ext-simplexml": "*",
         "phpunit/phpunit": "^7.5||9.5",
-        "mockery/mockery": "^1.3",
+        "mockery/mockery": "^1.3.3",
         "phpstan/phpstan": "^0.12.42",
         "friendsofphp/php-cs-fixer": "^2.17"
     },
