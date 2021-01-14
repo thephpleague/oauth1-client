@@ -13,12 +13,12 @@
         "phpunit/phpunit": "^7.5||9.5",
         "mockery/mockery": "^1.3",
         "phpstan/phpstan": "^0.12.42",
-        "friendsofphp/php-cs-fixer": "^2.16.9"
+        "friendsofphp/php-cs-fixer": "^2.17"
     },
     "scripts": {
         "analyze": "vendor/bin/phpstan analyse -l 6 src/",
-        "php-cs-fixer:lint": "vendor/bin/php-cs-fixer fix --verbose --dry-run",
-        "php-cs-fixer:format": "vendor/bin/php-cs-fixer fix",
+        "php-cs-fixer:lint": "PHP_CS_FIXER_IGNORE_ENV=1 vendor/bin/php-cs-fixer fix --verbose --dry-run",
+        "php-cs-fixer:format": "PHP_CS_FIXER_IGNORE_ENV=1 vendor/bin/php-cs-fixer fix",
         "test:unit": "vendor/bin/phpunit --coverage-text --coverage-clover coverage.xml"
     },
     "suggest": {
