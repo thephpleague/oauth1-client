@@ -8,3 +8,4 @@ parameters:
         -
             message: '#invalid type OpenSSLAsymmetricKey#'
             path: src/Credentials/RsaClientCredentials.php
+    reportUnmatchedIgnoredErrors: false
