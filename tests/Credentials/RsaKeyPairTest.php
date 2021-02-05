@@ -3,7 +3,7 @@
 namespace Credentials;
 
 use League\OAuth1\Client\Credentials\RsaKeyPair;
-use PHPStan\Testing\TestCase;
+use PHPUnit\Framework\TestCase;
 use RuntimeException;
 
 class RsaKeyPairTest extends TestCase
@@ -17,7 +17,9 @@ class RsaKeyPairTest extends TestCase
             'a-passphrase'
         );
 
-        self::assertIsResource($keyPair->getPublicKey());
+        $keyPair->getPublicKey();
+
+        $this->addToAssertionCount(1);
     }
 
     /** @test */
@@ -42,7 +44,9 @@ class RsaKeyPairTest extends TestCase
             'a-passphrase'
         );
 
-        self::assertIsResource($keyPair->getPrivateKey());
+        $keyPair->getPrivateKey();
+
+        $this->addToAssertionCount(1);
     }
 
     /** @test */
@@ -70,5 +74,10 @@ class RsaKeyPairTest extends TestCase
         $this->expectException(RuntimeException::class);
 
         $keyPair->getPrivateKey();
+    }
+
+    private function isPhp8OrNewer(): bool
+    {
+        return PHP_MAJOR_VERSION >= 8;
     }
 }

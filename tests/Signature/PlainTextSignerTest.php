@@ -6,7 +6,7 @@ use GuzzleHttp\Psr7\Request;
 use League\OAuth1\Client\Credentials\ClientCredentials;
 use League\OAuth1\Client\Credentials\Credentials;
 use League\OAuth1\Client\Signature\PlainTextSigner;
-use PHPStan\Testing\TestCase;
+use PHPUnit\Framework\TestCase;
 
 class PlainTextSignerTest extends TestCase
 {

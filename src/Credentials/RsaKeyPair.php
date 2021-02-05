@@ -15,10 +15,10 @@ class RsaKeyPair
     /** @var string|null */
     private $passphrase;
 
-    /** @var resource|null */
+    /** @var RsaKey|null */
     private $publicKey;
 
-    /** @var resource|null */
+    /** @var RsaKey|null */
     private $privateKey;
 
     public function __construct(string $publicKeyPath, string $privateKeyPath, string $passphrase = null)
@@ -28,10 +28,7 @@ class RsaKeyPair
         $this->passphrase     = $passphrase;
     }
 
-    /**
-     * @return resource|null
-     */
-    public function getPublicKey()
+    public function getPublicKey(): RsaKey
     {
         if (null === $this->publicKey) {
             $publicKey = openssl_pkey_get_public(sprintf('file://%s', $this->publicKeyPath));
@@ -43,16 +40,13 @@ class RsaKeyPair
                 ));
             }
 
-            $this->publicKey = $publicKey;
+            $this->publicKey = new RsaKey($publicKey);
         }
 
         return $this->publicKey;
     }
 
-    /**
-     * @return resource|null
-     */
-    public function getPrivateKey()
+    public function getPrivateKey(): RsaKey
     {
         if (null === $this->privateKey) {
             $privateKey = openssl_pkey_get_private(
@@ -67,20 +61,9 @@ class RsaKeyPair
                 ));
             }
 
-            $this->privateKey = $privateKey;
+            $this->privateKey = new RsaKey($privateKey);
         }
 
         return $this->privateKey;
-    }
-
-    public function __destruct()
-    {
-        if (is_resource($this->publicKey)) {
-            openssl_free_key($this->publicKey);
-        }
-
-        if (is_resource($this->privateKey)) {
-            openssl_free_key($this->privateKey);
-        }
     }
 }
