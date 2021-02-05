@@ -66,15 +66,4 @@ class RsaKeyPair
 
         return $this->privateKey;
     }
-
-    public function __destruct()
-    {
-        if ( ! is_null($this->publicKey)) {
-            openssl_free_key($this->publicKey->getRaw());
-        }
-
-        if ( ! is_null($this->privateKey)) {
-            openssl_free_key($this->privateKey->getRaw());
-        }
-    }
 }

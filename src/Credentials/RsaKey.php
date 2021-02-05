@@ -24,4 +24,12 @@ class RsaKey
     {
         return $this->raw;
     }
+
+    public function __destruct()
+    {
+        // In PHP 8, this function is deprecated and is no longer required
+        if (PHP_MAJOR_VERSION < 8) {
+            openssl_pkey_free($this->getRaw());
+        }
+    }
 }
