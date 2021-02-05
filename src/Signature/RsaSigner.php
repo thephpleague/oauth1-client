@@ -40,7 +40,7 @@ class RsaSigner implements Signer
         openssl_sign(
             $this->baseStringBuilder->forRequest($request, $oauthParameters),
             $signature,
-            $this->keyPair->getPrivateKey()
+            $this->keyPair->getPrivateKey()->getRaw()
         );
 
         return base64_encode($signature);

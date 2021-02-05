@@ -18,14 +18,9 @@ class RsaKeyPairTest extends TestCase
             'a-passphrase'
         );
 
-        /** @var resource|OpenSSLAsymmetricKey $key */
-        $key = $keyPair->getPublicKey();
+        $keyPair->getPublicKey();
 
-        if ($this->isPhp8OrNewer()) {
-            self::assertInstanceOf(OpenSSLAsymmetricKey::class, $key);
-        } else {
-            self::assertIsResource($key);
-        }
+        $this->addToAssertionCount(1);
     }
 
     /** @test */
@@ -50,14 +45,9 @@ class RsaKeyPairTest extends TestCase
             'a-passphrase'
         );
 
-        /** @var resource|OpenSSLAsymmetricKey $key */
-        $key = $keyPair->getPrivateKey();
+        $keyPair->getPrivateKey();
 
-        if ($this->isPhp8OrNewer()) {
-            self::assertInstanceOf(OpenSSLAsymmetricKey::class, $key);
-        } else {
-            self::assertIsResource($key);
-        }
+        $this->addToAssertionCount(1);
     }
 
     /** @test */
