@@ -3,8 +3,7 @@
 namespace Credentials;
 
 use League\OAuth1\Client\Credentials\RsaKeyPair;
-use OpenSSLAsymmetricKey;
-use PHPStan\Testing\TestCase;
+use PHPUnit\Framework\TestCase;
 use RuntimeException;
 
 class RsaKeyPairTest extends TestCase
