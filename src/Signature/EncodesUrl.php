@@ -4,6 +4,7 @@ namespace League\OAuth1\Client\Signature;
 
 use GuzzleHttp\Psr7;
 use GuzzleHttp\Psr7\Uri;
+use function GuzzleHttp\Psr7\uri_for;
 use Psr\Http\Message\UriInterface;
 
 trait EncodesUrl
@@ -17,6 +18,11 @@ trait EncodesUrl
      */
     protected function createUrl($uri)
     {
+        if (method_exists(Psr7\Utils::class, 'uriFor')) {
+            return Psr7\Utils::uriFor($uri);
+        }
+
+        // Deprecated, removed in Guzzle 7.2
         return Psr7\uri_for($uri);
     }
 
