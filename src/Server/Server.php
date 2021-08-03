@@ -553,6 +553,17 @@ abstract class Server
     }
 
     /**
+     * Any additional required protocol parameters for an
+     * OAuth request to get temporary credentials.
+     *
+     * @return array
+     */
+    protected function additionalTemporaryCredentialsProtocolParameters()
+    {
+        return [];
+    }
+
+    /**
      * Generate the OAuth protocol header for a temporary credentials
      * request, based on the URI.
      *
@@ -562,9 +573,13 @@ abstract class Server
      */
     protected function temporaryCredentialsProtocolHeader($uri)
     {
-        $parameters = array_merge($this->baseProtocolParameters(), [
-            'oauth_callback' => $this->clientCredentials->getCallbackUri(),
-        ]);
+        $parameters = array_merge(
+            $this->baseProtocolParameters(),
+            $this->additionalTemporaryCredentialsProtocolParameters(),
+            [
+                'oauth_callback' => $this->clientCredentials->getCallbackUri(),
+            ]
+        );
 
         $parameters['oauth_signature'] = $this->signature->sign($uri, $parameters, 'POST');
 
