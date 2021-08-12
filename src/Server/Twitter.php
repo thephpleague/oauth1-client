@@ -10,9 +10,9 @@ class Twitter extends Server
     /**
      * Application scope.
      *
-     * @var string
+     * @var ?string
      */
-    protected $applicationScope;
+    protected $applicationScope = null;
 
     /**
      * @inheritDoc
@@ -29,7 +29,7 @@ class Twitter extends Server
     /**
      * Set the application scope.
      *
-     * @param string $applicationScope
+     * @param ?string $applicationScope
      *
      * @return Twitter
      */
@@ -43,11 +43,11 @@ class Twitter extends Server
     /**
      * Get application scope.
      *
-     * @return string
+     * @return ?string
      */
     public function getApplicationScope()
     {
-        return $this->applicationScope ?: 'read';
+        return $this->applicationScope;
     }
 
     /**
@@ -55,7 +55,10 @@ class Twitter extends Server
      */
     public function urlTemporaryCredentials()
     {
-        return 'https://api.twitter.com/oauth/request_token';
+        $url = 'https://api.twitter.com/oauth/request_token';
+        $queryParams = $this->temporaryCredentialsQueryParameters();
+
+        return empty($queryParams) ? $url : $url . '?' . $queryParams;
     }
 
     /**
@@ -143,13 +146,19 @@ class Twitter extends Server
     }
 
     /**
-     * @inheritDoc
+     * Query parameters for a Twitter OAuth request to get temporary credentials.
+     *
+     * @return string
      */
-    protected function additionalTemporaryCredentialsProtocolParameters()
+    protected function temporaryCredentialsQueryParameters()
     {
-        return [
-            'x_auth_access_type' => $this->getApplicationScope()
-        ];
+        $queryParams = [];
+
+        if ($scope = $this->getApplicationScope()) {
+            $queryParams['x_auth_access_type'] = $scope;
+        }
+
+        return http_build_query($queryParams);
     }
 
     /**
