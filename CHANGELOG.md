@@ -1,5 +1,9 @@
 # Changelog
 
+## v1.10.0
+
+- Adds customizable application scope (setting the `x_auth_access_type` query parameter when fetching temporary credentials) on the Twitter provider - thanks to @Diegslapasteque
+
 ## v1.9.3
 
 - Reverts bug in `v1.9.1` and will reintroduce `x_auth_access_type` to Twitter provider in `v1.10.0`.
