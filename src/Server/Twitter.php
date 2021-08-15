@@ -7,11 +7,57 @@ use League\OAuth1\Client\Credentials\TokenCredentials;
 class Twitter extends Server
 {
     /**
+     * Application scope.
+     *
+     * @var ?string
+     */
+    protected $applicationScope = null;
+
+    /**
+     * @inheritDoc
+     */
+    public function __construct($clientCredentials, SignatureInterface $signature = null)
+    {
+        parent::__construct($clientCredentials, $signature);
+
+        if (is_array($clientCredentials)) {
+            $this->parseConfiguration($clientCredentials);
+        }
+    }
+
+    /**
+     * Set the application scope.
+     *
+     * @param ?string $applicationScope
+     *
+     * @return Twitter
+     */
+    public function setApplicationScope($applicationScope)
+    {
+        $this->applicationScope = $applicationScope;
+
+        return $this;
+    }
+
+    /**
+     * Get application scope.
+     *
+     * @return ?string
+     */
+    public function getApplicationScope()
+    {
+        return $this->applicationScope;
+    }
+
+    /**
      * @inheritDoc
      */
     public function urlTemporaryCredentials()
     {
-        return 'https://api.twitter.com/oauth/request_token';
+        $url = 'https://api.twitter.com/oauth/request_token';
+        $queryParams = $this->temporaryCredentialsQueryParameters();
+
+        return empty($queryParams) ? $url : $url . '?' . $queryParams;
     }
 
     /**
@@ -96,5 +142,41 @@ class Twitter extends Server
     public function userScreenName($data, TokenCredentials $tokenCredentials)
     {
         return $data['name'];
+    }
+
+    /**
+     * Query parameters for a Twitter OAuth request to get temporary credentials.
+     *
+     * @return string
+     */
+    protected function temporaryCredentialsQueryParameters()
+    {
+        $queryParams = [];
+
+        if ($scope = $this->getApplicationScope()) {
+            $queryParams['x_auth_access_type'] = $scope;
+        }
+
+        return http_build_query($queryParams);
+    }
+
+    /**
+     * Parse configuration array to set attributes.
+     *
+     * @param array $configuration
+     *
+     * @return void
+     */
+    private function parseConfiguration(array $configuration = [])
+    {
+        $configToPropertyMap = [
+            'scope' => 'applicationScope',
+        ];
+
+        foreach ($configToPropertyMap as $config => $property) {
+            if (isset($configuration[$config])) {
+                $this->$property = $configuration[$config];
+            }
+        }
     }
 }

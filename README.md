@@ -137,6 +137,7 @@ $server = new League\OAuth1\Client\Server\Twitter([
     'identifier' => 'your-identifier',
     'secret' => 'your-secret',
     'callback_uri' => "http://your-callback-uri/",
+    'scope' => 'your-application-scope' // optional ('read', 'write'), empty by default
 ]);
 ```
 
