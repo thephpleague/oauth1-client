@@ -414,6 +414,10 @@ abstract class Server
             $_clientCredentials = new RsaClientCredentials();
             $_clientCredentials->setRsaPrivateKey($clientCredentials['rsa_private_key']);
             $_clientCredentials->setRsaPublicKey($clientCredentials['rsa_public_key']);
+        } else if (isset($clientCredentials['rsa_private_key_content']) && isset($clientCredentials['rsa_public_key_content'])) {
+            $_clientCredentials = new RsaClientCredentials();
+            $_clientCredentials->setRsaPrivateKeyContent($clientCredentials['rsa_private_key_content']);
+            $_clientCredentials->setRsaPublicKeyContent($clientCredentials['rsa_public_key_content']);
         } else {
             $_clientCredentials = new ClientCredentials();
         }

@@ -57,6 +57,23 @@ class ServerTest extends TestCase
         $signature = $server->getSignature();
         $this->assertInstanceOf(RsaSha1Signature::class, $signature);
     }
+    public function testCreatingWithArrayRsaContent()
+    {
+        $config = [
+            'identifier' => 'app_key',
+            'secret' => 'secret',
+            'callback_uri' => 'https://example.com/callback',
+            'rsa_public_key_content' => file_get_contents(__DIR__ . '/test_rsa_publickey.pem'),
+            'rsa_private_key_content' => file_get_contents(__DIR__ . '/test_rsa_privatekey.pem'),
+        ];
+        $server = new ServerStub($config);
+
+        $credentials = $server->getClientCredentials();
+        $this->assertInstanceOf(RsaClientCredentials::class, $credentials);
+
+        $signature = $server->getSignature();
+        $this->assertInstanceOf(RsaSha1Signature::class, $signature);
+    }
 
     public function testCreatingWithObject()
     {

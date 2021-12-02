@@ -26,6 +26,16 @@ class RsaSha1SignatureTest extends TestCase
         $this->assertEquals('h8vpV4CYnLwss+rWicKE4sY6AiW2+DT6Fe7qB8jA7LSLhX5jvLEeX1D8E2ynSePSksAY48j+OSLu9vo5juS2duwNK8UA2Rtnnvuj6UFxpx70dpjHAsQg6EbycGptL/SChDkxfpG8LhuwX1FlFa+H0jLYXI5Dy8j90g51GRJbj48=', $signature->sign($uri, $parameters));
     }
 
+    public function testSigningRequestByKeyValue()
+    {
+        $signature = new RsaSha1Signature($this->getClientCredentialsByKeyValues());
+
+        $uri = 'http://www.example.com/?qux=corge';
+        $parameters = ['foo' => 'bar', 'baz' => null];
+
+        $this->assertEquals('h8vpV4CYnLwss+rWicKE4sY6AiW2+DT6Fe7qB8jA7LSLhX5jvLEeX1D8E2ynSePSksAY48j+OSLu9vo5juS2duwNK8UA2Rtnnvuj6UFxpx70dpjHAsQg6EbycGptL/SChDkxfpG8LhuwX1FlFa+H0jLYXI5Dy8j90g51GRJbj48=', $signature->sign($uri, $parameters));
+    }
+
     public function testQueryStringFromArray()
     {
         $array = ['a' => 'b'];
@@ -142,6 +152,15 @@ class RsaSha1SignatureTest extends TestCase
         $credentials = new RsaClientCredentials();
         $credentials->setRsaPublicKey(__DIR__ . '/test_rsa_publickey.pem');
         $credentials->setRsaPrivateKey(__DIR__ . '/test_rsa_privatekey.pem');
+
+        return $credentials;
+    }
+
+    protected function getClientCredentialsByKeyValues()
+    {
+        $credentials = new RsaClientCredentials();
+        $credentials->setRsaPublicKeyContent(file_get_contents(__DIR__ . '/test_rsa_publickey.pem'));
+        $credentials->setRsaPrivateKeyContent(file_get_contents(__DIR__ . '/test_rsa_privatekey.pem'));
 
         return $credentials;
     }
