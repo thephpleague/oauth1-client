@@ -127,6 +127,7 @@ class User implements \IteratorAggregate
     /**
      * @inheritDoc
      */
+    #[\ReturnTypeWillChange]
     public function getIterator()
     {
         return new ArrayIterator(get_object_vars($this));
