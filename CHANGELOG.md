@@ -1,5 +1,9 @@
 # Changelog
 
+## v1.10.1
+
+- Fix deprecation error (#147)
+
 ## v1.10.0
 
 - Adds customizable application scope (setting the `x_auth_access_type` query parameter when fetching temporary credentials) on the Twitter provider - thanks to @Diegslapasteque
