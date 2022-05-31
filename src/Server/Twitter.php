@@ -3,6 +3,7 @@
 namespace League\OAuth1\Client\Server;
 
 use League\OAuth1\Client\Credentials\TokenCredentials;
+use League\OAuth1\Client\Signature\SignatureInterface;
 
 class Twitter extends Server
 {
