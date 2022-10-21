@@ -57,6 +57,28 @@ class HmacSha1SignatureTest extends TestCase
         );
     }
 
+    public function testQueryStringFromMultiValueArray()
+    {
+        $array = ['test' => ['789', '1234']];
+        $res = $this->invokeQueryStringFromData($array);
+
+        $this->assertSame(
+            'test%3D1234%26test%3D789',
+            $res
+        );
+    }
+
+    public function testQueryStringFromMultiValueNumericArray()
+    {
+        $array = ['test' => [789, 1234]];
+        $res = $this->invokeQueryStringFromData($array);
+
+        $this->assertSame(
+            'test%3D1234%26test%3D789',
+            $res
+        );
+    }
+
     public function testQueryStringFromMultiDimensionalArray()
     {
         $array = [
@@ -78,7 +100,7 @@ class HmacSha1SignatureTest extends TestCase
         $res = $this->invokeQueryStringFromData($array);
 
         $this->assertSame(
-            'a%5Bb%5D%5Bc%5D%3Dd%26a%5Be%5D%5Bf%5D%3Dg%26h%3Di%26empty%3D%26null%3D%26false%3D',
+            'a%5Bb%5D%5Bc%5D%3Dd%26a%5Be%5D%5Bf%5D%3Dg%26empty%3D%26false%3D%26h%3Di%26null%3D',
             $res
         );
 
@@ -86,7 +108,7 @@ class HmacSha1SignatureTest extends TestCase
         $res = urldecode($res);
 
         $this->assertSame(
-            'a[b][c]=d&a[e][f]=g&h=i&empty=&null=&false=',
+            'a[b][c]=d&a[e][f]=g&empty=&false=&h=i&null=',
             $res
         );
 
@@ -104,10 +126,10 @@ class HmacSha1SignatureTest extends TestCase
                         'f' => 'g',
                     ],
                 ],
-                'h' => 'i',
                 'empty' => '',
-                'null' => '', // null value gets lost in string translation
                 'false' => '', // false value gets lost in string translation
+                'h' => 'i',
+                'null' => '', // null value gets lost in string translation
             ],
             $original_array
         );
