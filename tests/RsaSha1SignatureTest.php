@@ -26,106 +26,6 @@ class RsaSha1SignatureTest extends TestCase
         $this->assertEquals('h8vpV4CYnLwss+rWicKE4sY6AiW2+DT6Fe7qB8jA7LSLhX5jvLEeX1D8E2ynSePSksAY48j+OSLu9vo5juS2duwNK8UA2Rtnnvuj6UFxpx70dpjHAsQg6EbycGptL/SChDkxfpG8LhuwX1FlFa+H0jLYXI5Dy8j90g51GRJbj48=', $signature->sign($uri, $parameters));
     }
 
-    public function testQueryStringFromArray()
-    {
-        $array = ['a' => 'b'];
-        $res = $this->invokeQueryStringFromData($array);
-
-        $this->assertSame(
-            'a%3Db',
-            $res
-        );
-    }
-
-    public function testQueryStringFromIndexedArray()
-    {
-        $array = ['a', 'b'];
-        $res = $this->invokeQueryStringFromData($array);
-
-        $this->assertSame(
-            '0%3Da%261%3Db',
-            $res
-        );
-    }
-
-    public function testQueryStringFromMultiValueArray()
-    {
-        $array = ['test' => ['789', '1234']];
-        $res = $this->invokeQueryStringFromData($array);
-
-        $this->assertSame(
-            'test%3D1234%26test%3D789',
-            $res
-        );
-    }
-
-    public function testQueryStringFromMultiValueNumericArray()
-    {
-        $array = ['test' => [789, 1234]];
-        $res = $this->invokeQueryStringFromData($array);
-
-        $this->assertSame(
-            'test%3D1234%26test%3D789',
-            $res
-        );
-    }
-
-    public function testQueryStringFromMultiDimensionalArray()
-    {
-        $array = [
-            'a' => [
-                'b' => [
-                    'c' => 'd',
-                ],
-                'e' => [
-                    'f' => 'g',
-                ],
-            ],
-            'h' => 'i',
-            'empty' => '',
-            'null' => null,
-            'false' => false,
-        ];
-
-        // Convert to query string.
-        $res = $this->invokeQueryStringFromData($array);
-
-        $this->assertSame(
-            'a%5Bb%5D%5Bc%5D%3Dd%26a%5Be%5D%5Bf%5D%3Dg%26empty%3D%26false%3D%26h%3Di%26null%3D',
-            $res
-        );
-
-        // Reverse engineer the string.
-        $res = urldecode($res);
-
-        $this->assertSame(
-            'a[b][c]=d&a[e][f]=g&empty=&false=&h=i&null=',
-            $res
-        );
-
-        // Finally, parse the string back to an array.
-        parse_str($res, $original_array);
-
-        // And ensure it matches the orignal array (approximately).
-        $this->assertSame(
-            [
-                'a' => [
-                    'b' => [
-                        'c' => 'd',
-                    ],
-                    'e' => [
-                        'f' => 'g',
-                    ],
-                ],
-                'empty' => '',
-                'false' => '', // false value gets lost in string translation
-                'h' => 'i',
-                'null' => '', // null value gets lost in string translation
-            ],
-            $original_array
-        );
-    }
-
     public function testSigningRequestWithMultiDimensionalParams()
     {
         $signature = new RsaSha1Signature($this->getClientCredentials());
@@ -147,16 +47,6 @@ class RsaSha1SignatureTest extends TestCase
         ];
 
         $this->assertEquals('X9EkmOEbA5CoF2Hicf3ciAumpp1zkKxnVZkh/mEwWyF2DDcrfou9XF11WvbBu3G4loJGeX4GY1FsIrQpsjEILbn0e7Alyii/x8VA9mBwdqMhQVl49jF0pdowocc03M04cAbAOMNObT7tMmDs+YTFgRxEGCiUkq9AizP1cW3+eBo=', $signature->sign($uri, $parameters));
-    }
-
-    protected function invokeQueryStringFromData(array $args)
-    {
-        $signature = new RsaSha1Signature(Mockery::mock(ClientCredentialsInterface::class));
-        $refl = new \ReflectionObject($signature);
-        $method = $refl->getMethod('queryStringFromData');
-        $method->setAccessible(true);
-
-        return $method->invokeArgs($signature, [$args]);
     }
 
     protected function getClientCredentials()
