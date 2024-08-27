@@ -54,7 +54,7 @@ class Twitter extends Server
      */
     public function urlTemporaryCredentials()
     {
-        $url = 'https://api.twitter.com/oauth/request_token';
+        $url = 'https://api.x.com/oauth/request_token';
         $queryParams = $this->temporaryCredentialsQueryParameters();
 
         return empty($queryParams) ? $url : $url . '?' . $queryParams;
@@ -65,7 +65,7 @@ class Twitter extends Server
      */
     public function urlAuthorization()
     {
-        return 'https://api.twitter.com/oauth/authenticate';
+        return 'https://api.x.com/oauth/authenticate';
     }
 
     /**
@@ -73,7 +73,7 @@ class Twitter extends Server
      */
     public function urlTokenCredentials()
     {
-        return 'https://api.twitter.com/oauth/access_token';
+        return 'https://api.x.com/oauth/access_token';
     }
 
     /**
@@ -81,7 +81,7 @@ class Twitter extends Server
      */
     public function urlUserDetails()
     {
-        return 'https://api.twitter.com/1.1/account/verify_credentials.json?include_email=true';
+        return 'https://api.x.com/1.1/account/verify_credentials.json?include_email=true';
     }
 
     /**
@@ -106,7 +106,7 @@ class Twitter extends Server
 
         foreach ($data as $key => $value) {
             if (strpos($key, 'url') !== false) {
-                if ( ! in_array($key, $used)) {
+                if (! in_array($key, $used)) {
                     $used[] = $key;
                 }
 
