@@ -2,16 +2,17 @@
 
 $finder = PhpCsFixer\Finder::create()->in([__DIR__ . '/src', __DIR__ . '/tests']);
 
-return PhpCsFixer\Config::create()
+return (new PhpCsFixer\Config)
     ->setRules([
         '@PSR2' => true,
         'array_syntax' => ['syntax' => 'short'],
         'binary_operator_spaces' => true,
-        'blank_line_before_return' => true,
+        'blank_line_before_statement' => true,
         'cast_spaces' => true,
         'concat_space' => ['spacing' => 'one'],
         'no_singleline_whitespace_before_semicolons' => true,
         'not_operator_with_space' => true,
+        'nullable_type_declaration_for_default_null_value' => true,
         'ordered_imports' => true,
         'phpdoc_align' => true,
         'phpdoc_indent' => true,
