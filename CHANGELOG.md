@@ -1,5 +1,10 @@
 # Changelog
 
+## v1.11.0
+
+- Fix PHP 8.4 deprecations
+- Added X implementation
+
 ## v1.10.1
 
 - Fix deprecation error (#147)
