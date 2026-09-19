@@ -1,5 +1,9 @@
 # Changelog
 
+## v1.12.0
+
+- Add Guzzle 8 support
+
 ## v1.11.0
 
 - Fix PHP 8.4 deprecations
