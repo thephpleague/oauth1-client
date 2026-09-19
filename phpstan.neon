@@ -8,4 +8,8 @@ parameters:
         -
             message: '#invalid type OpenSSLAsymmetricKey#'
             path: src/Credentials/RsaClientCredentials.php
+        -
+            # This can be removed when upgrading to at least PHPStan 1.1.1
+            message: '#Function array_is_list not found.#'
+            path: src/Signature/EncodesUrl.php
     reportUnmatchedIgnoredErrors: false
